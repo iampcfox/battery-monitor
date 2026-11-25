@@ -372,6 +372,33 @@ namespace BatteryMonitor
             return normal;
         }
 
+        // 卡片底：纯平面，不画投影、不画描边，只有一层（或上下渐变）半透明填充。
+        // 纵向和横向两套布局共用，颜色/透明度都取配置
+        private void DrawCardBody(Graphics g, RectangleF card, float radius)
+        {
+            int alpha = _cfg.Alpha;
+            using (GraphicsPath bodyPath = RoundRect(card, radius))
+            {
+                bool flat = _cfg.BgTopR == _cfg.BgBotR && _cfg.BgTopG == _cfg.BgBotG
+                         && _cfg.BgTopB == _cfg.BgBotB;
+                if (flat)
+                {
+                    using (SolidBrush body = new SolidBrush(Color.FromArgb(alpha,
+                        _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB)))
+                        g.FillPath(body, bodyPath);
+                }
+                else
+                {
+                    RectangleF gRect = new RectangleF(card.X, card.Y - 1f, card.Width, card.Height + 2f);
+                    using (LinearGradientBrush body = new LinearGradientBrush(gRect,
+                        Color.FromArgb(alpha, _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB),
+                        Color.FromArgb(alpha, _cfg.BgBotR, _cfg.BgBotG, _cfg.BgBotB),
+                        LinearGradientMode.Vertical))
+                        g.FillPath(body, bodyPath);
+                }
+            }
+        }
+
         private static GraphicsPath RoundRect(RectangleF r, float radius)
         {
             GraphicsPath p = new GraphicsPath();
@@ -392,6 +419,12 @@ namespace BatteryMonitor
         private void Render()
         {
             _btHits.Clear();
+            if (_cfg.Horizontal)
+            {
+                try { RenderHorizontal(); }
+                catch (Exception ex) { try { Program.Trace("horiz ex: " + ex); } catch { } }
+                return;
+            }
             float sc = _cfg.Scale <= 0 ? 1f : _cfg.Scale;
             using (Bitmap bmp = new Bitmap(_w, _h, PixelFormat.Format32bppArgb))
             {
@@ -407,35 +440,7 @@ namespace BatteryMonitor
                     RectangleF card = new RectangleF(pad, pad, _w - pad * 2 - 2f * sc, _h - pad * 2 - 2f * sc);
                     float radius = 11f * sc;
 
-                    // 纯平面：不画投影、不画描边，只有一层半透明填充
-                    int alpha = _cfg.Alpha;
-                    using (GraphicsPath bodyPath = RoundRect(card, radius))
-                    {
-                        bool flat = _cfg.BgTopR == _cfg.BgBotR && _cfg.BgTopG == _cfg.BgBotG
-                                 && _cfg.BgTopB == _cfg.BgBotB;
-                        if (flat)
-                        {
-                            // 上下色相同 → 平色块
-                            using (SolidBrush body = new SolidBrush(Color.FromArgb(alpha,
-                                _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB)))
-                            {
-                                g.FillPath(body, bodyPath);
-                            }
-                        }
-                        else
-                        {
-                            // 上下色不同 → 竖向渐变
-                            RectangleF gRect = new RectangleF(card.X, card.Y - 1f,
-                                card.Width, card.Height + 2f);
-                            using (LinearGradientBrush body = new LinearGradientBrush(gRect,
-                                Color.FromArgb(alpha, _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB),
-                                Color.FromArgb(alpha, _cfg.BgBotR, _cfg.BgBotG, _cfg.BgBotB),
-                                LinearGradientMode.Vertical))
-                            {
-                                g.FillPath(body, bodyPath);
-                            }
-                        }
-                    }
+                    DrawCardBody(g, card, radius);
 
                     StringFormat sf = new StringFormat(StringFormat.GenericTypographic);
                     sf.FormatFlags |= StringFormatFlags.NoWrap;
@@ -459,7 +464,7 @@ namespace BatteryMonitor
                     float ringGap = 4f * sc;                   // 环与左侧电量文字的间隔
                     float ringCx = rightLimit - ringD / 2f;
                     float ringCy = card.Y + padtop + rowPct / 2f;
-                    if (showBolt) DrawBoltRing(g, ringCx, ringCy, ringD, ringW, _sample.Percent, TrackColor(), accent);
+                    if (showBolt) DrawBoltRing(g, ringCx, ringCy, ringD, ringW, _sample.Percent, TrackColor(), accent, BoltPulse());
 
                     // 电量行永远画：这是卡片的主体信息，不给关
                     string pctText = DrawPercentText();
@@ -629,7 +634,7 @@ namespace BatteryMonitor
         // 充电徽标：外圈电量环 + 环内闪电
         // 进度从 12 点方向顺时针填充，100% 时才是完整一圈；环底色比卡片体深一档，空出来的部分才看得见
         private static void DrawBoltRing(Graphics g, float cx, float cy, float d, float ringW,
-            int percent, Color track, Color accent)
+            int percent, Color track, Color accent, float boltAlpha)
         {
             float r = d / 2f - ringW / 2f;          // 环中心线半径（线宽居中压在圆上）
             if (r <= 0.5f) return;
@@ -654,11 +659,21 @@ namespace BatteryMonitor
                 }
             }
 
-            DrawBolt(g, cx, cy, d * 0.56f, accent);
+            // 闪电带透明度：充电时它在一个周期里呼吸（见 BoltPulse），静态场景传 1 不变
+            DrawBolt(g, cx, cy, d * 0.56f, Color.FromArgb((int)Math.Round(255f * Math.Max(0f, Math.Min(1f, boltAlpha))), accent));
         }
 
         // 环底槽色：卡片底色朝墨色方向压 32%，浅底变深、深底变亮，两种主题下都能分辨。
         // 透明度跟卡片一致，否则环会显得比卡身更"实"，像贴了块补丁
+        // 充电动画的相位：0.35 ~ 1.0 的呼吸系数，周期 1.2 秒。
+        // 卡片上的动画定时器每 350ms 重画一拍，两拍之间靠这个系数插值出明暗变化
+        private static float BoltPulse()
+        {
+            double t = (Environment.TickCount % 1200) / 1200.0;
+            float v = (float)(0.5 - 0.5 * Math.Cos(t * Math.PI * 2.0));   // 0→1→0
+            return 0.35f + 0.65f * v;
+        }
+
         private Color TrackColor()
         {
             Color c = Blend(Color.FromArgb(255, _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB), InkColor(), 0.32f);

@@ -37,6 +37,7 @@ namespace BatteryMonitor
         public bool StripTemp = true;        // 窄条下行的温度（与悬浮窗口的温度分开配，缺省跟以前一致）
         public bool StripWatt = true;        // 窄条下行的功率（同上）
         public bool StripBt = true;          // 窄条上的蓝牙设备电量（耳机/键盘/手柄，各自一个图标 + 电量）
+        public bool Horizontal = false;      // true = 悬浮窗横向排列（电量在右、温度居中、蓝牙在左）
         public bool ShowEmptyBt = false;     // 连"没上报电量"的设备也显示（蓝牙音箱这类永远不报电量的才看得见）
         public bool StripSolid = false;      // true = 窄条不走逐像素透明，改用实底绘制（花屏/看不见时的退路）
         public bool TrayMin = false;         // true = 托盘数字取"所有在线设备的最低电量"，而不是只显示本机
@@ -89,6 +90,7 @@ namespace BatteryMonitor
                     else if (k == "stripwatt") { c.StripWatt = !IsFalse(v); hasStripWatt = true; }
                     else if (k == "stripbt") c.StripBt = !IsFalse(v);
                     else if (k == "showemptybt") c.ShowEmptyBt = !IsFalse(v);
+                    else if (k == "horizontal") c.Horizontal = !IsFalse(v);
                     else if (k == "stripsolid") c.StripSolid = !IsFalse(v);
                     else if (k == "traymin") c.TrayMin = !IsFalse(v);
                     else if (k == "trayicon") c.TrayNumber = (v.Trim().ToLowerInvariant() == "number");
@@ -132,6 +134,7 @@ namespace BatteryMonitor
             kv["stripwatt"] = BoolText(StripWatt);
             kv["stripbt"] = BoolText(StripBt);
             kv["showemptybt"] = BoolText(ShowEmptyBt);
+            kv["horizontal"] = BoolText(Horizontal);
             kv["stripsolid"] = BoolText(StripSolid);
             kv["traymin"] = BoolText(TrayMin);
             kv["trayicon"] = TrayNumber ? "number" : "glyph";

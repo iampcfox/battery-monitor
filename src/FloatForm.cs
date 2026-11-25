@@ -120,6 +120,7 @@ namespace BatteryMonitor
         private readonly System.Windows.Forms.Timer _timer;
         private readonly System.Windows.Forms.Timer _warmTimer;   // 启动后补几拍，等首轮链路探测
         private readonly System.Windows.Forms.Timer _tipTimer;    // Ctrl+悬停：看某台蓝牙设备的详情
+        private readonly System.Windows.Forms.Timer _animTimer;   // 充电动画：真在进电时重画，闪电呼吸
         private int _warmLeft;
         private bool _started;          // OnShown 只做一次初始化，隐藏后再显示不要重来
         private Sample _sample = new Sample();
@@ -161,8 +162,18 @@ namespace BatteryMonitor
             // 134：蓝牙设备行是"图标 + 名称 + 电池胶囊 + 音量"四段。
             // 音量到 100 时占三位，再加小喇叭和缝；两台音频设备同时显示时，
             // 144 仍会把名字截成"耳…"，再加两个数字位（约 14px）名字才放得下
-            _w = (int)Math.Round(134 * sc);
-            _h = CalcHeight(cfg, sc, 0);   // 蓝牙行等第一次采样后由 ApplyHeight 补上
+            if (cfg.Horizontal)
+            {
+                // 横向：宽高都由内容量出来，蓝牙设备一行一台往下叠
+                Size hs = MeasureHorizontal();
+                _w = Math.Max(60, hs.Width);
+                _h = Math.Max(30, hs.Height);
+            }
+            else
+            {
+                _w = (int)Math.Round(134 * sc);
+                _h = CalcHeight(cfg, sc, 0);   // 蓝牙行等第一次采样后由 ApplyHeight 补上
+            }
 
             _light = IsLightTheme(cfg);
 
@@ -223,6 +234,12 @@ namespace BatteryMonitor
             _tipTimer.Interval = 120;
             _tipTimer.Tick += delegate { OnTipTick(); };
             _tipTimer.Start();
+
+            // 动画定时器常开，但 OnAnimTick 会在"卡片不可见 / 不在充电"时自己停掉，
+            // OnTick 每拍又会按需拉起来 —— 平时（用电池）它是不跑的
+            _animTimer = new System.Windows.Forms.Timer();
+            _animTimer.Interval = 350;
+            _animTimer.Tick += delegate { OnAnimTick(); };
         }
 
         protected override CreateParams CreateParams
@@ -505,14 +522,36 @@ namespace BatteryMonitor
         private void ApplyHeight()
         {
             float sc = _cfg.Scale <= 0 ? 1f : _cfg.Scale;
-            int bt = BtRowCount();
-            int h = CalcHeight(_cfg, sc, bt);
-            if (h == _h) return;
-            int delta = _h - h;
-            _h = h;
+            int nw, nh;
+            if (_cfg.Horizontal)
+            {
+                // 横向的宽度也跟着内容走（设备增减、名字长短都会变），所以宽也要一起比
+                Size hs = MeasureHorizontal();
+                nw = Math.Max(60, hs.Width);
+                nh = Math.Max(30, hs.Height);
+            }
+            else
+            {
+                nw = _w;
+                nh = CalcHeight(_cfg, sc, BtRowCount());
+            }
+            if (nw == _w && nh == _h) return;
+
+            // 右下角是锚点：变宽变高都往左上长，原地不动会顶出屏幕
+            int dw = _w - nw, dh = _h - nh;
+            _w = nw; _h = nh;
             Size = new Size(_w, _h);
-            Location = ClampToWorkArea(Location.X, Location.Y + delta);
-            SavePosition();      // 高度变了，文件里的"最小底距"要跟着改，不然下次启动会跳
+            Location = ClampToWorkArea(Location.X + dw, Location.Y + dh);
+            SavePosition();      // 尺寸变了，文件里的"最小右下间距"要跟着改，不然下次启动会跳
+        }
+
+        // 纵向 / 横向切换（菜单用）
+        internal void ToggleHorizontal()
+        {
+            _cfg.Horizontal = !_cfg.Horizontal;
+            try { _cfg.Save(AppPaths.Ini); } catch { }
+            ApplyConfig();
+            ForceRefresh();
         }
 
         // 温度 / 状态与功率 / 蓝牙开关：决定卡片有几行，蓝牙行数还取决于真的连了几台设备
@@ -604,10 +643,19 @@ namespace BatteryMonitor
                 gapB = _cfg.MarginBottom;
             }
 
-            _w = (int)Math.Round(134 * sc);     // 同构造函数
             _light = IsLightTheme(_cfg);
             _timer.Interval = Math.Max(2, _cfg.RefreshSeconds) * 1000;
-            _h = CalcHeight(_cfg, sc, BtRowCount());
+            if (_cfg.Horizontal)
+            {
+                Size hs = MeasureHorizontal();
+                _w = Math.Max(60, hs.Width);
+                _h = Math.Max(30, hs.Height);
+            }
+            else
+            {
+                _w = (int)Math.Round(134 * sc);     // 同构造函数
+                _h = CalcHeight(_cfg, sc, BtRowCount());
+            }
             Size = new Size(_w, _h);
             Location = ClampToWorkArea(wa0.Right - _w - gapR, wa0.Bottom - _h - gapB);
             SavePosition();
@@ -689,6 +737,7 @@ namespace BatteryMonitor
             _started = true;
             try { _sample = Sensors.Read(); } catch { }
             ApplyHeight();          // 首次采样后才知道有几台蓝牙设备，先把高度定下来再画
+            _animTimer.Start();
             MaybeRecord();          // 启动就先落一个点，短时间运行也能看到曲线
             Render();
             _timer.Start();
@@ -711,6 +760,7 @@ namespace BatteryMonitor
             _timer.Stop();
             _warmTimer.Stop();
             _dragTimer.Stop();
+            _animTimer.Stop();
             SetHittable(false);   // 退出前恢复穿透 + 箭头，别把光标留在手型
             SavePosition();
             base.OnFormClosing(e);
@@ -726,7 +776,22 @@ namespace BatteryMonitor
             // 任务栏挪位、分辨率变化、拔掉外接屏后，把卡片拉回工作区
             if (!_dragging) Location = ClampToWorkArea(Location.X, Location.Y);
             Render();
+            if (_sample != null && ChargeVisual.Bolt(_sample)) _animTimer.Start();
             if (SampleChanged != null) { try { SampleChanged(); } catch { } }
+        }
+
+        // ── 充电动画：真在进电时每 350ms 重画一拍，闪电的透明度按相位呼吸 ────
+        // 只在"卡片可见 + 真在进电"时跑；拔掉电源或隐藏卡片就自己停，不空转
+        private void OnAnimTick()
+        {
+            try
+            {
+                if (!Visible) { _animTimer.Stop(); return; }
+                Sample s = _sample;
+                if (s == null || !ChargeVisual.Bolt(s)) { _animTimer.Stop(); return; }
+                Render();
+            }
+            catch { }
         }
 
         // ── Ctrl + 悬停：蓝牙设备详情卡 ──────────────────────────────────────

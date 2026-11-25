@@ -45,6 +45,12 @@ namespace BatteryMonitor
                 Checked = delegate { return cfg.Taskbar; },
                 Do = delegate { card.ToggleTaskbarItem(); }
             });
+            l.Add(new Item
+            {
+                Text = "横向排列",
+                Checked = delegate { return cfg.Horizontal; },
+                Do = delegate { card.ToggleHorizontal(); }
+            });
 
             l.Add(new Item());
 
