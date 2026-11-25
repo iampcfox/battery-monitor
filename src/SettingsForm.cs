@@ -2311,6 +2311,7 @@ namespace BatteryMonitor
         private readonly UiToggle _chkWatt = new UiToggle();
         private readonly UiToggle _chkBt = new UiToggle();
         private readonly UiToggle _chkPercent = new UiToggle();
+        private readonly UiToggle _chkEmptyBt = new UiToggle();
         private readonly UiToggle _chkCtrl = new UiToggle();
         private readonly UiToggle _chkTray = new UiToggle();
         private readonly UiToggle _chkTaskbar = new UiToggle();
@@ -2433,7 +2434,7 @@ namespace BatteryMonitor
         private void BuildGroups()
         {
             // 悬浮窗口显示哪些内容
-            Panel g1 = Group("悬浮窗口", 116);
+            Panel g1 = Group("悬浮窗口", 140);
             _chkTemp.Text = "温度";
             _chkState.Text = "充放电状态";
             _chkWatt.Text = "功率";
@@ -2444,8 +2445,10 @@ namespace BatteryMonitor
             _chkWatt.Location = new Point(380, 46);
             _chkBt.Location = new Point(18, 76);
             _chkPercent.Location = new Point(196, 76);
+            _chkEmptyBt.Text = "显示未上报电量的设备（音箱等）";
+            _chkEmptyBt.Location = new Point(18, 106);
             g1.Controls.Add(_chkTemp); g1.Controls.Add(_chkState); g1.Controls.Add(_chkWatt);
-            g1.Controls.Add(_chkBt); g1.Controls.Add(_chkPercent);
+            g1.Controls.Add(_chkBt); g1.Controls.Add(_chkPercent); g1.Controls.Add(_chkEmptyBt);
 
             Panel themeHost = new Panel();
             themeHost.BackColor = Ui.Card;
@@ -2628,6 +2631,7 @@ namespace BatteryMonitor
             _chkWatt.Checked = _cfg.ShowWatt;
             _chkBt.Checked = _cfg.ShowBt;
             _chkPercent.Checked = _cfg.ShowPercentSign;
+            _chkEmptyBt.Checked = _cfg.ShowEmptyBt;
             _chkCtrl.Checked = _cfg.DragNeedsCtrl;
             _chkTray.Checked = _cfg.Tray;
             _chkTaskbar.Checked = _cfg.Taskbar;
@@ -2711,6 +2715,8 @@ namespace BatteryMonitor
             _cfg.ShowWatt = _chkWatt.Checked;
             _cfg.ShowBt = _chkBt.Checked;
             _cfg.ShowPercentSign = _chkPercent.Checked;
+            _cfg.ShowEmptyBt = _chkEmptyBt.Checked;
+            Sensors.ShowAllBt = _cfg.ShowEmptyBt;
             _cfg.DragNeedsCtrl = _chkCtrl.Checked;
             _cfg.Tray = _chkTray.Checked;
             _cfg.Taskbar = _chkTaskbar.Checked;

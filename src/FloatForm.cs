@@ -495,7 +495,9 @@ namespace BatteryMonitor
             for (int i = 0; i < _sample.Bt.Count; i++)
             {
                 BtDevice d = _sample.Bt[i];
-                if (d.Percent >= 0 && d.Percent <= 100) n++;
+                // 判据必须和 CardRender.VisibleBt 一模一样，否则会算少一行 → 底部空出一块 / 内容被切
+                if (!Sensors.ShowAllBt && (d.Percent < 0 || d.Percent > 100)) continue;
+                n++;
             }
             return n;
         }

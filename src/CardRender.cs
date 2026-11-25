@@ -110,7 +110,7 @@ namespace BatteryMonitor
                 BtDevice d = _sample.Bt[i];
                 // 没上报电量的设备（手柄最常见）不进卡片：它会显示成"已连接 / --"，
                 // 既不提供信息又占一行。用户要求这类只在面板的设备电量页里出现。
-                if (d.Percent < 0 || d.Percent > 100) continue;
+                if (!Sensors.ShowAllBt && (d.Percent < 0 || d.Percent > 100)) continue;
                 list.Add(d);
             }
             return list;

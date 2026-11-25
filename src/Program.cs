@@ -53,6 +53,7 @@ namespace BatteryMonitor
                 AppPaths.Migrate();            // battery-float.* → battery-monitor.*（只搬一次）
                 FloatForm.MigrateAutoStart();  // 开机自启动的注册表值也改名，不然会静默失效
                 Config cfg = Config.Load();
+                if (cfg.ShowEmptyBt) Sensors.ShowAllBt = true;
                 // 主题要在任何窗口创建之前定下来：Ui 的颜色是全局静态值，控件一创建就用它
                 Ui.ApplyTheme(cfg.Theme == 2 || (cfg.Theme == 0 && Ui.SystemIsDark()));
                 cfg.BgTopR = Ui.CardTop.R; cfg.BgTopG = Ui.CardTop.G; cfg.BgTopB = Ui.CardTop.B;

@@ -930,6 +930,12 @@ namespace BatteryMonitor
             return BtKindName(k);
         }
 
+        // 预览开关（环境变量 BM_SHOWALL=1）：把"没上报电量、平时不显示"的设备也画出来。
+        // 只为了看效果 / 截图用，默认关闭 —— 用户定的规则是"没电量的不进窄条和悬浮窗"。
+        // 设置页的"显示未上报电量的设备"就是它；启动时也会认环境变量 BM_SHOWALL=1（调试用）
+        internal static bool ShowAllBt =
+            Environment.GetEnvironmentVariable("BM_SHOWALL") == "1";
+
         internal static RowIcon BtKindIcon(BtKind k)
         {
             if (k == BtKind.Headphone) return RowIcon.Headphone;

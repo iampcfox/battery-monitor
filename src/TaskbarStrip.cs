@@ -1296,6 +1296,7 @@ namespace BatteryMonitor
             for (int i = 0; i < src.Count; i++)
             {
                 BtDevice d = src[i];
+                if (Sensors.ShowAllBt) { list.Add(d); continue; }
                 if (d.Percent >= 0 && d.Percent <= 100) list.Add(d);
             }
             return list;

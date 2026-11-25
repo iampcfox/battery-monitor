@@ -26,6 +26,14 @@ namespace BatteryMonitor
                 ? "电量：" + d.Percent.ToString(CultureInfo.InvariantCulture) + "%"
                 : "电量：--（设备未上报）");
 
+            // 音频设备再补一行"当前音量"：耳机和音箱各有各的端点音量，
+            // 取的是这台设备自己的播放端点（见 Audio.VolumeFor），不是系统默认音量
+            if (d.Kind == BtKind.Headphone || d.Kind == BtKind.Speaker)
+            {
+                int vol = Audio.VolumeFor(d.Container, d.Model);
+                if (vol >= 0) L.Add("音量：" + vol.ToString(CultureInfo.InvariantCulture));
+            }
+
             // 版本要走驱动 IOCTL 查，第一次是空的，后台查到后下一拍悬停就会补上
             string ver = Sensors.BtVersion(d.Address);
             string st = "状态：已连接";
