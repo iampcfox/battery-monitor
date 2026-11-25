@@ -1,0 +1,83 @@
+﻿<Page
+    x:Class="BatteryMonitor.UI.Views.StatsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20,16" RowSpacing="12">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+                <TextBlock Text="历史统计" Style="{StaticResource AppPageTitleStyle}" />
+                <TextBlock x:ConnectionId='16' x:Name="SubtitleText" Text="—" Style="{StaticResource AppPageSubtitleStyle}" />
+            </StackPanel>
+            <Button x:ConnectionId='15' x:Name="RefreshButton" Grid.Column="1"                       VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE72C;" FontSize="14" />
+                    <TextBlock Text="刷新" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource AppCardStyle}" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Spacing="5">
+                    <TextBlock Text="统计范围" Style="{StaticResource AppCardLabelStyle}" />
+                    <TextBlock x:ConnectionId='14' x:Name="RangeText" Text="最近 24 小时" FontSize="14" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="5" HorizontalAlignment="Right">
+                    <TextBlock Text="时间范围" Style="{StaticResource AppCardLabelStyle}" />
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <ToggleButton x:ConnectionId='11' x:Name="Range24" Content="24 小时" Tag="24" IsChecked="True"                     />
+                        <ToggleButton x:ConnectionId='12' x:Name="Range168" Content="7 天" Tag="168"                     />
+                        <ToggleButton x:ConnectionId='13' x:Name="Range720" Content="30 天" Tag="720"                     />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Style="{StaticResource AppKpiCardStyle}">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="当前电量" Style="{StaticResource AppCardLabelStyle}" />
+                    <TextBlock x:ConnectionId='9' x:Name="KpiCurrent" Text="—" FontSize="24" FontWeight="Bold" />
+                    <TextBlock x:ConnectionId='10' x:Name="KpiCurrentSub" Text="—" Style="{StaticResource AppCardFootnoteStyle}" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="1" Style="{StaticResource AppKpiCardStyle}">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="区间最高" Style="{StaticResource AppCardLabelStyle}" />
+                    <TextBlock x:ConnectionId='7' x:Name="KpiMax" Text="—" FontSize="24" FontWeight="Bold" />
+                    <TextBlock x:ConnectionId='8' x:Name="KpiMaxSub" Text="—" Style="{StaticResource AppCardFootnoteStyle}" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="2" Style="{StaticResource AppKpiCardStyle}">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="区间最低" Style="{StaticResource AppCardLabelStyle}" />
+                    <TextBlock x:ConnectionId='5' x:Name="KpiMin" Text="—" FontSize="24" FontWeight="Bold" />
+                    <TextBlock x:ConnectionId='6' x:Name="KpiMinSub" Text="—" Style="{StaticResource AppCardFootnoteStyle}" />
+                </StackPanel>
+            </Border>
+            <Border Grid.Column="3" Style="{StaticResource AppKpiCardStyle}">
+                <StackPanel Spacing="2">
+                    <TextBlock Text="平均电量" Style="{StaticResource AppCardLabelStyle}" />
+                    <TextBlock x:ConnectionId='3' x:Name="KpiAvg" Text="—" FontSize="24" FontWeight="Bold" />
+                    <TextBlock x:ConnectionId='4' x:Name="KpiAvgSub" Text="—" Style="{StaticResource AppCardFootnoteStyle}" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="3" Style="{StaticResource AppCardStyle}" Padding="8">
+            <Canvas x:ConnectionId='2' x:Name="ChartCanvas"                                       />
+        </Border>
+    </Grid>
+</Page>
+

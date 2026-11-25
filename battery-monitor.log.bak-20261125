@@ -1,0 +1,446 @@
+15:57:42 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+15:57:42 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+15:57:42 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+15:57:42 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+15:57:42 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+15:57:42 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+15:57:42 tb cand #32770 [362,732-495,764] 133x32 vis=1 pid=1720
+15:57:42 tb cand MSTaskSwWClass [495,728-965,768] 470x40 vis=1 pid=10136
+15:57:42 tb cand MSTaskListWClass [495,728-965,768] 470x40 vis=1 pid=10136
+15:57:42 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+15:57:42 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+15:57:42 tb cand tooltips_class32 [474,679-690,735] 216x56 vis=0 pid=1720
+15:57:42 tb cand #32768 [474,473-661,735] 187x262 vis=1 pid=1720
+15:57:42 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+15:57:42 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+15:57:42 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+15:57:42 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+15:57:42 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+15:57:42 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+15:57:42 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+15:57:42 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+15:57:42 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+15:57:42 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+15:57:42 tb ok: x=832 w=116 winW=116 list=[495,965] btn=965 tm=none win11=False compressed=True tray=954
+15:57:43 tb ok: x=832 w=116 winW=116 list=[362,965] btn=965 tm=none win11=False compressed=True tray=954
+15:57:47 tb ok: x=864 w=116 winW=116 list=[96,986] btn=986 tm=none win11=False compressed=True tray=986
+15:57:53 pct=89   plug=0 chg=0 full=0 temp=40 watt=5.5 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 89% | 电池 40℃ | 耳机 90%
+15:57:58 tb ok: x=864 w=116 winW=116 list=[229,986] btn=986 tm=none win11=False compressed=True tray=986
+15:58:53 pct=89   plug=0 chg=0 full=0 temp=40 watt=5.5 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 89% | 电池 40℃ | 耳机 90%
+15:59:23 tb taskbar type: classic
+15:59:23 tb row: taskbar=[0,728-1366,768] band=[229,948]
+15:59:23 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+15:59:23 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+15:59:23 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+15:59:23 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+15:59:23 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+15:59:23 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+15:59:23 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+15:59:23 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+15:59:23 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+15:59:23 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+15:59:23 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+15:59:23 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+15:59:23 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+15:59:23 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+15:59:23 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=19136
+15:59:23 tb cand MSTaskSwWClass [229,728-954,768] 725x40 vis=1 pid=10136
+15:59:23 tb cand MSTaskListWClass [229,728-954,768] 725x40 vis=1 pid=10136
+15:59:23 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+15:59:23 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+15:59:23 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+15:59:23 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+15:59:23 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+15:59:23 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+15:59:23 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+15:59:23 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+15:59:23 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+15:59:23 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+15:59:23 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+15:59:23 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+15:59:23 tb ok: x=889 w=59 winW=59 list=[229,889] btn=954 tm=none win11=False compressed=True tray=954
+15:59:24 pct=89   plug=0 chg=0 full=0 temp=39 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 89% | 电池 39℃ | 耳机 90%
+15:59:24 tb ok: x=832 w=116 winW=116 list=[362,965] btn=889 tm=none win11=False compressed=True tray=954
+15:59:24 tb ok: x=832 w=116 winW=116 list=[495,965] btn=965 tm=none win11=False compressed=True tray=954
+16:00:08 tb ok: x=864 w=116 winW=116 list=[229,986] btn=986 tm=none win11=False compressed=True tray=986
+16:00:28 pct=89   plug=0 chg=0 full=0 temp=39 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 89% | 电池 39℃ | 耳机 90%
+16:00:53 pct=88   plug=0 chg=0 full=0 temp=39 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 88% | 电池 39℃ | 耳机 90%
+16:01:53 pct=88   plug=0 chg=0 full=0 temp=39 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 88% | 电池 39℃ | 耳机 90%
+16:02:23 pct=88   plug=0 chg=0 full=0 temp=40 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 88% | 电池 40℃ | 耳机 90%
+16:02:53 pct=87   plug=0 chg=0 full=0 temp=40 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 87% | 电池 40℃ | 耳机 90%
+16:03:53 pct=87   plug=0 chg=0 full=0 temp=40 watt=5.1 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 87% | 电池 40℃ | 耳机 90%
+16:04:09 tb taskbar type: classic
+16:04:09 tb row: taskbar=[0,728-1366,768] band=[229,948]
+16:04:09 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:04:09 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:04:09 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:04:09 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:04:09 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:04:09 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:09 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:09 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:04:09 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:09 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:09 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:04:09 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:04:09 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:04:09 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:04:09 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=19136
+16:04:09 tb cand MSTaskSwWClass [229,728-954,768] 725x40 vis=1 pid=10136
+16:04:09 tb cand MSTaskListWClass [229,728-954,768] 725x40 vis=1 pid=10136
+16:04:09 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:04:09 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:04:09 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:04:09 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:04:09 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:04:09 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:04:09 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:04:09 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:04:09 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:04:09 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:04:09 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:04:09 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:04:09 tb ok: x=889 w=59 winW=59 list=[229,889] btn=954 tm=none win11=False compressed=True tray=954
+16:04:09 pct=87   plug=0 chg=0 full=0 temp=40 watt=3.4 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 87% | 电池 40℃ | 耳机 90%
+16:04:09 tb ok: x=229 w=116 winW=116 list=[229,832] btn=889 tm=[229,362] win11=False compressed=True tray=954
+16:04:10 tb ok: x=832 w=116 winW=116 list=[362,832] btn=832 tm=none win11=False compressed=True tray=954
+16:04:22 tb row: taskbar=[0,728-1366,768] band=[362,948]
+16:04:22 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:04:22 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:04:22 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:04:22 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:04:22 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:04:22 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:22 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:22 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:04:22 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:22 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:22 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:04:22 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:04:22 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:04:22 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:04:22 tb cand #32770 [229,732-362,764] 133x32 vis=1 pid=19136
+16:04:22 tb cand MSTaskSwWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:04:22 tb cand MSTaskListWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:04:22 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:04:22 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:04:22 tb cand tooltips_class32 [280,705-496,761] 216x56 vis=1 pid=19136
+16:04:22 tb cand SysShadow [280,705-501,766] 221x61 vis=1 pid=19136
+16:04:22 tb cand #32768 [280,499-467,761] 187x262 vis=1 pid=19136
+16:04:22 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:04:22 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:04:22 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:04:22 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:04:22 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:04:22 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:04:22 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:04:22 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:04:22 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:04:22 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:04:22 tb ok: x=362 w=116 winW=116 list=[362,832] btn=832 tm=[362,501] win11=False compressed=True tray=954
+16:04:23 tb row: taskbar=[0,728-1366,768] band=[362,948]
+16:04:23 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:04:23 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:04:23 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:04:23 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:04:23 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:04:23 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:23 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:23 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:04:23 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:23 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:23 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:04:23 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:04:23 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:04:23 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:04:23 tb cand #32770 [229,732-362,764] 133x32 vis=1 pid=19136
+16:04:23 tb cand MSTaskSwWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:04:23 tb cand MSTaskListWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:04:23 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:04:23 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:04:23 tb cand tooltips_class32 [280,705-496,761] 216x56 vis=0 pid=19136
+16:04:23 tb cand #32768 [280,499-467,761] 187x262 vis=1 pid=19136
+16:04:23 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:04:23 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:04:23 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:04:23 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:04:23 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:04:23 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:04:23 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:04:23 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:04:23 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:04:23 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:04:23 tb ok: x=832 w=116 winW=116 list=[362,832] btn=832 tm=none win11=False compressed=True tray=954
+16:04:29 tb row: taskbar=[0,728-1366,768] band=[229,948]
+16:04:29 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:04:29 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:04:29 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:04:29 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:04:29 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:04:29 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:29 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:29 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:04:29 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:29 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:29 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:04:29 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:04:29 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:04:29 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:04:29 tb cand #32770 [701,732-834,764] 133x32 vis=1 pid=19136
+16:04:29 tb cand MSTaskSwWClass [229,728-699,768] 470x40 vis=1 pid=10136
+16:04:29 tb cand MSTaskListWClass [229,728-699,768] 470x40 vis=1 pid=10136
+16:04:29 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:04:29 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:04:29 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:04:29 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:04:29 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:04:29 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:04:29 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:04:29 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:04:29 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:04:29 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:04:29 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:04:29 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:04:29 tb ok: x=579 w=116 winW=116 list=[229,699] btn=699 tm=[701,834] win11=False compressed=True tray=954
+16:04:46 tb row: taskbar=[0,728-1366,768] band=[362,948]
+16:04:46 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:04:46 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:04:46 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:04:46 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:04:46 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:04:46 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:46 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:46 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:04:46 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:46 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:46 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:04:46 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:04:46 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:04:46 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:04:46 tb cand #32770 [229,732-362,764] 133x32 vis=1 pid=19136
+16:04:46 tb cand MSTaskSwWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:04:46 tb cand MSTaskListWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:04:46 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:04:46 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:04:46 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:04:46 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:04:46 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:04:46 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:04:46 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:04:46 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:04:46 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:04:46 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:04:46 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:04:46 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:04:46 tb ok: x=832 w=116 winW=116 list=[362,832] btn=832 tm=none win11=False compressed=True tray=954
+16:04:54 tb ok: x=864 w=116 winW=116 list=[229,986] btn=986 tm=none win11=False compressed=True tray=986
+16:04:58 tb row: taskbar=[0,728-1366,768] band=[229,980]
+16:04:58 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:04:58 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:04:58 tb cand TrayNotifyWnd [986,728-1366,768] 380x40 vis=1 pid=10136
+16:04:58 tb cand Button [986,728-1018,768] 32x40 vis=1 pid=10136
+16:04:58 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:58 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:04:58 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:04:58 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:58 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:04:58 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:04:58 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:04:58 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:04:58 tb cand ReBarWindow32 [94,728-986,768] 892x40 vis=1 pid=10136
+16:04:58 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=19136
+16:04:58 tb cand MSTaskSwWClass [229,728-986,768] 757x40 vis=1 pid=10136
+16:04:58 tb cand MSTaskListWClass [229,728-986,768] 757x40 vis=1 pid=10136
+16:04:58 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:04:58 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:04:58 tb cand tooltips_class32 [209,687-425,743] 216x56 vis=1 pid=19136
+16:04:58 tb cand SysShadow [209,687-430,748] 221x61 vis=1 pid=19136
+16:04:58 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:04:58 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:04:58 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:04:58 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:04:58 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:04:58 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:04:58 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:04:58 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:04:58 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:04:58 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:04:58 tb ok: x=229 w=116 winW=116 list=[229,986] btn=986 tm=[229,410] win11=False compressed=True tray=986
+16:04:59 tb ok: x=229 w=116 winW=116 list=[229,986] btn=986 tm=[229,436] win11=False compressed=True tray=986
+16:05:00 tb row: taskbar=[0,728-1366,768] band=[229,980]
+16:05:00 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:05:00 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:05:00 tb cand TrayNotifyWnd [986,728-1366,768] 380x40 vis=1 pid=10136
+16:05:00 tb cand Button [986,728-1018,768] 32x40 vis=1 pid=10136
+16:05:00 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:05:00 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:05:00 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:05:00 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:05:00 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:05:00 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:05:00 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:05:00 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:05:00 tb cand ReBarWindow32 [94,728-986,768] 892x40 vis=1 pid=10136
+16:05:00 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=19136
+16:05:00 tb cand MSTaskSwWClass [229,728-986,768] 757x40 vis=1 pid=10136
+16:05:00 tb cand MSTaskListWClass [229,728-986,768] 757x40 vis=1 pid=10136
+16:05:00 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:05:00 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:05:00 tb cand tooltips_class32 [215,686-431,742] 216x56 vis=0 pid=19136
+16:05:00 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:05:00 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:05:00 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:05:00 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:05:00 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:05:00 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:05:00 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:05:00 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:05:00 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:05:00 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:05:00 tb ok: x=864 w=116 winW=116 list=[229,986] btn=986 tm=none win11=False compressed=True tray=986
+16:05:09 pct=87   plug=0 chg=0 full=0 temp=39 watt=3.4 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 87% | 电池 39℃ | 耳机 90%
+16:05:18 tb taskbar type: classic
+16:05:18 tb row: taskbar=[0,728-1366,768] band=[229,948]
+16:05:18 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:05:18 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:05:18 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:05:18 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:05:18 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:05:18 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:05:18 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:05:18 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:05:18 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:05:18 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:05:18 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:05:18 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:05:18 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:05:18 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:05:18 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=19136
+16:05:18 tb cand MSTaskSwWClass [229,728-954,768] 725x40 vis=1 pid=10136
+16:05:18 tb cand MSTaskListWClass [229,728-954,768] 725x40 vis=1 pid=10136
+16:05:18 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:05:18 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:05:18 tb cand tooltips_class32 [152,695-368,751] 216x56 vis=0 pid=19136
+16:05:18 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:05:18 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:05:18 tb cand CASCADIA_HOSTING_WINDOW_CLASS [148,156-1277,791] 1129x635 vis=1 pid=17820
+16:05:18 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:05:18 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:05:18 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:05:18 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:05:18 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:05:18 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:05:18 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:05:18 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:05:18 tb ok: x=889 w=59 winW=59 list=[229,889] btn=954 tm=none win11=False compressed=True tray=954
+16:05:19 pct=87   plug=0 chg=0 full=0 temp=39 watt=4.0 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 87% | 电池 39℃ | 耳机 90%
+16:05:19 tb ok: x=229 w=116 winW=116 list=[229,832] btn=889 tm=[229,362] win11=False compressed=True tray=954
+16:05:19 tb ok: x=832 w=116 winW=116 list=[362,832] btn=832 tm=none win11=False compressed=True tray=954
+16:05:53 pct=86   plug=0 chg=0 full=0 temp=39 watt=4.0 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 86% | 电池 39℃ | 耳机 90%
+16:06:03 tb ok: x=864 w=116 winW=116 list=[229,986] btn=986 tm=none win11=False compressed=True tray=986
+16:06:18 tb taskbar type: classic
+16:06:18 tb row: taskbar=[0,728-1366,768] band=[229,948]
+16:06:18 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:06:18 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:06:18 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:06:18 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:06:18 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:06:18 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:06:18 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:06:18 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:06:18 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:06:18 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:06:18 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:06:18 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:06:18 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:06:18 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:06:18 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=19136
+16:06:18 tb cand MSTaskSwWClass [229,728-954,768] 725x40 vis=1 pid=10136
+16:06:18 tb cand MSTaskListWClass [229,728-954,768] 725x40 vis=1 pid=10136
+16:06:18 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:06:18 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:06:18 tb cand tooltips_class32 [222,681-438,737] 216x56 vis=0 pid=19136
+16:06:18 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:06:18 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:06:18 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:06:18 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:06:18 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:06:18 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:06:18 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:06:18 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:06:18 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:06:18 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:06:18 tb ok: x=889 w=59 winW=59 list=[229,889] btn=954 tm=none win11=False compressed=True tray=954
+16:06:19 pct=86   plug=0 chg=0 full=0 temp=39 watt=1.2 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 86% | 电池 39℃ | 耳机 90%
+16:06:19 tb ok: x=229 w=116 winW=116 list=[229,832] btn=889 tm=[229,362] win11=False compressed=True tray=954
+16:06:19 tb ok: x=832 w=116 winW=116 list=[362,832] btn=832 tm=none win11=False compressed=True tray=954
+16:06:45 tb row: taskbar=[0,728-1366,768] band=[362,948]
+16:06:45 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:06:45 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:06:45 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:06:45 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:06:45 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:06:45 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:06:45 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:06:45 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:06:45 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:06:45 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:06:45 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:06:45 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:06:45 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:06:45 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:06:45 tb cand #32770 [229,732-362,764] 133x32 vis=1 pid=19136
+16:06:45 tb cand MSTaskSwWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:06:45 tb cand MSTaskListWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:06:45 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:06:45 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:06:45 tb cand tooltips_class32 [295,693-511,749] 216x56 vis=1 pid=19136
+16:06:45 tb cand SysShadow [295,693-516,754] 221x61 vis=1 pid=19136
+16:06:45 tb cand SysShadow [560,706-638,733] 78x27 vis=1 pid=10136
+16:06:45 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:06:45 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:06:45 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:06:45 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:06:45 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:06:45 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:06:45 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:06:45 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:06:45 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:06:45 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:06:45 tb ok: x=362 w=116 winW=116 list=[362,832] btn=832 tm=[362,516] win11=False compressed=True tray=954
+16:06:46 tb row: taskbar=[0,728-1366,768] band=[362,948]
+16:06:46 tb cand Start [0,728-48,768] 48x40 vis=1 pid=10136
+16:06:46 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=10136
+16:06:46 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=10136
+16:06:46 tb cand Button [954,728-986,768] 32x40 vis=1 pid=10136
+16:06:46 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=10136
+16:06:46 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:06:46 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=10136
+16:06:46 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=10136
+16:06:46 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:06:46 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=10136
+16:06:46 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=10136
+16:06:46 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=10136
+16:06:46 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=10136
+16:06:46 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=10136
+16:06:46 tb cand #32770 [229,732-362,764] 133x32 vis=1 pid=19136
+16:06:46 tb cand MSTaskSwWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:06:46 tb cand MSTaskListWClass [362,728-832,768] 470x40 vis=1 pid=10136
+16:06:46 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=11912
+16:06:46 tb cand tooltips_class32 [1005,731-1102,753] 97x22 vis=0 pid=10136
+16:06:46 tb cand tooltips_class32 [295,693-511,749] 216x56 vis=0 pid=19136
+16:06:46 tb cand tooltips_class32 [1135,745-1240,767] 105x22 vis=0 pid=10136
+16:06:46 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=10136
+16:06:46 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13564
+16:06:46 tb cand WindowsDashboard [0,0-2340,1010] 2340x1010 vis=0 pid=9604
+16:06:46 tb cand Chrome_WidgetWin_0 [88,88-1482,812] 1394x724 vis=0 pid=4588
+16:06:46 tb cand \o/ Walk_MainWindow_Class \o/ [44,44-1438,768] 1394x724 vis=0 pid=2876
+16:06:46 tb cand global_hotkey_app [44,44-1438,768] 1394x724 vis=0 pid=1664
+16:06:46 tb cand Chrome_WidgetWin_0 [220,220-1614,944] 1394x724 vis=0 pid=13564
+16:06:46 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10168
+16:06:46 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=10136
+16:06:46 tb ok: x=832 w=116 winW=116 list=[362,832] btn=832 tm=none win11=False compressed=True tray=954
+16:07:03 tb ok: x=864 w=116 winW=116 list=[229,986] btn=986 tm=none win11=False compressed=True tray=986
+16:07:18 pct=86   plug=0 chg=0 full=0 temp=38 watt=1.2 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 86% | 电池 38℃ | 耳机 90%
+16:07:53 pct=85   plug=0 chg=0 full=0 temp=38 watt=1.2 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 85% | 电池 38℃ | 耳机 90%
+16:08:58 pct=85   plug=0 chg=0 full=0 temp=38 watt=1.2 bt=耳机 90% dev=耳机:90@84AC60112BD4(QCY ArcBuds Lite) link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:0/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 85% | 电池 38℃ | 耳机 90%

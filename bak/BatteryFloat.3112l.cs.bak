@@ -1,0 +1,3112 @@
+﻿// 电量悬浮窗（编译版）
+// 半透明圆角卡片：电量百分比（常显，右侧圆环显示进度）+ 充电闪电 + 可选温度 / 充放电状态+功率 / 蓝牙设备电量
+// 蓝牙一行一台设备（耳机 / 键盘 / 手柄 / 鼠标），行首带矢量小图标；同类多台自动编号（键盘1 / 键盘2）
+// 鼠标完全穿透：WS_EX_LAYERED | WS_EX_TRANSPARENT；不进 Alt+Tab：WS_EX_TOOLWINDOW；不抢焦点：WS_EX_NOACTIVATE
+// 拖动：按住 Ctrl 拖动（临时关掉穿透才能显示手型光标），位置会被夹在工作区内
+// 菜单：按住 Ctrl 右键 → 系统菜单（统计数据 / 显示温度 / 显示充放电状态 / 显示功率 / 显示蓝牙电量 / 开机自启动 / 退出）
+// 统计：每 recordmin 分钟把电量追加进 battery-float-history.csv，右键菜单里看近 30 天折线图
+// 渲染方式：32bpp ARGB 位图 + UpdateLayeredWindow，实现逐像素透明（圆角、阴影、抗锯齿文字）
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing.Text;
+using System.Globalization;
+using System.IO;
+using System.Management;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
+using Microsoft.Win32;
+
+namespace BatteryFloat
+{
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main()
+        {
+            bool created;
+            using (Mutex mutex = new Mutex(true, "Local\\BatteryFloatExeSingleton", out created))
+            {
+                if (!created) return;
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new FloatForm(Config.Load()));
+            }
+        }
+    }
+
+    internal sealed class Config
+    {
+        public float Scale = 1f;
+        public int MarginRight = 16;
+        public int MarginBottom = 14;
+        public int RefreshSeconds = 5;
+        public int Alpha = 208;
+        public bool ShowPercentSign = true;
+        public bool ShowTemp = true;         // 温度行（Ctrl+右键菜单可切换，会写回 ini）
+        public bool ShowState = true;        // 充放电状态词（充电中/放电中…，菜单可切换）
+        public bool ShowWatt = true;         // 状态行后面的功率数字（菜单可切换）
+        public bool ShowBt = true;           // 蓝牙设备电量行（耳机/键盘，没连时不占行）
+        public bool DragNeedsCtrl = true;    // true = 必须按住 Ctrl 才能拖动（默认，避免穿透点到下面的窗口）
+        public bool Debug = true;            // true = 每 5 秒把采样值写进 battery-float.log，方便核对
+        public int RecordMinutes = 5;        // 统计数据的采样间隔（分钟）
+        public int HistoryDays = 30;         // 统计数据保留天数
+
+        // 卡片渐变底色（上 → 下），默认浅色玻璃感
+        public int BgTopR = 242; public int BgTopG = 244; public int BgTopB = 248;
+        public int BgBotR = 242; public int BgBotG = 244; public int BgBotB = 248;
+
+        public static Config Load()
+        {
+            Config c = new Config();
+            try
+            {
+                string dir = Path.GetDirectoryName(Application.ExecutablePath);
+                string path = Path.Combine(dir, "battery-float.ini");
+                if (!File.Exists(path)) return c;
+                foreach (string raw in File.ReadAllLines(path))
+                {
+                    string line = raw.Trim();
+                    if (line.Length == 0 || line.StartsWith(";") || line.StartsWith("#")) continue;
+                    int i = line.IndexOf('=');
+                    if (i < 1) continue;
+                    string k = line.Substring(0, i).Trim().ToLowerInvariant();
+                    string v = line.Substring(i + 1).Trim();
+                    if (k == "scale") c.Scale = ParseF(v, c.Scale);
+                    else if (k == "marginright") c.MarginRight = (int)ParseF(v, c.MarginRight);
+                    else if (k == "marginbottom") c.MarginBottom = (int)ParseF(v, c.MarginBottom);
+                    else if (k == "refresh") c.RefreshSeconds = Math.Max(2, (int)ParseF(v, c.RefreshSeconds));
+                    else if (k == "alpha") c.Alpha = Math.Max(0, Math.Min(255, (int)ParseF(v, c.Alpha)));
+                    else if (k == "bgtop") ParseColor(v, out c.BgTopR, out c.BgTopG, out c.BgTopB);
+                    else if (k == "bgbottom") ParseColor(v, out c.BgBotR, out c.BgBotG, out c.BgBotB);
+                    else if (k == "percent") c.ShowPercentSign = !IsFalse(v);
+                    else if (k == "showtemp") c.ShowTemp = !IsFalse(v);
+                    else if (k == "showstate") c.ShowState = !IsFalse(v);
+                    else if (k == "showwatt") c.ShowWatt = !IsFalse(v);
+                    else if (k == "showbt" || k == "showheadset") c.ShowBt = !IsFalse(v);
+                    else if (k == "dragctrl") c.DragNeedsCtrl = !IsFalse(v);
+                    else if (k == "debug") c.Debug = !IsFalse(v);
+                    else if (k == "recordmin") c.RecordMinutes = Math.Max(1, (int)ParseF(v, c.RecordMinutes));
+                    else if (k == "historydays") c.HistoryDays = Math.Max(1, (int)ParseF(v, c.HistoryDays));
+                }
+            }
+            catch { }
+            return c;
+        }
+
+        private static bool IsFalse(string v)
+        {
+            string s = v.ToLowerInvariant();
+            return s == "false" || s == "0" || s == "no" || s == "off";
+        }
+
+        private static float ParseF(string s, float fallback)
+        {
+            float r;
+            if (float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out r)) return r;
+            return fallback;
+        }
+
+        // 支持 "96,99,108" 和 "#60636C" 两种写法
+        private static void ParseColor(string v, out int r, out int g, out int b)
+        {
+            r = 0; g = 0; b = 0;
+            string s = v.Trim();
+            try
+            {
+                if (s.StartsWith("#") && s.Length >= 7)
+                {
+                    r = Convert.ToInt32(s.Substring(1, 2), 16);
+                    g = Convert.ToInt32(s.Substring(3, 2), 16);
+                    b = Convert.ToInt32(s.Substring(5, 2), 16);
+                    return;
+                }
+                string[] parts = s.Split(',');
+                if (parts.Length < 3) return;
+                r = Math.Max(0, Math.Min(255, (int)ParseF(parts[0].Trim(), 0)));
+                g = Math.Max(0, Math.Min(255, (int)ParseF(parts[1].Trim(), 0)));
+                b = Math.Max(0, Math.Min(255, (int)ParseF(parts[2].Trim(), 0)));
+            }
+            catch { }
+        }
+    }
+
+    // 蓝牙设备类型：决定卡片上的名字和行首那个小图标
+    internal enum BtKind
+    {
+        Unknown = 0,
+        Headphone = 1,
+        Keyboard = 2,
+        Mouse = 3,
+        Gamepad = 4
+    }
+
+    // 一台蓝牙设备的电量（耳机 / 键盘 / 手柄…）
+    internal sealed class BtDevice
+    {
+        public string Label = "";     // 卡片上显示的类型名（同类多台时带序号）
+        public string Address = "";   // BD_ADDR，身份标识兼排序依据
+        public string Model = "";     // 型号名，只用于日志
+        public BtKind Kind = BtKind.Unknown;
+        public int Percent = -1;      // -1 = 已连接但系统没上报电量（手柄常见）
+        public int Index;             // 同类多台时的序号（1、2…），0 = 只此一台、不编号
+    }
+
+    // 卡片上的一行信息（温度 / 状态 / 蓝牙设备），带行首图标
+    internal enum RowIcon
+    {
+        None = 0,
+        Thermo = 1,
+        Battery = 2,
+        Headphone = 3,
+        Keyboard = 4,
+        Mouse = 5,
+        Bolt = 6,
+        Gamepad = 7
+    }
+
+    internal sealed class InfoRow
+    {
+        public string Text = "";
+        public string Name = "";      // 蓝牙行显示的类型名（耳机 / 键盘1 …）；Text 只留给日志
+        public RowIcon Icon = RowIcon.None;
+        public int Percent = -1;      // 电池图标内部填充用
+        public bool Meter;            // true = 行内画"名称 + 电池胶囊（数字在电池里）"
+
+        public InfoRow() { }
+
+        public InfoRow(string text, RowIcon icon)
+        {
+            Text = text;
+            Icon = icon;
+        }
+    }
+
+
+    internal sealed class Sample
+    {
+        public bool HasBattery = true;
+        public int Percent = -1;
+        public bool Charging = false;
+        public bool Full = false;
+        public double TempC = double.NaN;
+        public string TempLabel = "电池";
+        public bool AcOnline = false;         // 适配器是否接着（掉电图标就看它）
+        public double Watts = double.NaN;     // 电池侧功率（W）；NaN = 暂时算不出来
+        public List<BtDevice> Bt = new List<BtDevice>();   // 已连接的蓝牙设备电量，空 = 没连或没上报
+    }
+
+    internal static class Sensors
+    {
+        // 功率取值的优先级：
+        //   ① CallNtPowerInformation(SystemBatteryState).Rate（毫瓦，电池类驱动填，多数 x86 笔记本有）
+        //   ② root\wmi BatteryStatus 的 ChargeRate / DischargeRate（毫瓦）
+        //   ③ 都没有就按"容量跳变区间"估算：Δ剩余容量(mWh) ÷ Δ时间(h) = mW
+        // 这块 QCOM052D 只有 ③ 可用（①② 恒为 0），所以默认显示的是估算值。
+        private const int SystemBatteryState = 5;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SYSTEM_BATTERY_STATE
+        {
+            public byte AcOnLine;
+            public byte BatteryPresent;
+            public byte Charging;
+            public byte Discharging;
+            public byte Spare1_0, Spare1_1, Spare1_2, Spare1_3;
+            public int MaxCapacity;
+            public int RemainingCapacity;
+            public int Rate;              // 毫瓦，正负表示充/放
+            public int EstimatedTime;
+            public int DefaultAlert1;
+            public int DefaultAlert2;
+        }
+
+        [DllImport("powrprof.dll")]
+        private static extern uint CallNtPowerInformation(int level, IntPtr input,
+            uint inputSize, IntPtr output, uint outputSize);
+
+        public static Sample Read()
+        {
+            Sample s = new Sample();
+            int rateMw = 0;            // 驱动直读的功率（毫瓦），0 = 没给
+            int remainingMwh = -1;     // 剩余容量（毫瓦时），估算用
+
+            // 0) 系统电源状态
+            try
+            {
+                int sz = Marshal.SizeOf(typeof(SYSTEM_BATTERY_STATE));
+                IntPtr buf = Marshal.AllocCoTaskMem(sz);
+                try
+                {
+                    if (CallNtPowerInformation(SystemBatteryState, IntPtr.Zero, 0, buf, (uint)sz) == 0)
+                    {
+                        SYSTEM_BATTERY_STATE st = (SYSTEM_BATTERY_STATE)Marshal.PtrToStructure(
+                            buf, typeof(SYSTEM_BATTERY_STATE));
+                        if (st.BatteryPresent == 0) s.HasBattery = false;
+                        if (st.AcOnLine != 0) s.AcOnline = true;
+                        if (st.Charging != 0) s.Charging = true;
+                        else if (st.Discharging != 0) s.Charging = false;
+                        if (st.Rate > 0) rateMw = st.Rate;
+                        if (st.RemainingCapacity > 0) remainingMwh = st.RemainingCapacity;
+                    }
+                }
+                finally { Marshal.FreeCoTaskMem(buf); }
+            }
+            catch { }
+
+            // 1) 基础状态
+            try
+            {
+                PowerStatus ps = SystemInformation.PowerStatus;
+                if (ps.BatteryLifePercent < 0f || ps.BatteryLifePercent > 1f) s.HasBattery = false;
+                else s.Percent = (int)Math.Round(ps.BatteryLifePercent * 100.0);
+                s.Charging = ps.PowerLineStatus == PowerLineStatus.Online;
+                s.AcOnline = s.Charging;
+                // BatteryChargeStatus 没有 Full 成员（只有 High/Low/Critical/Charging/NoSystemBattery/Unknown/None），
+                // “已充满”统一由下面 Percent >= 99 && Charging 判定。
+            }
+            catch { }
+
+            // 2) root\wmi BatteryStatus：电源在线与充/放状态
+            try
+            {
+                using (ManagementObjectSearcher se = new ManagementObjectSearcher("root\\wmi",
+                    "SELECT PowerOnline, Charging, Discharging FROM BatteryStatus"))
+                {
+                    foreach (ManagementBaseObject mo in se.Get())
+                    {
+                        try
+                        {
+                            object online = mo["PowerOnline"];
+                            if (online is bool) { s.AcOnline = (bool)online; s.Charging = (bool)online; }
+                            object chg = mo["Charging"];
+                            if (chg is bool && (bool)chg) s.Charging = true;
+                            object dis = mo["Discharging"];
+                            if (dis is bool && (bool)dis) s.Charging = false;
+                        }
+                        catch { }
+                    }
+                }
+            }
+            catch { }
+
+            // 2b) 速率字段单独查：有些机型的 BatteryStatus 不带这两个属性，整条查询会失败，
+            //     所以和上面的状态查询分开写，别互相拖累
+            if (rateMw == 0)
+            {
+                try
+                {
+                    using (ManagementObjectSearcher se = new ManagementObjectSearcher("root\\wmi",
+                        "SELECT ChargeRate, DischargeRate FROM BatteryStatus"))
+                    {
+                        foreach (ManagementBaseObject mo in se.Get())
+                        {
+                            try
+                            {
+                                int cr = ToInt(mo["ChargeRate"]);
+                                int dr = ToInt(mo["DischargeRate"]);
+                                if (cr > 0) { rateMw = cr; break; }
+                                if (dr > 0) { rateMw = dr; break; }
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            // 3) 电池温度
+            try
+            {
+                using (ManagementObjectSearcher se = new ManagementObjectSearcher("root\\wmi", "SELECT Temperature FROM BatteryTemperature"))
+                {
+                    foreach (ManagementBaseObject mo in se.Get())
+                    {
+                        try
+                        {
+                            object t = mo["Temperature"];
+                            if (t != null)
+                            {
+                                double c = Convert.ToDouble(t) / 10.0 - 273.15;
+                                if (c > 0 && c < 80) { s.TempC = c; s.TempLabel = "电池"; }
+                            }
+                        }
+                        catch { }
+                        if (!double.IsNaN(s.TempC)) break;
+                    }
+                }
+            }
+            catch { }
+
+            // 4) percent 兜底：Win32_Battery
+            if (s.Percent < 0)
+            {
+                try
+                {
+                    using (ManagementObjectSearcher se = new ManagementObjectSearcher("root\\cimv2",
+                        "SELECT EstimatedChargeRemaining, BatteryStatus FROM Win32_Battery"))
+                    {
+                        foreach (ManagementBaseObject mo in se.Get())
+                        {
+                            try
+                            {
+                                object p = mo["EstimatedChargeRemaining"];
+                                if (p != null) s.Percent = Convert.ToInt32(p);
+                                object st = mo["BatteryStatus"];
+                                if (st != null)
+                                {
+                                    int code = Convert.ToInt32(st);
+                                    if (code == 2) s.Charging = true;
+                                    if (code == 3) { s.Full = true; s.Charging = true; }
+                                }
+                            }
+                            catch { }
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            // 5) 温度兜底：ACPI 热区（通常是 SoC / 机身）
+            if (double.IsNaN(s.TempC))
+            {
+                try
+                {
+                    using (ManagementObjectSearcher se = new ManagementObjectSearcher("root\\wmi",
+                        "SELECT CurrentTemperature FROM MSAcpi_ThermalZoneTemperature"))
+                    {
+                        foreach (ManagementBaseObject mo in se.Get())
+                        {
+                            try
+                            {
+                                object t = mo["CurrentTemperature"];
+                                if (t != null)
+                                {
+                                    double c = Convert.ToDouble(t) / 10.0 - 273.15;
+                                    if (c > 0 && c < 120) { s.TempC = c; s.TempLabel = "温度"; break; }
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                catch { }
+            }
+
+            if (s.Percent >= 99 && s.Charging) s.Full = true;
+
+            s.Bt = ReadBtDevices();
+            UpdateWatts(s, rateMw, remainingMwh);
+            return s;
+        }
+
+        // 功率估算状态：只在"容量真的跳了一格"时算一次平均功率，然后把锚点移到当前时刻。
+        // 绝不能用 now - 首次时刻 当分母，那样分母越来越大会把数值一路衰减到 0。
+        private static double _estW = double.NaN;
+        private static int _estMwh = -1;
+        private static DateTime _estAt = DateTime.MinValue;
+        private static bool _estWasAc;
+
+        private static void UpdateWatts(Sample s, int rateMw, int remainingMwh)
+        {
+            DateTime now = DateTime.Now;
+
+            // 插拔电源会让容量曲线拐头，旧锚点作废
+            if (s.AcOnline != _estWasAc)
+            {
+                _estWasAc = s.AcOnline;
+                _estMwh = remainingMwh > 0 ? remainingMwh : -1;
+                _estAt = now;
+                _estW = double.NaN;
+            }
+
+            // ① 驱动直读（毫瓦）
+            if (rateMw != 0)
+            {
+                double w = Math.Abs(rateMw) / 1000.0;
+                if (w > 0.1 && w < 400)
+                {
+                    s.Watts = w;
+                    return;
+                }
+            }
+
+            // ② 容量跳变区间法
+            if (remainingMwh > 0)
+            {
+                if (_estMwh < 0)
+                {
+                    _estMwh = remainingMwh;
+                    _estAt = now;
+                }
+                else if (remainingMwh != _estMwh)
+                {
+                    double min = (now - _estAt).TotalMinutes;
+                    int dmwh = Math.Abs(remainingMwh - _estMwh);
+                    if (min >= 0.4 && min <= 45 && dmwh >= 30)
+                    {
+                        double w = dmwh / (min / 60.0) / 1000.0;    // mWh ÷ h ÷ 1000 = W
+                        if (w > 0.3 && w < 300) _estW = w;          // 超出 0.3~300W 当噪声丢掉
+                    }
+                    _estMwh = remainingMwh;   // 锚点移到这次跳变
+                    _estAt = now;
+                }
+            }
+
+            // 估算值只在最近一次跳变后 30 分钟内有效，过时就留空，宁可没有也不给旧数字
+            if (!double.IsNaN(_estW) && (now - _estAt).TotalMinutes <= 30)
+            {
+                s.Watts = _estW;
+            }
+        }
+
+        private static int ToInt(object v)
+        {
+            try
+            {
+                if (v == null) return 0;
+                if (v is uint) return (int)(uint)v;
+                return Convert.ToInt32(v);
+            }
+            catch { return 0; }
+        }
+
+        // ── 蓝牙设备电量（耳机 / 键盘 / 鼠标）──
+        // Windows 把设备上报的电量写成设备属性 DEVPKEY_Bluetooth_Battery：
+        //   {104EA319-6EE2-4701-BD47-8DDBF425BBE5} pid=2，类型多为 BYTE
+        // 它不挂在主设备上，而是挂在某一个服务实例上（本机：耳机挂在 "… Hands-Free AG"，
+        // 键盘挂在那个 BLE 通用设备上），所以蓝牙三个枚举器下的节点要全扫一遍。
+        // 走 SetupAPI 而不是 Registry：这批属性存在设备属性存储里，普通权限读注册表会被拒。
+        private static readonly Guid BtBatteryFmtid = new Guid("104EA319-6EE2-4701-BD47-8DDBF425BBE5");
+
+        // 设备通用属性的 fmtid（DevNodeStatus=pid2 / Parent=pid8 / Children=pid10）
+        private static readonly Guid DevInfoFmtid = new Guid("4340A6C5-93FA-4706-972C-7B648008A5A7");
+        private static List<BtDevice> _btCache = new List<BtDevice>();
+        private static DateTime _btAt = DateTime.MinValue;
+
+        private const int DIGCF_PRESENT = 0x02;
+        private const int DIGCF_ALLCLASSES = 0x04;
+        private const uint SPDRP_FRIENDLYNAME = 0x0000000C;
+        private const uint DEVPROP_TYPE_BYTE = 0x00000003;
+        private const uint DEVPROP_TYPE_UINT16 = 0x00000005;
+        private const uint DEVPROP_TYPE_UINT32 = 0x00000007;
+
+        // 一个蓝牙设备节点：实例 ID、名字、自己的电量、设备节点状态、所属设备容器
+        private sealed class BtNode
+        {
+            public string Id = "";
+            public string Name = "";
+            public int Percent = -1;
+            public int Status = -1;
+            public string Container = "";    // DEVPKEY_Device_ContainerId，16 字节十六进制串
+            public string Enumerator = "";   // BTHENUM / BTHLE / BTHLEDEVICE
+        }
+
+        // 按"设备容器"聚合出来的一台设备（同一台设备的多个服务节点并到这里）
+        private sealed class BtAgg
+        {
+            public string Address = "";
+            public string Container = "";
+            public string Enumerator = "";
+            public string Names = "";     // 容器内所有节点名拼接，仅用于判类型
+            public string Model = "";     // 第一个不像通用名的名字，只写进日志
+            public int Percent = -1;      // -1 = 没上报电量
+            public bool Online = false;   // 至少有一个节点是启动状态
+            public BtKind Kind = BtKind.Unknown;
+
+            public void Append(string s)
+            {
+                if (string.IsNullOrEmpty(s)) return;
+                if (Names.Length > 0) Names += ' ';
+                Names += s.Trim();
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SP_DEVINFO_DATA
+        {
+            public int cbSize;
+            public Guid ClassGuid;
+            public int DevInst;
+            public IntPtr Reserved;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DEVPROPKEY
+        {
+            public Guid fmtid;
+            public uint pid;
+        }
+
+        [DllImport("setupapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern IntPtr SetupDiGetClassDevs(IntPtr ClassGuid, string Enumerator,
+            IntPtr hwndParent, int Flags);
+
+        [DllImport("setupapi.dll", SetLastError = true)]
+        private static extern bool SetupDiEnumDeviceInfo(IntPtr DeviceInfoSet, int MemberIndex,
+            ref SP_DEVINFO_DATA DeviceInfoData);
+
+        [DllImport("setupapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool SetupDiGetDeviceProperty(IntPtr DeviceInfoSet,
+            ref SP_DEVINFO_DATA DeviceInfoData, ref DEVPROPKEY PropertyKey, out uint PropertyType,
+            byte[] PropertyBuffer, uint PropertyBufferSize, out uint RequiredSize, uint Flags);
+
+        [DllImport("setupapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool SetupDiGetDeviceRegistryProperty(IntPtr DeviceInfoSet,
+            ref SP_DEVINFO_DATA DeviceInfoData, uint Property, out uint PropertyRegDataType,
+            byte[] PropertyBuffer, uint PropertyBufferSize, out uint RequiredSize);
+
+        [DllImport("setupapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool SetupDiGetDeviceInstanceId(IntPtr DeviceInfoSet,
+            ref SP_DEVINFO_DATA DeviceInfoData, StringBuilder DeviceInstanceId,
+            int DeviceInstanceIdSize, out int RequiredSize);
+
+        [DllImport("setupapi.dll", SetLastError = true)]
+        private static extern bool SetupDiDestroyDeviceInfoList(IntPtr DeviceInfoSet);
+
+        // 蓝牙电量变化很慢（几十秒才动一次），10 秒读一次就够；但断开要马上反映，
+        // 缓存再长就会出现"耳机早关了还在显示"的假象
+        public static List<BtDevice> ReadBtDevices()
+        {
+            DateTime now = DateTime.Now;
+            if (_btAt != DateTime.MinValue && (now - _btAt).TotalSeconds < 10) return _btCache;
+            // 首轮链路探测没回来之前不锁缓存：这时候"谁连着"还是未知数，
+            // 下一拍（预热定时器 0.7 秒）要立刻重算，不能等 10 秒
+            if (_linkReady) _btAt = now;
+
+            List<BtNode> nodes = new List<BtNode>();
+            try
+            {
+                // 经典蓝牙（A2DP / HFP）、BLE 主设备、BLE 的 GATT 服务节点，三条都扫
+                CollectBtNodes("BTHENUM", nodes);
+                CollectBtNodes("BTHLE", nodes);
+                CollectBtNodes("BTHLEDEVICE", nodes);
+            }
+            catch { }
+
+            // 按"设备容器"（DEVPKEY_Device_ContainerId）聚合：同一台物理设备的所有服务节点
+            // 共享一个容器 ID（耳机四个节点连同它的 COM 串口都在 {535B0398…} 里），不同设备各占一个容器，
+            // 所以两把同型号键盘、两个同型号手柄都不会被并成一条。
+            // 绝对不能用 DEVPKEY_Device_Children 判类型：BTHENUM 节点的 children 返回的是
+            // "本适配器下的全部节点"，实测耳机的 children 里就混着旁边那台手柄，害得耳机被判成手柄。
+            List<BtAgg> aggs = new List<BtAgg>();
+            Dictionary<string, BtAgg> byBox = new Dictionary<string, BtAgg>(StringComparer.OrdinalIgnoreCase);
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                BtNode n = nodes[i];
+                string key = n.Container.Length > 0 ? n.Container : n.Id;   // 读不到容器就退化成"一节点一台"
+                if (key.Length == 0) continue;
+
+                BtAgg a;
+                if (!byBox.TryGetValue(key, out a))
+                {
+                    a = new BtAgg();
+                    a.Container = key;
+                    a.Enumerator = n.Enumerator;
+                    byBox[key] = a;
+                    aggs.Add(a);
+                }
+
+                a.Append(n.Name);
+                if (a.Address.Length == 0) a.Address = BtAddress(n.Id);      // 排序用
+                if (a.Percent < 0 && n.Percent >= 0 && n.Percent <= 100) a.Percent = n.Percent;
+                if (IsBtOnline(n.Status)) a.Online = true;
+                if (a.Model.Length == 0 && n.Name.Trim().Length > 0
+                    && !n.Name.Trim().ToLowerInvariant().StartsWith("bluetooth")) a.Model = n.Name.Trim();
+            }
+
+            // 先按需刷新"链路真通没通"：设备树说在线不算数（键盘断开后节点照样 STARTED）。
+            // 刷新在后台线程跑，这次用上一轮的结果，没探到的不拦
+            List<string> watch = new List<string>(aggs.Count);
+            for (int i = 0; i < aggs.Count; i++)
+            {
+                BtAgg w = aggs[i];
+                if (!w.Online || w.Address.Length < 12) continue;
+                if (IsGenericBtName(w.Names)) continue;   // 线索节点地址是编的，问了也没意义
+                watch.Add(w.Address);
+            }
+            KickLinkRefresh(watch);
+
+            // 分类：有电量的直接出；没电量的分两种——
+            //   · "Bluetooth Keyboard" 这种通用名节点：它是另一台 BLE 设备的 HID 功能视图，
+            //     单独显示会让键盘出现两行（实测就多出一行"键盘 已连接"），只能当类型线索；
+            //   · "Pro Controller" 这种真实名字：就是一台没上报电量的设备，显示"已连接"。
+            List<BtDevice> list = new List<BtDevice>();
+            Dictionary<string, List<BtAgg>> hints = new Dictionary<string, List<BtAgg>>(StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, List<BtAgg>> pend = new Dictionary<string, List<BtAgg>>(StringComparer.OrdinalIgnoreCase);
+            StringBuilder diag = new StringBuilder();       // 这轮被丢掉的是谁、为什么
+            for (int i = 0; i < aggs.Count; i++)
+            {
+                BtAgg a = aggs[i];
+                if (!a.Online) { DiagAdd(diag, a, "off"); continue; }   // 关机的不显示，旧电量也不留
+
+                BtKind kind = ClassifyBt(a.Names);
+                bool genericName = IsGenericBtName(a.Names);
+
+                // 设备树只说明"系统里还有这个节点"，不代表蓝牙链路现在通着。
+                // 链路明确断开就跳过（键盘断开后电量还是 100 的旧值，不能拿它骗人）。
+                // 但通用名线索节点（"Bluetooth Keyboard"）不能查：它在设备树里是独立容器
+                // （BTHLE\DEV_101114A90050），地址是系统另编的，跟键盘真地址
+                // （BTHLE\DEV_E6BD813A9447）不是一回事 —— 拿它去问永远得到"断开"，
+                // 线索一死，等它配对的那台真设备就被连带丢掉了（表现就是键盘时隐时现）。
+                if (!genericName)
+                {
+                    bool? link = BtLinkCached(a.Address);
+                    // 明确断开 → 不显示；还没探到 → 首轮当"没连上"处理（宁缺勿滥），
+                    // 探测结束以后仍然探不到（超时/系统不支持）才放行，免得漏掉真连着的
+                    if (link.HasValue)
+                    {
+                        if (!link.Value) { DiagAdd(diag, a, "link0"); continue; }
+                    }
+                    else if (!_linkReady)
+                    {
+                        DiagAdd(diag, a, "wait");
+                        continue;
+                    }
+                }
+
+                if (a.Percent < 0)
+                {
+                    if (kind == BtKind.Unknown) { DiagAdd(diag, a, "noname"); continue; }
+                    if (genericName)
+                    {
+                        a.Kind = kind;                     // 线索自己的类型，配对时要用
+                        BucketAdd(hints, a.Enumerator, a);
+                        continue;                          // 通用名节点不单独占一行
+                    }
+                    a.Kind = kind;
+                    list.Add(ToDevice(a));
+                }
+                else
+                {
+                    if (kind == BtKind.Unknown) { DiagAdd(diag, a, "orphan"); BucketAdd(pend, a.Enumerator, a); continue; }
+                    a.Kind = kind;
+                    list.Add(ToDevice(a));
+                }
+            }
+
+            // BLE 键盘的型号节点（"AK820 MAX5.0"）自己看不出是键盘，靠同枚举器里的
+            // "Bluetooth Keyboard" 反推。数量一致才配对，宁可漏也不乱指：
+            // 两把键盘 → 两条线索各认一个；线索数与设备数对不上就不猜。
+            foreach (KeyValuePair<string, List<BtAgg>> kv in pend)
+            {
+                List<BtAgg> ps = kv.Value;
+                List<BtAgg> hs;
+                if (!hints.TryGetValue(kv.Key, out hs)) continue;
+                if (ps.Count != hs.Count)
+                {
+                    for (int i = 0; i < ps.Count; i++) DiagAdd(diag, ps[i], "unpaired");
+                    continue;
+                }
+                ps.Sort(CompareByAddress);
+                hs.Sort(CompareByAddress);
+                for (int i = 0; i < ps.Count; i++)
+                {
+                    ps[i].Kind = hs[i].Kind;
+                    list.Add(ToDevice(ps[i]));
+                }
+            }
+
+            // 同类型多台（两个手柄 / 两把键盘）：先按类型、再按地址排死。
+            // List.Sort 本身不稳定，不拿地址兜底的话同类两行会在刷新时来回跳。
+            list.Sort(delegate(BtDevice a, BtDevice b)
+            {
+                int r = BtRank(a.Kind) - BtRank(b.Kind);
+                if (r != 0) return r;
+                return string.CompareOrdinal(a.Address, b.Address);
+            });
+
+            // 同类不止一台才编号："键盘" vs "键盘1 / 键盘2"，只连一台时不加多余后缀
+            Dictionary<BtKind, int> total = new Dictionary<BtKind, int>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                BtKind k = list[i].Kind;
+                total[k] = (total.ContainsKey(k) ? total[k] : 0) + 1;
+            }
+            Dictionary<BtKind, int> seq = new Dictionary<BtKind, int>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                BtDevice d = list[i];
+                if (total[d.Kind] <= 1) continue;
+                int s = seq.ContainsKey(d.Kind) ? seq[d.Kind] + 1 : 1;
+                seq[d.Kind] = s;
+                d.Index = s;
+                d.Label = BtKindName(d.Kind) + s.ToString(CultureInfo.InvariantCulture);
+            }
+
+            _btDiag = diag.Length == 0 ? "-" : diag.ToString();
+            _btCache = list;
+            return list;
+        }
+
+        // 诊断日志用：这轮被过滤掉的节点 + 原因
+        //   off=设备树说不在线 / link0=链路查出来断开 / noname=没电量也认不出类型
+        //   orphan=有电量但名字认不出类型（等通用名线索配对）/ unpaired=线索数与设备数对不上
+        private static string _btDiag = "-";
+
+        internal static string BtDiag()
+        {
+            return _btDiag;
+        }
+
+        private static void DiagAdd(StringBuilder sb, BtAgg a, string why)
+        {
+            if (sb.Length > 0) sb.Append(',');
+            string nm = a.Model.Length > 0 ? a.Model : "(空名)";
+            sb.Append(nm).Append('@').Append(a.Address)
+              .Append('#').Append(a.Percent.ToString(CultureInfo.InvariantCulture))
+              .Append(':').Append(why);
+        }
+
+        // 系统给 BLE 的 HID 功能节点起的通用名："Bluetooth Keyboard" / "Bluetooth Mouse" / "Bluetooth Gamepad"。
+        // 这类节点是"某台设备的某个功能"，不是设备本身，不能单独占一行，只用来反推类型。
+        // 只认这三个词，免得把真名叫 "Bluetooth Speaker" 之类的东西也当成通用名藏起来。
+        private static bool IsGenericBtName(string s)
+        {
+            string t = s.Trim().ToLowerInvariant();
+            if (t.Length == 0 || !t.StartsWith("bluetooth")) return false;
+            return t.Contains("keyboard") || t.Contains("mouse") || t.Contains("gamepad")
+                || t.Contains("game pad") || t.Contains("控制器");
+        }
+
+        private static void BucketAdd(Dictionary<string, List<BtAgg>> map, string key, BtAgg a)
+        {
+            List<BtAgg> v;
+            if (!map.TryGetValue(key, out v))
+            {
+                v = new List<BtAgg>();
+                map[key] = v;
+            }
+            v.Add(a);
+        }
+
+        private static int CompareByAddress(BtAgg a, BtAgg b)
+        {
+            return string.CompareOrdinal(a.Address, b.Address);
+        }
+
+        private static BtDevice ToDevice(BtAgg a)
+        {
+            BtDevice d = new BtDevice();
+            d.Kind = a.Kind;
+            d.Address = a.Address;
+            d.Model = a.Model;
+            d.Label = BtKindName(a.Kind);
+            d.Percent = a.Percent;
+            return d;
+        }
+
+        // 从设备实例 ID 里抠出蓝牙地址（BD_ADDR，12 位十六进制）。
+        // 系统本来有个 DEVPKEY_Bluetooth_DeviceAddress，但本机实测读不到，只能解析实例 ID：
+        //   BTHENUM\{0000111E-…}_…\5&109C16B3&0&84AC60112BD4_C00000000   → 84AC60112BD4
+        //   BTHENUM\DEV_84AC60112BD4\5&109C16B3&0&BLUETOOTHDEVICE_84AC60112BD4
+        //   BTHLE\DEV_E6BD813A9447\5&144969EC&0&E6BD813A9447
+        // 做法：扫全串，取最后一个前后都不是 hex 的 12 位段（"109C16B3" 这种 8 位的不会误命中）
+        private static string BtAddress(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return "";
+            string best = "";
+            for (int i = 0; i + 12 <= id.Length; i++)
+            {
+                if (i > 0 && IsHexChar(id[i - 1])) continue;
+                bool ok = true;
+                for (int k = 0; k < 12; k++)
+                {
+                    if (!IsHexChar(id[i + k])) { ok = false; break; }
+                }
+                if (!ok) continue;
+                if (i + 12 < id.Length && IsHexChar(id[i + 12])) continue;
+                best = id.Substring(i, 12).ToUpperInvariant();
+                i += 11;
+            }
+            return best;
+        }
+
+        private static bool IsHexChar(char c)
+        {
+            return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+        }
+
+        // 设备节点状态位（DEVPKEY_Device_DevNodeStatus）
+        private const int DN_STARTED = 0x00000008;
+        private const int DN_HAS_PROBLEM = 0x00000400;
+
+        // 蓝牙设备关掉以后，节点并不会消失，只是驱动不再启动（丢掉 DN_STARTED / 带问题码），
+        // 这时候读到的电量是断开前的旧值，不能拿它当"还连着"。
+        // 读不到状态（-1）就当在线处理：宁可多显示一台，也别把真连着的漏掉。
+        private static bool IsBtOnline(int status)
+        {
+            if (status < 0) return true;
+            if ((status & DN_HAS_PROBLEM) != 0) return false;
+            return (status & DN_STARTED) != 0;
+        }
+
+        // ── 链路状态：设备树骗人，只能问 Windows 运行时 ──
+        // 实测（键盘断开蓝牙时）：设备节点仍是 0x0380200A，DN_STARTED 还在、ProblemCode=0，
+        // 注册表里也没有任何"当前连接"标记 —— 光看 PnP 永远判不出断开。
+        // 真正的答案在 Windows.Devices.Bluetooth：BLE 看 BluetoothLEDevice.ConnectionStatus，
+        // 经典看 BluetoothDevice.ConnectionStatus。实测同一次运行里：
+        //   耳机 Classic=Connected / 键盘 LE=Disconnected / 手柄 Classic=Disconnected，与实际完全一致。
+        // 本程序是 .NET 4.x 编译、不能引用 WinRT 元数据，所以整条链走反射：
+        //   Type.GetType("…, ContentType=WindowsRuntime") → FromBluetoothAddressAsync → AsTask → ConnectionStatus。
+        // 任何一步失败（老系统、API 缺失、超时）都返回 null，调用方按"在线"处理：宁可多显示，不漏真连着的。
+        private static Type _tLeDev, _tClDev;
+        private static MethodInfo _mLeFrom, _mClFrom, _mAsTask;
+        private static bool _winRtTried;
+
+        private static readonly object _winRtLock = new object();
+
+        private static void ProbeWinRt()
+        {
+            if (_winRtTried) return;
+            lock (_winRtLock)
+            {
+                if (_winRtTried) return;
+                _winRtTried = true;
+                ProbeWinRtCore();
+            }
+        }
+
+        private static void ProbeWinRtCore()
+        {
+            try
+            {
+                _tLeDev = Type.GetType(
+                    "Windows.Devices.Bluetooth.BluetoothLEDevice, Windows.Devices.Bluetooth, ContentType=WindowsRuntime");
+                _tClDev = Type.GetType(
+                    "Windows.Devices.Bluetooth.BluetoothDevice, Windows.Devices.Bluetooth, ContentType=WindowsRuntime");
+                if (_tLeDev != null)
+                    _mLeFrom = _tLeDev.GetMethod("FromBluetoothAddressAsync", new Type[] { typeof(ulong) });
+                if (_tClDev != null)
+                    _mClFrom = _tClDev.GetMethod("FromBluetoothAddressAsync", new Type[] { typeof(ulong) });
+
+                // IAsyncOperation<T> → Task<T> 的扩展方法在 System.Runtime.WindowsRuntime 里。
+                // 它在 GAC 里，但简单名在部分宿主下 Load 不到（实测会 FileNotFound），必须给完整名
+                Assembly asm = LoadWinRtAsm();
+                Type ext = asm == null ? null : asm.GetType("System.WindowsRuntimeSystemExtensions");
+                if (ext != null)
+                {
+                    MethodInfo[] ms = ext.GetMethods(BindingFlags.Public | BindingFlags.Static);
+                    for (int i = 0; i < ms.Length; i++)
+                    {
+                        MethodInfo m = ms[i];
+                        if (!m.IsGenericMethodDefinition || m.Name != "AsTask") continue;
+                        ParameterInfo[] ps = m.GetParameters();
+                        if (ps.Length != 1) continue;
+                        if (ps[0].ParameterType.Name.StartsWith("IAsyncOperation`1", StringComparison.Ordinal))
+                        {
+                            _mAsTask = m;
+                            break;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                _mLeFrom = null;
+                _mClFrom = null;
+                _mAsTask = null;
+            }
+        }
+
+        // System.Runtime.WindowsRuntime 装在 GAC，简单名 Load 会 FileNotFound（实测），先按完整名加载，
+        // 再退一步在已加载程序集里找（万一将来被别的东西先加载过）
+        private static Assembly LoadWinRtAsm()
+        {
+            try
+            {
+                return Assembly.Load("System.Runtime.WindowsRuntime, Version=4.0.0.0, Culture=neutral, " +
+                    "PublicKeyToken=b77a5c561934e089");
+            }
+            catch { }
+            try
+            {
+                Assembly[] all = AppDomain.CurrentDomain.GetAssemblies();
+                for (int i = 0; i < all.Length; i++)
+                {
+                    if (all[i].GetName().Name == "System.Runtime.WindowsRuntime") return all[i];
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        // 查一条通道（BLE 或经典）。known=false 表示这台设备不在这条通道上，或压根查不出来
+        private static bool QueryLink(MethodInfo from, Type type, ulong addr, out bool known)
+        {
+            known = false;
+            if (from == null || type == null || _mAsTask == null) return false;
+            try
+            {
+                object op = from.Invoke(null, new object[] { addr });
+                if (op == null) return false;
+                object task = _mAsTask.MakeGenericMethod(type).Invoke(null, new object[] { op });
+                if (task == null) return false;
+
+                Type tt = task.GetType();
+                MethodInfo wait = tt.GetMethod("Wait", new Type[] { typeof(int) });
+                if (wait != null) wait.Invoke(task, new object[] { 400 });
+                else tt.GetMethod("Wait", Type.EmptyTypes).Invoke(task, null);
+
+                // 没跑完就不采信：超时多半是设备不在范围内，别让一次查询把卡片刷新拖住
+                object st = tt.GetProperty("Status").GetValue(task, null);
+                if (Convert.ToInt32(st, CultureInfo.InvariantCulture) != 5) return false;   // 5 = RanToCompletion
+
+                object dev = tt.GetProperty("Result").GetValue(task, null);
+                if (dev == null) return false;                                              // 这台不在该通道上
+                object cs = dev.GetType().GetProperty("ConnectionStatus").GetValue(dev, null);
+                known = true;                                                               // 0 = 断开, 1 = 已连接
+                bool on = Convert.ToInt32(cs, CultureInfo.InvariantCulture) == 1;
+
+                IDisposable closable = dev as IDisposable;
+                if (closable != null) closable.Dispose();
+                return on;
+            }
+            catch { return false; }
+        }
+
+        // true = 明确连着，false = 明确断了，null = 不知道（调用方别据此隐藏）
+        private static bool? BtLinkState(string addr12)
+        {
+            ProbeWinRt();
+            if (_mAsTask == null || addr12.Length < 12) return null;
+            ulong addr;
+            if (!ulong.TryParse(addr12, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out addr)) return null;
+            if (addr == 0) return null;
+
+            bool kLe, kCl;
+            bool le = QueryLink(_mLeFrom, _tLeDev, addr, out kLe);
+            if (kLe && le) return true;
+            bool cl = QueryLink(_mClFrom, _tClDev, addr, out kCl);
+            if (kCl && cl) return true;
+            if (kLe || kCl) return false;
+            return null;
+        }
+
+        private static readonly object _linkLock = new object();
+        private static Dictionary<string, bool> _linkCache =
+            new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        private static int _linkBusy;
+
+        // 首轮链路探测完成没有。没完成时蓝牙行一律不显示 —— 冷启动那一刻"谁连着"
+        // 还是未知数，先把所有历史设备铺出来再一个个消失，观感很差。
+        private static volatile bool _linkReady;
+
+        internal static bool LinkReady()
+        {
+            return _linkReady;
+        }
+
+        private static bool? BtLinkCached(string addr12)
+        {
+            if (addr12.Length == 0) return null;
+            lock (_linkLock)
+            {
+                bool v;
+                if (_linkCache.TryGetValue(addr12, out v)) return v;
+            }
+            return null;
+        }
+
+        // 后台刷一遍链路状态。WinRT 要等 IAsyncOperation，放 UI 线程会卡住拖动，所以扔线程池。
+        // 结果下一轮（10 秒）生效：断开最迟十来秒那行就消失，重新连上也会自己回来。
+        private static void KickLinkRefresh(List<string> addrs)
+        {
+            ProbeWinRt();
+            // 没有蓝牙设备，或这台机器压根跑不了 WinRT：没什么可等，立刻算"已知"
+            if (addrs.Count == 0 || _mAsTask == null) { _linkReady = true; return; }
+            if (Interlocked.CompareExchange(ref _linkBusy, 1, 0) != 0) return;
+            string[] arr = addrs.ToArray();
+            ThreadPool.QueueUserWorkItem(delegate(object state)
+            {
+                Dictionary<string, bool> map = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+                try
+                {
+                    for (int i = 0; i < arr.Length; i++)
+                    {
+                        bool? c = BtLinkState(arr[i]);
+                        if (c.HasValue) map[arr[i]] = c.Value;
+                    }
+                }
+                catch { }
+                finally
+                {
+                    lock (_linkLock) { _linkCache = map; }
+                    _linkReady = true;                 // 探过了，之后探不到就按"未知"放行
+                    Interlocked.Exchange(ref _linkBusy, 0);
+                }
+            });
+        }
+
+        // 日志用：地址:1/0（1 连着、0 断开）；没探到的地址不出现
+        internal static string LinkLog()
+        {
+            lock (_linkLock)
+            {
+                if (_linkCache.Count == 0) return "-";
+                StringBuilder sb = new StringBuilder();
+                foreach (KeyValuePair<string, bool> kv in _linkCache)
+                {
+                    if (sb.Length > 0) sb.Append('/');
+                    sb.Append(kv.Key).Append(':').Append(kv.Value ? '1' : '0');
+                }
+                return sb.ToString();
+            }
+        }
+
+        private static void CollectBtNodes(string enumerator, List<BtNode> nodes)
+        {
+            IntPtr set = SetupDiGetClassDevs(IntPtr.Zero, enumerator, IntPtr.Zero,
+                DIGCF_PRESENT | DIGCF_ALLCLASSES);
+            if (set == IntPtr.Zero || set == new IntPtr(-1)) return;
+            try
+            {
+                for (int i = 0; ; i++)
+                {
+                    SP_DEVINFO_DATA data = new SP_DEVINFO_DATA();
+                    data.cbSize = Marshal.SizeOf(typeof(SP_DEVINFO_DATA));
+                    if (!SetupDiEnumDeviceInfo(set, i, ref data)) break;
+
+                    BtNode n = new BtNode();
+                    n.Id = DeviceInstanceId(set, ref data);
+                    n.Name = DeviceFriendlyName(set, ref data);
+                    n.Percent = DeviceBattery(set, ref data);
+                    n.Status = DeviceDevNodeStatus(set, ref data);
+                    n.Container = DeviceContainerId(set, ref data);
+                    n.Enumerator = enumerator;
+                    nodes.Add(n);
+                }
+            }
+            catch { }
+            finally { try { SetupDiDestroyDeviceInfoList(set); } catch { } }
+        }
+
+        private static string DeviceInstanceId(IntPtr set, ref SP_DEVINFO_DATA data)
+        {
+            StringBuilder sb = new StringBuilder(512);
+            int need;
+            if (!SetupDiGetDeviceInstanceId(set, ref data, sb, sb.Capacity, out need)) return "";
+            return sb.ToString();
+        }
+
+        private static string DeviceFriendlyName(IntPtr set, ref SP_DEVINFO_DATA data)
+        {
+            byte[] buf = new byte[512];
+            uint type, need;
+            if (!SetupDiGetDeviceRegistryProperty(set, ref data, SPDRP_FRIENDLYNAME,
+                out type, buf, (uint)buf.Length, out need)) return "";
+            int len = (int)Math.Min(need, (uint)buf.Length);
+            return Encoding.Unicode.GetString(buf, 0, len).TrimEnd('\0');
+        }
+
+        private static int DeviceBattery(IntPtr set, ref SP_DEVINFO_DATA data)
+        {
+            DEVPROPKEY key = new DEVPROPKEY();
+            key.fmtid = BtBatteryFmtid;
+            key.pid = 2;
+            byte[] buf = new byte[16];
+            uint type, need;
+            if (!SetupDiGetDeviceProperty(set, ref data, ref key, out type,
+                buf, (uint)buf.Length, out need, 0)) return -1;
+            if (type == DEVPROP_TYPE_BYTE) return buf[0];
+            if (type == DEVPROP_TYPE_UINT16) return BitConverter.ToUInt16(buf, 0);
+            if (type == DEVPROP_TYPE_UINT32) return (int)BitConverter.ToUInt32(buf, 0);
+            return -1;
+        }
+
+        // 设备节点状态（DevNodeStatus，UINT32 位域）：{4340A6C5-…} pid=2
+        private static int DeviceDevNodeStatus(IntPtr set, ref SP_DEVINFO_DATA data)
+        {
+            DEVPROPKEY key = new DEVPROPKEY();
+            key.fmtid = DevInfoFmtid;
+            key.pid = 2;
+            byte[] buf = new byte[8];
+            uint type, need;
+            if (!SetupDiGetDeviceProperty(set, ref data, ref key, out type,
+                buf, (uint)buf.Length, out need, 0)) return -1;
+            if (type == DEVPROP_TYPE_UINT32) return BitConverter.ToInt32(buf, 0);
+            return -1;
+        }
+
+        // 设备容器 ID（DEVPKEY_Device_ContainerId）：{8C7ED206-3F8A-4827-B3AB-AE9E1FAEFC6C} pid=2
+        // 同一台物理设备的所有节点共享同一个 GUID —— 这是"这台设备"唯一可靠的身份证。
+        // 实测：耳机的 HFP/A2DP/AVRCP/DEV_ 四个节点连同它的 COM 串口都是 {535B0398…}，
+        // 旁边那台 Pro Controller 是 {0441CD95…}，所以按容器聚合既不会拆散一台设备，也不会把两台并起来。
+        private static readonly Guid DevContainerFmtid = new Guid("8C7ED206-3F8A-4827-B3AB-AE9E1FAEFC6C");
+        private const uint DEVPROP_TYPE_GUID = 0x0000000D;
+
+        // 直接拿 16 字节转十六进制当 key，不关心 GUID 的字节序，只要同设备一致就行
+        private static string DeviceContainerId(IntPtr set, ref SP_DEVINFO_DATA data)
+        {
+            DEVPROPKEY key = new DEVPROPKEY();
+            key.fmtid = DevContainerFmtid;
+            key.pid = 2;
+            byte[] buf = new byte[16];
+            uint type, need;
+            if (!SetupDiGetDeviceProperty(set, ref data, ref key, out type,
+                buf, (uint)buf.Length, out need, 0)) return "";
+            if (type != DEVPROP_TYPE_GUID) return "";
+
+            StringBuilder sb = new StringBuilder(32);
+            for (int i = 0; i < 16; i++) sb.Append(buf[i].ToString("X2"));
+            string id = sb.ToString();
+
+            // {00000000-0000-0000-FFFF-FFFFFFFFFFFF} 是"没有容器"的哨兵值，
+            // 好几台设备都没有容器时不能靠它并成一台（本机的 COM4 就是这个值）
+            if (id == "0000000000000000FFFFFFFFFFFFFFFF") return "";
+            return id;
+        }
+
+        // 判类型：看容器里所有节点的名字。
+        // 耳机的 HFP 节点带 "Hands-Free"，键盘的电量节点叫 "AK820 MAX5.0"、同容器里那个叫 "Bluetooth Keyboard"，
+        // 手柄叫 "Pro Controller" —— 拼起来看就不会漏。
+        // 手柄放在耳机前面判：手柄名里偶尔也带 "audio"，而 "controller" 更具体，先认它。
+        private static BtKind ClassifyBt(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return BtKind.Unknown;
+            string t = s.ToLowerInvariant();
+            if (t.Contains("keyboard") || s.Contains("键盘")) return BtKind.Keyboard;
+            if (t.Contains("mouse") || s.Contains("鼠标")) return BtKind.Mouse;
+            if (t.Contains("controller") || t.Contains("gamepad") || t.Contains("game pad")
+                || t.Contains("joystick") || t.Contains("dualshock") || t.Contains("dualsense")
+                || t.Contains("xbox") || t.Contains("8bitdo") || s.Contains("手柄"))
+                return BtKind.Gamepad;
+            if (t.Contains("hands-free") || t.Contains("handsfree") || t.Contains("avrcp")
+                || t.Contains("headphone") || t.Contains("headset") || t.Contains("buds")
+                || t.Contains("airpod") || t.Contains("earbud") || t.Contains("audio")
+                || s.Contains("耳机")) return BtKind.Headphone;
+            return BtKind.Unknown;
+        }
+
+        private static string BtKindName(BtKind k)
+        {
+            if (k == BtKind.Headphone) return "耳机";
+            if (k == BtKind.Keyboard) return "键盘";
+            if (k == BtKind.Gamepad) return "手柄";
+            if (k == BtKind.Mouse) return "鼠标";
+            return "蓝牙设备";
+        }
+
+        internal static RowIcon BtKindIcon(BtKind k)
+        {
+            if (k == BtKind.Headphone) return RowIcon.Headphone;
+            if (k == BtKind.Keyboard) return RowIcon.Keyboard;
+            if (k == BtKind.Gamepad) return RowIcon.Gamepad;
+            if (k == BtKind.Mouse) return RowIcon.Mouse;
+            return RowIcon.None;
+        }
+
+        // 卡片上的固定顺序：耳机、键盘、手柄、鼠标，别的排最后
+        private static int BtRank(BtKind k)
+        {
+            if (k == BtKind.Headphone) return 0;
+            if (k == BtKind.Keyboard) return 1;
+            if (k == BtKind.Gamepad) return 2;
+            if (k == BtKind.Mouse) return 3;
+            return 4;
+        }
+    }
+
+    // 历史数据：一行一个采样点，"yyyy-MM-dd HH:mm:ss,电量,温度,是否接通电源"
+    // 只做追加写 + 启动时按保留天数裁剪，不引入数据库
+    internal static class History
+    {
+        internal sealed class Point
+        {
+            public DateTime Time;
+            public int Percent;
+            public double TempC = double.NaN;
+            public bool Ac;
+        }
+
+        private const string StampFormat = "yyyy-MM-dd HH:mm:ss";
+
+        private static string _path = "";
+        private static int _keepDays = 30;
+        private static readonly List<Point> _list = new List<Point>();
+        private static int _trimmedSinceSave;   // 累计删掉多少行，够多才整体重写文件
+
+        public static string FilePath { get { return _path; } }
+        public static int Count { get { return _list.Count; } }
+
+        public static DateTime LastTime
+        {
+            get { return _list.Count == 0 ? DateTime.MinValue : _list[_list.Count - 1].Time; }
+        }
+
+        public static List<Point> Snapshot() { return new List<Point>(_list); }
+
+        public static void Init(string path, int keepDays)
+        {
+            _path = path;
+            _keepDays = keepDays > 0 ? keepDays : 30;
+            try { Load(); } catch { }
+        }
+
+        private static void Load()
+        {
+            _list.Clear();
+            if (!File.Exists(_path)) return;
+
+            DateTime cutoff = DateTime.Now.AddDays(-_keepDays);
+            string[] lines = File.ReadAllLines(_path);
+            foreach (string raw in lines)
+            {
+                Point p = Parse(raw);
+                if (p == null) continue;
+                if (p.Time < cutoff) { _trimmedSinceSave++; continue; }
+                _list.Add(p);
+            }
+            _list.Sort(delegate (Point a, Point b) { return a.Time.CompareTo(b.Time); });
+            if (_trimmedSinceSave > 0) Rewrite();
+        }
+
+        private static Point Parse(string raw)
+        {
+            string line = raw.Trim().Trim('\uFEFF');
+            if (line.Length == 0 || line.StartsWith("#")) return null;
+            string[] f = line.Split(',');
+            if (f.Length < 2) return null;
+
+            DateTime t;
+            if (!DateTime.TryParseExact(f[0].Trim(), StampFormat, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out t)) return null;
+
+            int pct;
+            if (!int.TryParse(f[1].Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out pct)) return null;
+            if (pct < 0 || pct > 100) return null;
+
+            Point p = new Point();
+            p.Time = t;
+            p.Percent = pct;
+            if (f.Length > 2)
+            {
+                double temp;
+                if (double.TryParse(f[2].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out temp))
+                    p.TempC = temp;
+            }
+            if (f.Length > 3) p.Ac = f[3].Trim() == "1";
+            return p;
+        }
+
+        public static void Append(Sample s)
+        {
+            if (s == null || s.Percent < 0) return;
+            Point p = new Point();
+            p.Time = DateTime.Now;
+            p.Percent = s.Percent;
+            p.TempC = s.TempC;
+            p.Ac = s.AcOnline;
+            _list.Add(p);
+
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(p.Time.ToString(StampFormat, CultureInfo.InvariantCulture)).Append(',');
+                sb.Append(p.Percent.ToString(CultureInfo.InvariantCulture)).Append(',');
+                sb.Append(double.IsNaN(p.TempC) ? "" : p.TempC.ToString("0.0", CultureInfo.InvariantCulture)).Append(',');
+                sb.Append(p.Ac ? "1" : "0");
+                File.AppendAllText(_path, sb.ToString() + Environment.NewLine, new UTF8Encoding(false));
+            }
+            catch { }
+
+            TrimFromMemory();
+        }
+
+        // 内存里超过保留期就丢，丢够 100 条再整体重写文件（避免每 5 分钟重写 260 KB）
+        private static void TrimFromMemory()
+        {
+            DateTime cutoff = DateTime.Now.AddDays(-_keepDays);
+            int i = 0;
+            while (i < _list.Count && _list[i].Time < cutoff) i++;
+            if (i > 0)
+            {
+                _list.RemoveRange(0, i);
+                _trimmedSinceSave += i;
+            }
+            if (_trimmedSinceSave >= 100) Rewrite();
+        }
+
+        private static void Rewrite()
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (Point p in _list)
+                {
+                    sb.Append(p.Time.ToString(StampFormat, CultureInfo.InvariantCulture)).Append(',');
+                    sb.Append(p.Percent.ToString(CultureInfo.InvariantCulture)).Append(',');
+                    sb.Append(double.IsNaN(p.TempC) ? "" : p.TempC.ToString("0.0", CultureInfo.InvariantCulture)).Append(',');
+                    sb.Append(p.Ac ? "1" : "0").Append(Environment.NewLine);
+                }
+                File.WriteAllText(_path, sb.ToString(), new UTF8Encoding(false));
+                _trimmedSinceSave = 0;
+            }
+            catch { }
+        }
+    }
+
+    internal sealed class FloatForm : Form
+    {
+        private const int WS_EX_LAYERED = 0x00080000;
+        private const int WS_EX_TRANSPARENT = 0x00000020;
+        private const int WS_EX_TOOLWINDOW = 0x00000080;
+        private const int WS_EX_NOACTIVATE = 0x08000000;
+        private const int ULW_ALPHA = 0x00000002;
+        private const byte AC_SRC_OVER = 0x00;
+        private const byte AC_SRC_ALPHA = 0x01;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct POINT { public int X; public int Y; }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct SIZE { public int cx; public int cy; }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        private struct BLENDFUNCTION
+        {
+            public byte BlendOp;
+            public byte BlendFlags;
+            public byte SourceConstantAlpha;
+            public byte AlphaFormat;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr CreateCompatibleDC(IntPtr hdc);
+
+        [DllImport("gdi32.dll")]
+        private static extern bool DeleteDC(IntPtr hdc);
+
+        [DllImport("gdi32.dll")]
+        private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+
+        [DllImport("gdi32.dll")]
+        private static extern bool DeleteObject(IntPtr hObject);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool UpdateLayeredWindow(IntPtr hwnd, IntPtr hdcDst, ref POINT pptDst,
+            ref SIZE psize, IntPtr hdcSrc, ref POINT pprSrc, int crKey, ref BLENDFUNCTION pblend, int dwFlags);
+
+        private const int VK_LBUTTON = 0x01;
+        private const int VK_CONTROL = 0x11;
+
+        [DllImport("user32.dll")]
+        private static extern short GetAsyncKeyState(int vKey);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetCursorPos(out POINT pt);
+
+        // 光标：SetCursor 是全局的，但只有窗口"可被点中"时才不会被下面的窗口改回去，
+        // 所以配合动态开关 WS_EX_TRANSPARENT 使用
+        [DllImport("user32.dll")]
+        private static extern IntPtr SetCursor(IntPtr hCursor);
+
+        private const int GWL_EXSTYLE = -20;
+
+        // 只用到了 32 位的扩展样式位，用 int 版即可，避免 64 位下 SetWindowLongPtr 的导出差异
+        [DllImport("user32.dll")]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        // 原生弹出菜单：Ctrl+右键时窗口是可点中的，用 TrackPopupMenu 弹系统菜单，
+        // 不依赖窗口被激活（卡片是 WS_EX_NOACTIVATE，WinForms 的 ContextMenuStrip 会闪一下就没）
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr CreatePopupMenu();
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool AppendMenu(IntPtr hMenu, int uFlags, UIntPtr uIDNewItem, string lpNewItem);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int TrackPopupMenu(IntPtr hMenu, int uFlags, int x, int y, int nReserved,
+            IntPtr hWnd, IntPtr prcRect);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool DestroyMenu(IntPtr hMenu);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern bool PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        private readonly Config _cfg;
+        private readonly int _w;
+        private int _h;                 // 可随"显示电量"开关变化：两行 68，只剩温度时压成一行 40
+        private readonly System.Windows.Forms.Timer _timer;
+        private readonly System.Windows.Forms.Timer _warmTimer;   // 启动后补几拍，等首轮链路探测
+        private int _warmLeft;
+        private Sample _sample = new Sample();
+        private readonly bool _light;   // 背景够亮就走深墨字，否则走浅白字
+
+        // 拖动：窗口本身是鼠标穿透的，收不到鼠标消息，所以用定时器轮询全局按键 + 光标位置
+        private readonly System.Windows.Forms.Timer _dragTimer;
+        private readonly string _posPath;
+        private bool _dragging;
+        private bool _wasDown;
+        private bool _pressOutside;
+        private int _grabDx;
+        private int _grabDy;
+
+        // 光标：默认全窗穿透（收不到鼠标消息），只有"按住 Ctrl 悬停在卡片上"时才临时
+        // 去掉 WS_EX_TRANSPARENT，让窗口能收到 WM_SETCURSOR，从而稳定显示手型（不闪）
+        private bool _hittable;
+        private IntPtr _handCur = IntPtr.Zero;
+        private IntPtr _arrowCur = IntPtr.Zero;
+
+        // 右键菜单（Ctrl + 右键弹出）：此时窗口已经临时不穿透，右键能直接送到窗口
+        private bool _menuOpen;
+
+        // 统计数据：每 RecordMinutes 分钟往 battery-float-history.csv 追加一行
+        private StatsForm _stats;
+        private DateTime _lastRecAt = DateTime.MinValue;
+
+        // 诊断日志：内容变化或每 60 秒写一行，用来证明"程序一直在跑"
+        private readonly string _logPath;
+        private readonly string _iniPath;   // 菜单里的显示开关要写回这里，重启后保持
+        private string _lastLogText = "";
+        private DateTime _lastLogAt = DateTime.MinValue;
+
+        public FloatForm(Config cfg)
+        {
+            _cfg = cfg;
+            float sc = cfg.Scale <= 0 ? 1f : cfg.Scale;
+            _w = (int)Math.Round(110 * sc);
+            _h = CalcHeight(cfg, sc, 0);   // 蓝牙行等第一次采样后由 ApplyHeight 补上
+
+            // 亮度取上下两端的平均（Rec.601 权重），阈值 140 划分深/浅主题
+            int lum = (cfg.BgTopR * 299 + cfg.BgTopG * 587 + cfg.BgTopB * 114
+                     + cfg.BgBotR * 299 + cfg.BgBotG * 587 + cfg.BgBotB * 114) / 2000;
+            _light = lum > 140;
+
+            FormBorderStyle = FormBorderStyle.None;
+            ShowInTaskbar = false;
+            TopMost = true;
+            StartPosition = FormStartPosition.Manual;
+            Size = new Size(_w, _h);
+
+            _posPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "battery-float.pos");
+            _logPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "battery-float.log");
+            _iniPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "battery-float.ini");
+
+            // 历史数据文件放在 exe 旁边，启动时顺便按保留天数裁一次
+            History.Init(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath),
+                "battery-float-history.csv"), cfg.HistoryDays);
+
+            try
+            {
+                _handCur = Cursors.Hand.Handle;    // 手型：暗示"这个可以拖"
+                _arrowCur = Cursors.Default.Handle;
+            }
+            catch { }
+
+            // 默认贴右下角；如果上次拖过就沿用上次的位置（并夹回工作区）
+            Rectangle wa = Screen.PrimaryScreen.WorkingArea;
+            Point pos = new Point(wa.Right - _w - cfg.MarginRight, wa.Bottom - _h - cfg.MarginBottom);
+            Point saved;
+            if (TryLoadPosition(out saved)) pos = saved;
+            Location = ClampToWorkArea(pos.X, pos.Y);
+
+            _timer = new System.Windows.Forms.Timer();
+            _timer.Interval = Math.Max(2, cfg.RefreshSeconds) * 1000;
+            _timer.Tick += OnTick;
+
+            _dragTimer = new System.Windows.Forms.Timer();
+            _dragTimer.Interval = 25;
+            _dragTimer.Tick += OnDragTick;
+            _dragTimer.Start();
+
+            // 链路探测在线程池里跑，启动那一拍必然是"还不知道谁连着"，
+            // 所以每 0.7 秒补一拍，探完立刻停 —— 蓝牙行一秒多就位，不用等主刷新的 5 秒
+            _warmTimer = new System.Windows.Forms.Timer();
+            _warmTimer.Interval = 700;
+            _warmTimer.Tick += OnWarmTick;
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE;
+                return cp;
+            }
+        }
+
+        private const int WM_SETCURSOR = 0x0020;
+        private const int WM_RBUTTONUP = 0x0205;
+        private const int WM_NULL = 0x0000;
+
+        // 菜单项 id / 标志位
+        private const int MENU_STATS = 1;
+        private const int MENU_AUTOSTART = 2;
+        private const int MENU_TEMP = 3;
+        private const int MENU_STATE = 4;
+        private const int MENU_WATT = 5;
+        private const int MENU_BT = 6;
+        private const int MENU_QUIT = 7;
+        private const int MF_STRING = 0x00000000;
+        private const int MF_SEPARATOR = 0x00000800;
+        private const int MF_CHECKED = 0x00000008;
+        private const int TPM_RIGHTBUTTON = 0x0002;
+        private const int TPM_NONOTIFY = 0x0080;
+        private const int TPM_RETURNCMD = 0x0100;
+
+        // 只有"可点中"时才会走到这里，直接钉住手型并声明已处理，避免被 DefWndProc 改回箭头
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_SETCURSOR && _hittable && _handCur != IntPtr.Zero)
+            {
+                SetCursor(_handCur);
+                m.Result = (IntPtr)1;
+                return;
+            }
+
+            // 能收到 WM_RBUTTONUP 就说明是 Ctrl+右键（否则窗口是穿透的）
+            if (m.Msg == WM_RBUTTONUP)
+            {
+                ShowCardMenu();
+                m.Result = IntPtr.Zero;
+                return;
+            }
+
+            base.WndProc(ref m);
+        }
+
+        // Ctrl + 右键弹系统菜单：勾选项直接读注册表，选完立刻生效
+        private void ShowCardMenu()
+        {
+            if (_menuOpen) return;
+            _menuOpen = true;
+            IntPtr hMenu = IntPtr.Zero;
+            IntPtr prev = IntPtr.Zero;
+            int cmd = 0;
+            try
+            {
+                hMenu = CreatePopupMenu();
+                if (hMenu == IntPtr.Zero) return;
+
+                AppendMenu(hMenu, MF_STRING, new UIntPtr((uint)MENU_STATS), "统计数据");
+                AppendMenu(hMenu, MF_SEPARATOR, UIntPtr.Zero, null);
+                AppendMenu(hMenu, MF_STRING | (_cfg.ShowTemp ? MF_CHECKED : 0),
+                    new UIntPtr((uint)MENU_TEMP), "显示温度");
+                AppendMenu(hMenu, MF_STRING | (_cfg.ShowState ? MF_CHECKED : 0),
+                    new UIntPtr((uint)MENU_STATE), "显示充放电状态");
+                AppendMenu(hMenu, MF_STRING | (_cfg.ShowWatt ? MF_CHECKED : 0),
+                    new UIntPtr((uint)MENU_WATT), "显示功率");
+                AppendMenu(hMenu, MF_STRING | (_cfg.ShowBt ? MF_CHECKED : 0),
+                    new UIntPtr((uint)MENU_BT), "显示蓝牙电量");
+                AppendMenu(hMenu, MF_SEPARATOR, UIntPtr.Zero, null);
+                AppendMenu(hMenu, MF_STRING | (IsAutoStart() ? MF_CHECKED : 0),
+                    new UIntPtr((uint)MENU_AUTOSTART), "开机自启动");
+                AppendMenu(hMenu, MF_SEPARATOR, UIntPtr.Zero, null);
+                AppendMenu(hMenu, MF_STRING, new UIntPtr((uint)MENU_QUIT), "退出");
+
+                prev = GetForegroundWindow();
+                SetForegroundWindow(Handle);   // 让菜单"点别处就消失"，失败也不影响弹出
+
+                Point c = System.Windows.Forms.Cursor.Position;
+                cmd = TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_NONOTIFY,
+                    c.X, c.Y, 0, Handle, IntPtr.Zero);
+
+                PostMessage(Handle, WM_NULL, IntPtr.Zero, IntPtr.Zero);
+            }
+            catch { }
+            finally
+            {
+                try { if (hMenu != IntPtr.Zero) DestroyMenu(hMenu); } catch { }
+                // 要开统计窗口时不要抢着把前台还回去，否则新窗口起不来
+                if (cmd != MENU_STATS)
+                {
+                    try { if (prev != IntPtr.Zero && prev != Handle) SetForegroundWindow(prev); } catch { }
+                }
+                _menuOpen = false;
+            }
+
+            if (cmd == MENU_AUTOSTART) SetAutoStart(!IsAutoStart());
+            else if (cmd == MENU_TEMP || cmd == MENU_STATE || cmd == MENU_WATT || cmd == MENU_BT)
+                ToggleInfoRow(cmd);
+            else if (cmd == MENU_QUIT) BeginInvoke(new Action(Close));
+            else if (cmd == MENU_STATS) ShowStatsWindow();
+        }
+
+        // 卡片高度：电量行固定占 54，下面每多一行信息加 RowPitch
+        // 功率和状态共用同一行（"充电中 6.2W"），所以它们只要有一个开着就占一行；
+        // 蓝牙是每台设备一行（耳机 / 键盘 / 手柄），断开就自动消失。
+        // 本机信息（温度/状态）和蓝牙设备之间空 BtGap 一档，两组才分得开
+        private static int CalcHeight(Config cfg, float sc, int btDevices)
+        {
+            if (sc <= 0) sc = 1f;
+            int local = 0;
+            if (cfg.ShowTemp) local++;
+            if (cfg.ShowState || cfg.ShowWatt) local++;
+
+            int bt = 0;
+            int more = 0;                               // "还有 N 台"那一行（纯文字，不加高行距）
+            if (cfg.ShowBt && btDevices > 0)
+            {
+                bt = Math.Min(btDevices, MaxBtRows);
+                if (btDevices > MaxBtRows) more = 1;
+            }
+
+            float h = 54f + RowPitch * (local + more) + BtPitch * bt;
+            if (local > 0 && bt > 0) h += BtGap;        // 两组之间那一档空隙
+            return (int)Math.Round(h * sc);
+        }
+
+        // 信息行的行距（sc 单位）。15 而不是 14：蓝牙行的电池胶囊高 12.5，
+        // 行距太小两行电池会挤在一起
+        private const float RowPitch = 15f;
+
+        // 蓝牙设备行再松一点（17）：每行都要画一个 12.5 高的电池，挤在一起像堆起来的
+        private const float BtPitch = 17f;
+
+        // 本机信息行与蓝牙设备行之间的额外间距（sc 单位）。两行文字紧挨着会分不清
+        // 哪条是本机的、哪条是外设的，空一档就分开了
+        private const float BtGap = 5f;
+
+        // 切换显示内容或蓝牙设备连断后重算窗口高度：底边留在原位（往上缩，而不是整体上移）
+        private void ApplyHeight()
+        {
+            float sc = _cfg.Scale <= 0 ? 1f : _cfg.Scale;
+            int bt = _sample == null ? 0 : _sample.Bt.Count;
+            int h = CalcHeight(_cfg, sc, bt);
+            if (h == _h) return;
+            int delta = _h - h;
+            _h = h;
+            Size = new Size(_w, _h);
+            Location = ClampToWorkArea(Location.X, Location.Y + delta);
+        }
+
+        // 温度 / 状态 / 功率 / 蓝牙开关：前三项决定固定行数，蓝牙行数还取决于真的连了几台设备
+        private void ToggleInfoRow(int menuId)
+        {
+            if (menuId == MENU_TEMP)
+            {
+                _cfg.ShowTemp = !_cfg.ShowTemp;
+                SaveFlag("showtemp", _cfg.ShowTemp);
+            }
+            else if (menuId == MENU_STATE)
+            {
+                _cfg.ShowState = !_cfg.ShowState;
+                SaveFlag("showstate", _cfg.ShowState);
+            }
+            else if (menuId == MENU_WATT)
+            {
+                _cfg.ShowWatt = !_cfg.ShowWatt;
+                SaveFlag("showwatt", _cfg.ShowWatt);
+            }
+            else
+            {
+                _cfg.ShowBt = !_cfg.ShowBt;
+                SaveFlag("showbt", _cfg.ShowBt);
+            }
+            ApplyHeight();                  // 先改窗口尺寸，Render 才知道新的 _h
+            try { Render(); } catch { }     // 立刻重绘，不用等下一次刷新
+        }
+
+        // 只改指定那一行，其余注释和配置原样保留；没有这一行就追加到末尾
+        private void SaveFlag(string key, bool value)
+        {
+            try
+            {
+                UTF8Encoding enc = new UTF8Encoding(false);   // ini 原本没有 BOM，别加进去
+                List<string> lines = new List<string>();
+                if (File.Exists(_iniPath)) lines.AddRange(File.ReadAllLines(_iniPath));
+
+                string want = key + "=" + (value ? "true" : "false");
+                bool replaced = false;
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    string t = lines[i].Trim();
+                    if (t.Length == 0 || t.StartsWith(";") || t.StartsWith("#")) continue;
+                    int eq = t.IndexOf('=');
+                    if (eq < 1) continue;
+                    if (t.Substring(0, eq).Trim().ToLowerInvariant() == key)
+                    {
+                        lines[i] = want;
+                        replaced = true;
+                        break;
+                    }
+                }
+                if (!replaced) lines.Add(want);
+
+                File.WriteAllLines(_iniPath, lines.ToArray(), enc);
+            }
+            catch { }
+        }
+
+        // 统计窗口是普通窗口（有任务栏按钮、能激活），和穿透的卡片互不干扰
+        private void ShowStatsWindow()
+        {
+            try
+            {
+                if (_stats == null || _stats.IsDisposed)
+                {
+                    StatsForm f = new StatsForm(_cfg.HistoryDays, _cfg.RecordMinutes);
+                    f.FormClosed += delegate { if (ReferenceEquals(_stats, f)) _stats = null; };
+                    _stats = f;
+                }
+                if (_stats.WindowState == FormWindowState.Minimized) _stats.WindowState = FormWindowState.Normal;
+                _stats.Show();
+                _stats.Activate();
+                _stats.BringToFront();
+            }
+            catch { }
+        }
+
+        // 动态开关鼠标穿透：开 = 窗口能收到鼠标消息（才能显示手型），关 = 完全穿透
+        private void SetHittable(bool on)
+        {
+            if (_hittable == on) return;
+            if (!IsHandleCreated) return;
+            try
+            {
+                int cur = GetWindowLong(Handle, GWL_EXSTYLE);
+                int next = on ? (cur & ~WS_EX_TRANSPARENT) : (cur | WS_EX_TRANSPARENT);
+                if (next == cur) { _hittable = on; return; }
+                SetWindowLong(Handle, GWL_EXSTYLE, next);
+
+                // 写完回读确认，万一没生效就别把 _hittable 置真，否则卡片会一直吃掉点击
+                int chk = GetWindowLong(Handle, GWL_EXSTYLE);
+                bool ok = on ? (chk & WS_EX_TRANSPARENT) == 0 : (chk & WS_EX_TRANSPARENT) != 0;
+                if (!ok) return;
+
+                _hittable = on;
+                if (on)
+                {
+                    if (_handCur != IntPtr.Zero) SetCursor(_handCur);   // 立刻生效，不必等鼠标动
+                }
+                else if (_arrowCur != IntPtr.Zero)
+                {
+                    SetCursor(_arrowCur);                              // 松手/移出后还原箭头
+                }
+            }
+            catch { }
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            try { _sample = Sensors.Read(); } catch { }
+            ApplyHeight();          // 首次采样后才知道有几台蓝牙设备，先把高度定下来再画
+            MaybeRecord();          // 启动就先落一个点，短时间运行也能看到曲线
+            Render();
+            _timer.Start();
+            if (!Sensors.LinkReady())
+            {
+                _warmLeft = 16;          // 最多补 11 秒，之后就算没探出来也不折腾了
+                _warmTimer.Start();
+            }
+        }
+
+        // 预热补拍：每 0.7 秒重读一次，直到"谁连着"有结果
+        private void OnWarmTick(object sender, EventArgs e)
+        {
+            OnTick(null, EventArgs.Empty);
+            if (Sensors.LinkReady() || --_warmLeft <= 0) _warmTimer.Stop();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            _timer.Stop();
+            _warmTimer.Stop();
+            _dragTimer.Stop();
+            SetHittable(false);   // 退出前恢复穿透 + 箭头，别把光标留在手型
+            SavePosition();
+            base.OnFormClosing(e);
+        }
+
+        private void OnTick(object sender, EventArgs e)
+        {
+            try { _sample = Sensors.Read(); } catch { }
+            // 蓝牙设备连上/断开会让信息行数变化，高度要跟着调（底边不动，向上长或缩）
+            ApplyHeight();
+            MaybeRecord();
+            if (_cfg.Debug) LogTick();
+            // 任务栏挪位、分辨率变化、拔掉外接屏后，把卡片拉回工作区
+            if (!_dragging) Location = ClampToWorkArea(Location.X, Location.Y);
+            Render();
+        }
+
+        // 每 RecordMinutes 分钟记一个点（采样本身是 5 秒一次，这里只做节流）
+        private void MaybeRecord()
+        {
+            if (_sample == null || _sample.Percent < 0) return;
+            DateTime now = DateTime.Now;
+            if (_lastRecAt != DateTime.MinValue &&
+                (now - _lastRecAt).TotalMinutes < _cfg.RecordMinutes - 0.01) return;
+            History.Append(_sample);
+            _lastRecAt = now;
+        }
+
+        // 诊断日志：确认真的是"每 5 秒都在读"，而不是程序停了
+        private void LogTick()
+        {
+            try
+            {
+                string temp = TempText();
+                string state = StateLineText();
+                List<string> bt = BtLines();
+                string shown = DrawPercentText()
+                    + (temp.Length > 0 ? " | " + temp : "")
+                    + (state.Length > 0 ? " | " + state : "");
+                for (int i = 0; i < bt.Count; i++) shown += " | " + bt[i];
+                if (shown == _lastLogText && (DateTime.Now - _lastLogAt).TotalSeconds < 60) return;
+
+                string devLog = "-";
+                if (_sample.Bt != null && _sample.Bt.Count > 0)
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < _sample.Bt.Count; i++)
+                    {
+                        BtDevice d = _sample.Bt[i];
+                        if (i > 0) sb.Append('/');
+                        sb.Append(d.Label).Append(':').Append(d.Percent).Append('@').Append(d.Address);
+                        if (d.Model.Length > 0) sb.Append('(').Append(d.Model).Append(')');
+                    }
+                    devLog = sb.ToString();
+                }
+
+                string line = string.Format(CultureInfo.InvariantCulture,
+                    "{0} pct={1,-4} plug={2} chg={3} full={4} temp={5} watt={6} bt={7} dev={8} link={9} drop={10} >> {11}",
+                    DateTime.Now.ToString("HH:mm:ss"),
+                    _sample.Percent,
+                    _sample.AcOnline ? 1 : 0,
+                    _sample.Charging ? 1 : 0,
+                    _sample.Full ? 1 : 0,
+                    double.IsNaN(_sample.TempC) ? "-" : _sample.TempC.ToString("0", CultureInfo.InvariantCulture),
+                    double.IsNaN(_sample.Watts)
+                        ? "-"
+                        : _sample.Watts.ToString("0.0", CultureInfo.InvariantCulture),
+                    bt.Count == 0 ? "-" : string.Join("/", bt.ToArray()),
+                    devLog,
+                    Sensors.LinkLog(),
+                    Sensors.BtDiag(),
+                    shown);
+
+                _lastLogText = shown;
+                _lastLogAt = DateTime.Now;
+
+                // 超过 256 KB 就只留最后 300 行，防止无限膨胀
+                if (File.Exists(_logPath) && new FileInfo(_logPath).Length > 262144)
+                {
+                    string[] all = File.ReadAllLines(_logPath);
+                    int keep = Math.Min(all.Length, 300);
+                    string[] tail = new string[keep];
+                    Array.Copy(all, all.Length - keep, tail, 0, keep);
+                    File.WriteAllLines(_logPath, tail);
+                }
+                File.AppendAllText(_logPath, line + Environment.NewLine);
+            }
+            catch { }
+        }
+
+        // 把窗口夹进"工作区"：WorkingArea 本身不含任务栏，所以既拖不上去也盖不住任务栏
+        private Point ClampToWorkArea(int x, int y)
+        {
+            Rectangle wa;
+            try { wa = Screen.FromPoint(new Point(x + _w / 2, y + _h / 2)).WorkingArea; }
+            catch { return new Point(x, y); }
+
+            if (x + _w > wa.Right) x = wa.Right - _w;
+            if (y + _h > wa.Bottom) y = wa.Bottom - _h;
+            if (x < wa.Left) x = wa.Left;
+            if (y < wa.Top) y = wa.Top;
+            return new Point(x, y);
+        }
+
+        // 轮询式拖动：窗口带 WS_EX_TRANSPARENT 收不到鼠标消息，只能看全局按键状态
+        private void OnDragTick(object sender, EventArgs e)
+        {
+            POINT p;
+            if (!GetCursorPos(out p)) return;
+            bool down = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+            Rectangle r = new Rectangle(Location.X, Location.Y, _w, _h);
+            bool inside = r.Contains(p.X, p.Y);
+            bool ctrl = (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+
+            // 光标状态与是否按键无关，必须在下面的提前 return 之前更新
+            UpdateCursor(inside, ctrl);
+
+            if (_dragging)
+            {
+                if (!down)
+                {
+                    _dragging = false;
+                    SavePosition();
+                    UpdateCursor(inside, ctrl);
+                    return;
+                }
+                Point np = ClampToWorkArea(p.X - _grabDx, p.Y - _grabDy);
+                if (np.X != Location.X || np.Y != Location.Y) Location = np;
+                return;
+            }
+
+            if (!down)
+            {
+                _pressOutside = false;
+                _wasDown = false;
+                return;
+            }
+
+            // 这一轮按下是从卡片外面开始的 → 整段按住期间都不抢窗口
+            if (!_wasDown && !inside) _pressOutside = true;
+
+            bool ctrlOk = !_cfg.DragNeedsCtrl || ctrl;
+            // 需要 Ctrl 时，允许"先按下、再补按 Ctrl"；不需要 Ctrl 时只认刚按下的那一下，
+            // 否则鼠标按住从别处滑过卡片就会把窗口粘走
+            bool canStart = ctrlOk && !_pressOutside && !_menuOpen && (_cfg.DragNeedsCtrl || !_wasDown);
+
+            if (canStart && inside)
+            {
+                _dragging = true;
+                _grabDx = p.X - Location.X;
+                _grabDy = p.Y - Location.Y;
+            }
+            _wasDown = down;
+        }
+
+        // 悬停 + Ctrl → 手型光标；其余情况回到穿透 + 箭头
+        private void UpdateCursor(bool inside, bool ctrl)
+        {
+            if (_cfg.DragNeedsCtrl)
+            {
+                bool want = _dragging || (ctrl && inside);
+                SetHittable(want);
+            }
+            else if (inside && _handCur != IntPtr.Zero)
+            {
+                // 不需要 Ctrl 的模式下窗口必须保持全穿透，只能硬设光标兜底（手型会轻微闪）
+                SetCursor(_handCur);
+            }
+        }
+
+        // 开机自启动：写 HKCU\...\Run，值和任务管理器「启动」页看到的完全一致
+        private const string RunKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+        private const string RunValueName = "BatteryFloat";
+
+        private static string AutoStartValue()
+        {
+            return "\"" + Application.ExecutablePath + "\"";
+        }
+
+        private static bool IsAutoStart()
+        {
+            try
+            {
+                using (RegistryKey k = Registry.CurrentUser.OpenSubKey(RunKeyPath, false))
+                {
+                    if (k == null) return false;
+                    string v = k.GetValue(RunValueName) as string;
+                    if (string.IsNullOrEmpty(v)) return false;
+
+                    string s = v.Trim();
+                    if (s.StartsWith("\""))
+                    {
+                        int e = s.IndexOf('"', 1);
+                        if (e > 1) s = s.Substring(1, e - 1);
+                    }
+                    else
+                    {
+                        int sp = s.IndexOf(' ');
+                        if (sp > 0) s = s.Substring(0, sp);
+                    }
+
+                    return string.Equals(Path.GetFullPath(s), Path.GetFullPath(Application.ExecutablePath),
+                        StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            catch { return false; }
+        }
+
+        private static void SetAutoStart(bool on)
+        {
+            try
+            {
+                using (RegistryKey k = Registry.CurrentUser.CreateSubKey(RunKeyPath))
+                {
+                    if (k == null) return;
+                    if (on) k.SetValue(RunValueName, AutoStartValue(), RegistryValueKind.String);
+                    else k.DeleteValue(RunValueName, false);
+                }
+            }
+            catch { }
+        }
+
+        private bool TryLoadPosition(out Point pos)
+        {
+            pos = Point.Empty;
+            try
+            {
+                if (!File.Exists(_posPath)) return false;
+                string[] parts = File.ReadAllText(_posPath).Split(',');
+                if (parts.Length < 2) return false;
+                int x, y;
+                if (!int.TryParse(parts[0].Trim(), out x)) return false;
+                if (!int.TryParse(parts[1].Trim(), out y)) return false;
+                pos = new Point(x, y);
+                return true;
+            }
+            catch { return false; }
+        }
+
+        private void SavePosition()
+        {
+            try { File.WriteAllText(_posPath, Location.X + "," + Location.Y); }
+            catch { }
+        }
+
+        // 两行文字（状态/功率、温度）统一用同一个颜色，保证视觉一致
+        private Color InkColor()
+        {
+            return _light
+                ? Color.FromArgb(242, 32, 36, 43)
+                : Color.FromArgb(238, 244, 246, 252);
+        }
+
+        private Color AccentColor()
+        {
+            Sample s = _sample;
+            bool unknown = !s.HasBattery || s.Percent < 0;
+            if (_light)
+            {
+                // 浅底：强调色要压暗，否则在浅灰上糊成一片
+                if (unknown) return Color.FromArgb(150, 155, 163);
+                if (s.Full) return Color.FromArgb(12, 148, 84);
+                if (s.Charging) return Color.FromArgb(6, 156, 90);
+                if (s.Percent <= 10) return Color.FromArgb(212, 50, 50);
+                if (s.Percent <= 20) return Color.FromArgb(198, 116, 14);
+                if (s.Percent <= 50) return Color.FromArgb(166, 124, 8);
+                return Color.FromArgb(24, 106, 204);
+            }
+            if (unknown) return Color.FromArgb(175, 178, 185);
+            if (s.Full) return Color.FromArgb(95, 205, 135);
+            if (s.Charging) return Color.FromArgb(70, 214, 135);
+            if (s.Percent <= 10) return Color.FromArgb(242, 92, 92);
+            if (s.Percent <= 20) return Color.FromArgb(246, 150, 62);
+            if (s.Percent <= 50) return Color.FromArgb(242, 198, 72);
+            return Color.FromArgb(98, 178, 252);
+        }
+
+        // 蓝牙电池里那层绿色：固定用充电时那个绿，不跟主电量走。
+        // 外设的电量不参与本机"低于 20% 变红"那套配色，所有设备一眼都是同一个绿
+        private Color BtFillColor()
+        {
+            return _light ? Color.FromArgb(6, 156, 90) : Color.FromArgb(70, 214, 135);
+        }
+
+        // 电量文字：卡片上唯一的大字，日志里也用它，保证"看到的"和"记下的"一致
+        private string DrawPercentText()
+        {
+            if (!_sample.HasBattery || _sample.Percent < 0) return "--";
+            return _cfg.ShowPercentSign
+                ? _sample.Percent.ToString(CultureInfo.InvariantCulture) + "%"
+                : _sample.Percent.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private string TempText()
+        {
+            if (!_cfg.ShowTemp) return "";
+            if (double.IsNaN(_sample.TempC)) return "";
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1:0}℃", _sample.TempLabel, _sample.TempC);
+        }
+
+        // 充放电状态词：没接电源就是"放电中"；接了电再看有没有真的在充
+        // （插着电但电池限制充电 / 已充满时，Charging 位是 false，就别硬说充电中）
+        private string StateText()
+        {
+            if (!_sample.HasBattery) return "";
+            if (!_sample.AcOnline) return "放电中";
+            if (_sample.Full) return "已充满";
+            return _sample.Charging ? "充电中" : "未充电";
+        }
+
+        // 功率：直接是"6.2W"，不加任何前缀；算不出来就整段省略，不留占位
+        // 功率：算不出来时给 0.0W，而不是空着。
+        // 空白会让人以为"这行坏了"，0 至少说明状态行还在工作（数值来源见 UpdateWatts）
+        private string WattText()
+        {
+            if (!_cfg.ShowWatt) return "";
+            if (!_sample.HasBattery) return "";           // 台式机没电池，不写 0.0W
+            if (double.IsNaN(_sample.Watts)) return "0.0W";
+            return string.Format(CultureInfo.InvariantCulture, "{0:0.0}W", _sample.Watts);
+        }
+
+        // 信息行（状态 + 功率同一行）："充电中 6.2W"
+        // 状态被关掉时就只剩数字，前面补个"功率"免得孤零零一个 6.2W 看不懂
+        private string StateLineText()
+        {
+            string st = _cfg.ShowState ? StateText() : "";
+            string w = WattText();
+            if (w.Length == 0) return st;
+            return st.Length == 0 ? "功率 " + w : st + " " + w;
+        }
+
+        // 要显示在卡片上的蓝牙设备：开关关掉、系统没上报、没连上，都直接滤掉（不留空行）。
+        // 注意"没上报电量"不等于"没连上"——手柄就是这样，Percent = -1 也要留一行
+        private List<BtDevice> VisibleBt()
+        {
+            List<BtDevice> list = new List<BtDevice>();
+            if (!_cfg.ShowBt || _sample == null) return list;
+            for (int i = 0; i < _sample.Bt.Count; i++)
+            {
+                BtDevice d = _sample.Bt[i];
+                if (d.Percent > 100) continue;
+                list.Add(d);
+            }
+            return list;
+        }
+
+        // "耳机 80%"；系统不上报电量的设备（手柄）显示"手柄 已连接"
+        private static string BtText(BtDevice d)
+        {
+            if (d.Percent >= 0)
+                return string.Format(CultureInfo.InvariantCulture, "{0} {1}%", d.Label, d.Percent);
+            return d.Label + " 已连接";
+        }
+
+        // 纯文本版（诊断日志用）
+        private List<string> BtLines()
+        {
+            List<string> lines = new List<string>();
+            List<BtDevice> devs = VisibleBt();
+            for (int i = 0; i < devs.Count; i++) lines.Add(BtText(devs[i]));
+            return lines;
+        }
+
+        // 卡片渲染用：行首设备图标 + 名称（耳机 / 键盘1 …）+ 右对齐的电池胶囊（数字在电池里）。
+        // Text（"耳机 80%"）只进诊断日志：卡片上"80%"由电池里的数字表达，不再重复写字
+        private List<InfoRow> BtRows()
+        {
+            List<InfoRow> rows = new List<InfoRow>();
+            List<BtDevice> devs = VisibleBt();
+            int shown = Math.Min(devs.Count, MaxBtRows);
+            for (int i = 0; i < shown; i++)
+            {
+                BtDevice d = devs[i];
+                InfoRow r = new InfoRow(BtText(d), Sensors.BtKindIcon(d.Kind));
+                r.Name = d.Label;
+                r.Percent = d.Percent;
+                r.Meter = true;
+                rows.Add(r);
+            }
+            if (devs.Count > shown)
+                rows.Add(new InfoRow("还有 " + (devs.Count - shown).ToString(CultureInfo.InvariantCulture) + " 台",
+                    RowIcon.None));
+            return rows;
+        }
+
+        // 卡片上最多摊开几台蓝牙设备，超出的折成一行"还有 N 台"，免得卡片一路长到屏幕顶
+        private const int MaxBtRows = 5;
+
+        private static GraphicsPath RoundRect(RectangleF r, float radius)
+        {
+            GraphicsPath p = new GraphicsPath();
+            float d = radius * 2f;
+            p.AddArc(r.X, r.Y, d, d, 180, 90);
+            p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
+            p.AddArc(r.Right - d, r.Bottom - d, d, d, 0, 90);
+            p.AddArc(r.X, r.Bottom - d, d, d, 90, 90);
+            p.CloseFigure();
+            return p;
+        }
+
+        private void Render()
+        {
+            float sc = _cfg.Scale <= 0 ? 1f : _cfg.Scale;
+            using (Bitmap bmp = new Bitmap(_w, _h, PixelFormat.Format32bppArgb))
+            {
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                    g.Clear(Color.Transparent);
+
+                    float pad = 4f * sc;
+                    RectangleF card = new RectangleF(pad, pad, _w - pad * 2 - 2f * sc, _h - pad * 2 - 2f * sc);
+                    float radius = 11f * sc;
+
+                    // 纯平面：不画投影、不画描边，只有一层半透明填充
+                    int alpha = _cfg.Alpha;
+                    using (GraphicsPath bodyPath = RoundRect(card, radius))
+                    {
+                        bool flat = _cfg.BgTopR == _cfg.BgBotR && _cfg.BgTopG == _cfg.BgBotG
+                                 && _cfg.BgTopB == _cfg.BgBotB;
+                        if (flat)
+                        {
+                            // 上下色相同 → 平色块
+                            using (SolidBrush body = new SolidBrush(Color.FromArgb(alpha,
+                                _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB)))
+                            {
+                                g.FillPath(body, bodyPath);
+                            }
+                        }
+                        else
+                        {
+                            // 上下色不同 → 竖向渐变
+                            RectangleF gRect = new RectangleF(card.X, card.Y - 1f,
+                                card.Width, card.Height + 2f);
+                            using (LinearGradientBrush body = new LinearGradientBrush(gRect,
+                                Color.FromArgb(alpha, _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB),
+                                Color.FromArgb(alpha, _cfg.BgBotR, _cfg.BgBotG, _cfg.BgBotB),
+                                LinearGradientMode.Vertical))
+                            {
+                                g.FillPath(body, bodyPath);
+                            }
+                        }
+                    }
+
+                    StringFormat sf = new StringFormat(StringFormat.GenericTypographic);
+                    sf.FormatFlags |= StringFormatFlags.NoWrap;
+
+                    // —— 统一间距体系（全部以 padx 为基准，左右严格对称）——
+                    float padx = 9f * sc;         // 左右内边距
+                    float padtop = 3f * sc;       // 顶部内边距（电量行上沿）
+                    float rowPct = 32f * sc;      // 电量行盒高（含字体行距）
+                    // 每多一行信息（温度 / 功率）就多 14；卡片高度由 CalcHeight 按开关算好
+
+                    float left = card.X + padx;
+                    float rightLimit = card.Right - padx;
+                    Color accent = AccentColor();
+                    Color ink = InkColor();
+
+                    // 充电徽标：外圈是电量环（进度 = 当前电量，100% 才是整圆），环内是闪电。
+                    // 环的右边缘对齐 rightLimit，与左边距对称
+                    bool showBolt = _sample.AcOnline && !_sample.Full && _sample.HasBattery;
+                    float ringD = 24f * sc;                    // 环外径
+                    float ringW = 2.4f * sc;                   // 环宽（线宽）
+                    float ringGap = 4f * sc;                   // 环与左侧电量文字的间隔
+                    float ringCx = rightLimit - ringD / 2f;
+                    float ringCy = card.Y + padtop + rowPct / 2f;
+                    if (showBolt) DrawBoltRing(g, ringCx, ringCy, ringD, ringW, _sample.Percent, TrackColor(), accent);
+
+                    // 电量行永远画：这是卡片的主体信息，不给关
+                    string pctText = DrawPercentText();
+
+                    float pctRight = showBolt ? (ringCx - ringD / 2f - ringGap) : rightLimit;
+                    float pctMaxW = pctRight - left;
+                    using (Font fPct = FitFont(g, pctText, "Segoe UI", 24f * sc, FontStyle.Bold,
+                        pctMaxW, rowPct, sf))
+                    using (SolidBrush bPct = new SolidBrush(accent))
+                    {
+                        g.DrawString(pctText, fPct, bPct, left, card.Y + padtop, sf);
+                    }
+
+                    // 信息行：温度 / 状态+功率 / 蓝牙设备（一台一行），从上往下排（菜单里可分别开关）
+                    // 本机信息（温度、充放电）纯文字，只有蓝牙设备带行首小图标
+                    List<InfoRow> infos = new List<InfoRow>(5);
+                    string temp = TempText();
+                    if (temp.Length > 0) infos.Add(new InfoRow(temp, RowIcon.None));
+                    string state = StateLineText();
+                    if (state.Length > 0)
+                    {
+                        InfoRow sr = new InfoRow(state, RowIcon.None);
+                        sr.Percent = -1;
+                        infos.Add(sr);
+                    }
+                    infos.AddRange(BtRows());
+
+                    if (infos.Count > 0)
+                    {
+                        // 图标槽：边长 11.5（只有蓝牙设备行用到）
+                        float iconBox = 11.5f * sc;
+                        // 蓝牙行三段：图标（左）+ 名称 + 电池胶囊（右缘对齐 rightLimit）
+                        // 电池宽 26：三位数"100"在 0.9 倍字高下要 19.4，内腔 20.5 才装得下，
+                        // 这样 80 和 100 是同一个字号，不会位数一变就忽大忽小
+                        float meterW = 26f * sc;
+                        float meterH = 12.5f * sc;
+                        float nameLeft = left + iconBox + 4f * sc;
+                        float nameMax = rightLimit - meterW - nameLeft - 2f * sc;
+                        Color btFill = BtFillColor();
+
+                        // 内容长了会撑到卡片边，按最长的一条整体缩字号，保证几行同号。
+                        // 电池行只画名字，不参与这个预算（名字另算字号，见下）
+                        string probe = "";
+                        for (int i = 0; i < infos.Count; i++)
+                        {
+                            InfoRow r = infos[i];
+                            if (r.Meter || r.Text.Length <= probe.Length) continue;
+                            probe = r.Text;
+                        }
+
+                        Font fInfo = probe.Length > 0
+                            ? FitFont(g, probe, "Microsoft YaHei", 10.5f * sc,
+                                FontStyle.Regular, rightLimit - left, 16f * sc, sf)
+                            : null;
+
+                        // 设备名（耳机 / 键盘1）单独算字号：名字短，按它自己的可用宽度缩，
+                        // 不会把温度、状态那两行的字号一起拖下去
+                        string nameProbe = "";
+                        for (int i = 0; i < infos.Count; i++)
+                        {
+                            InfoRow r = infos[i];
+                            if (r.Meter && r.Name.Length > nameProbe.Length) nameProbe = r.Name;
+                        }
+                        Font fName = nameProbe.Length > 0
+                            ? FitFont(g, nameProbe, "Microsoft YaHei", 10.5f * sc,
+                                FontStyle.Regular, nameMax, 16f * sc, sf)
+                            : null;
+
+                        using (SolidBrush bInfo = new SolidBrush(ink))
+                        {
+                            float yInfo = card.Y + padtop + rowPct;
+                            bool drewLocal = false;       // 已经画过本机信息行
+                            bool gapDone = false;
+                            for (int i = 0; i < infos.Count; i++)
+                            {
+                                InfoRow r = infos[i];
+                                if (r.Meter)
+                                {
+                                    // 第一台蓝牙设备前让开一档：本机的和外面几台不能挤成一片
+                                    if (drewLocal && !gapDone)
+                                    {
+                                        yInfo += BtGap * sc;
+                                        gapDone = true;
+                                    }
+                                }
+                                else
+                                {
+                                    drewLocal = true;
+                                }
+
+                                float cy = yInfo + 6.4f * sc;         // 行内垂直中心
+                                if (r.Icon != RowIcon.None)
+                                    DrawRowIcon(g, r.Icon, left, cy - iconBox / 2f, iconBox, ink, r.Percent);
+
+                                if (r.Meter)
+                                {
+                                    // 蓝牙：图标右边是名字，最右边是电池胶囊，数字写在电池里
+                                    if (fName != null)
+                                        g.DrawString(r.Name, fName, bInfo, nameLeft, yInfo, sf);
+                                    DrawMeter(g, rightLimit - meterW, cy, meterW, meterH,
+                                        r.Percent, ink, btFill);
+                                }
+                                else if (fInfo != null)
+                                {
+                                    g.DrawString(r.Text, fInfo, bInfo, left, yInfo, sf);
+                                }
+                                yInfo += (r.Meter ? BtPitch : RowPitch) * sc;
+                            }
+                        }
+                        if (fInfo != null) fInfo.Dispose();
+                        if (fName != null) fName.Dispose();
+                    }
+                    sf.Dispose();
+                }
+
+                ApplyLayered(bmp);
+            }
+        }
+
+        // 充电徽标：外圈电量环 + 环内闪电
+        // 进度从 12 点方向顺时针填充，100% 时才是完整一圈；环底色比卡片体深一档，空出来的部分才看得见
+        private static void DrawBoltRing(Graphics g, float cx, float cy, float d, float ringW,
+            int percent, Color track, Color accent)
+        {
+            float r = d / 2f - ringW / 2f;          // 环中心线半径（线宽居中压在圆上）
+            if (r <= 0.5f) return;
+            RectangleF rc = new RectangleF(cx - r, cy - r, 2f * r, 2f * r);
+
+            using (Pen pTrack = new Pen(track, ringW))
+            {
+                g.DrawEllipse(pTrack, rc);          // 整圈底槽
+            }
+
+            if (percent < 0) percent = 0;
+            if (percent > 100) percent = 100;
+            if (percent > 0)
+            {
+                // 正好 360° 时有些 GDI+ 版本会画不出东西，留 0.1° 的缝
+                float sweep = percent >= 100 ? 359.9f : 360f * percent / 100f;
+                using (Pen pArc = new Pen(accent, ringW))
+                {
+                    pArc.StartCap = LineCap.Round;
+                    pArc.EndCap = LineCap.Round;
+                    g.DrawArc(pArc, rc, -90f, sweep);
+                }
+            }
+
+            DrawBolt(g, cx, cy, d * 0.56f, accent);
+        }
+
+        // 环底槽色：卡片底色朝墨色方向压 32%，浅底变深、深底变亮，两种主题下都能分辨。
+        // 透明度跟卡片一致，否则环会显得比卡身更"实"，像贴了块补丁
+        private Color TrackColor()
+        {
+            Color c = Blend(Color.FromArgb(255, _cfg.BgTopR, _cfg.BgTopG, _cfg.BgTopB), InkColor(), 0.32f);
+            int a = _cfg.Alpha;
+            if (a < 0) a = 0; else if (a > 255) a = 255;
+            return Color.FromArgb(a, c.R, c.G, c.B);
+        }
+
+        private static Color Blend(Color a, Color b, float t)
+        {
+            if (t < 0f) t = 0f; else if (t > 1f) t = 1f;
+            return Color.FromArgb(255,
+                (int)Math.Round(a.R + (b.R - a.R) * t),
+                (int)Math.Round(a.G + (b.G - a.G) * t),
+                (int)Math.Round(a.B + (b.B - a.B) * t));
+        }
+
+        // 闪电图标：以 (cx,cy) 为中心，size 为高度
+        private static void DrawBolt(Graphics g, float cx, float cy, float size, Color color)
+        {
+            PointF[] pts = new PointF[]
+            {
+                new PointF(cx + 0.10f * size, cy - 0.50f * size),
+                new PointF(cx - 0.32f * size, cy + 0.04f * size),
+                new PointF(cx - 0.02f * size, cy + 0.04f * size),
+                new PointF(cx - 0.12f * size, cy + 0.50f * size),
+                new PointF(cx + 0.32f * size, cy - 0.06f * size),
+                new PointF(cx + 0.01f * size, cy - 0.06f * size)
+            };
+            using (SolidBrush b = new SolidBrush(color))
+            {
+                g.FillPolygon(b, pts);
+            }
+        }
+
+
+        // ── 蓝牙电量：手机状态栏那种"电池轮廓，电量数字写在里面" ──
+        // 轮廓是横向圆角胶囊 + 右侧正极凸起；数字取电池高度的 0.9 倍字号（塞满但不顶格），
+        // 只有宽度真的不够时才按比例压（26 宽的电池刚好装下三位数，实测不会触发）。
+        // percent < 0 = 已连接但系统没上报电量（多数蓝牙手柄），里面画一个小圆点：
+        // 空电池不会被误读成 0%，也没有 "--" 这类占位符。
+        // (x, cy) 是电池左缘的垂直中点；w/h 含正极凸起。
+        // fill 是电量那层填充色（绿色，跟右上角圆环同一个绿）：按百分比从左往右填，
+        // 100% 时把内腔整个填满。
+        private static void DrawMeter(Graphics g, float x, float cy, float w, float h,
+            int percent, Color ink, Color fill)
+        {
+            if (w < 9f || h < 5f) return;
+
+            float lw = Math.Max(1f, h * 0.108f);          // 线宽跟行首图标一个量级
+            float tipW = Math.Max(1.2f, w * 0.062f);      // 正极凸起
+            float tipH = h * 0.36f;
+            float bodyW = w - tipW;
+            RectangleF body = new RectangleF(x, cy - h / 2f, bodyW, h);
+
+            // 先铺电量填充，再压外框：填充是内缩的，不会盖到描边上
+            float inset = lw + 0.55f;
+            float cavityW = bodyW - inset * 2f;
+            float cavityH = h - inset * 2f;
+            if (percent > 0 && cavityW > 1f && cavityH > 1f)
+            {
+                if (percent > 100) percent = 100;
+                float fw = cavityW * percent / 100f;
+                float rad = Math.Min(h * 0.26f - inset, Math.Min(fw, cavityH) / 2f);
+                if (rad < 0.4f) rad = 0.4f;
+                // 半透明的绿：数字是深色的，全不透明会糊在一起；100% 时正好填满内腔
+                using (SolidBrush fb = new SolidBrush(Color.FromArgb(155, fill.R, fill.G, fill.B)))
+                using (GraphicsPath fp = RoundRect(new RectangleF(body.X + inset, body.Y + inset,
+                    fw, cavityH), rad))
+                {
+                    g.FillPath(fb, fp);
+                }
+            }
+
+            using (Pen p = new Pen(ink, lw))
+            {
+                p.LineJoin = LineJoin.Round;
+                using (GraphicsPath shell = RoundRect(body, h * 0.26f))
+                {
+                    g.DrawPath(p, shell);
+                }
+            }
+            using (SolidBrush b = new SolidBrush(ink))
+            {
+                g.FillRectangle(b, body.Right, cy - tipH / 2f, tipW, tipH);
+            }
+
+            StringFormat sfN = new StringFormat(StringFormat.GenericTypographic);
+            sfN.Alignment = StringAlignment.Center;
+            sfN.LineAlignment = StringAlignment.Center;
+            sfN.FormatFlags |= StringFormatFlags.NoWrap;
+
+            if (percent < 0)
+            {
+                // 没有数字可写：中心点一个实心小圆点，表示"连着，但没报电量"
+                using (SolidBrush dot = new SolidBrush(Color.FromArgb(165, ink.R, ink.G, ink.B)))
+                {
+                    float d = Math.Max(1.2f, h * 0.19f);
+                    g.FillEllipse(dot, body.X + (body.Width - d) / 2f, cy - d / 2f, d, d);
+                }
+            }
+            else
+            {
+                if (percent > 100) percent = 100;
+                string txt = percent.ToString(CultureInfo.InvariantCulture);
+                float innerW = body.Width - lw * 2f - 1.2f;
+
+                // 字号以电池高度为准（0.9 是"塞满但不顶格"的比例），
+                // 宽度不够（"100"）时按比例压一点，不换字体
+                float fs = h * 0.90f;
+                Font f = new Font("Segoe UI", fs, FontStyle.Bold, GraphicsUnit.Pixel);
+                SizeF m = g.MeasureString(txt, f, 1000, sfN);
+                if (m.Width > innerW && innerW > 2f)
+                {
+                    f.Dispose();
+                    fs = Math.Max(4.5f, fs * innerW / m.Width * 0.98f);
+                    f = new Font("Segoe UI", fs, FontStyle.Bold, GraphicsUnit.Pixel);
+                }
+                using (f)
+                using (SolidBrush b = new SolidBrush(ink))
+                {
+                    g.DrawString(txt, f, b, body, sfN);
+                }
+            }
+            sfN.Dispose();
+        }
+
+
+        // ── 信息行行首的小图标 ──
+        // 都是矢量描线（不用图片资源，放大不糊），统一线宽/圆头/单色，跟文字一个颜色。
+        // (x,y) 是图标方形区域的左上角，b 是边长；内部按 12×12 的网格设计，再整体缩放。
+        private static void DrawRowIcon(Graphics g, RowIcon icon, float x, float y, float b,
+            Color color, int percent)
+        {
+            if (b <= 4f || icon == RowIcon.None) return;
+            float u = b / 12f;
+            float w = Math.Max(1f, 1.15f * u);
+            using (Pen p = new Pen(color, w))
+            {
+                p.StartCap = LineCap.Round;
+                p.EndCap = LineCap.Round;
+                p.LineJoin = LineJoin.Round;
+                switch (icon)
+                {
+                    case RowIcon.Thermo: DrawThermoIcon(g, p, x, y, u, color); break;
+                    case RowIcon.Battery: DrawBatteryIcon(g, p, x, y, u, color, percent); break;
+                    case RowIcon.Headphone: DrawHeadphoneIcon(g, p, x, y, u, color); break;
+                    case RowIcon.Keyboard: DrawKeyboardIcon(g, p, x, y, u, color); break;
+                    case RowIcon.Mouse: DrawMouseIcon(g, p, x, y, u, color); break;
+                    case RowIcon.Gamepad: DrawGamepadIcon(g, p, x, y, u, color); break;
+                    case RowIcon.Bolt: DrawBolt(g, x + 6f * u, y + 6f * u, 9.5f * u, color); break;
+                }
+            }
+        }
+
+        // 温度计：细管 + 底部实心球 + 右侧两条刻度
+        private static void DrawThermoIcon(Graphics g, Pen p, float x, float y, float u, Color c)
+        {
+            float cx = x + 5.2f * u;
+            using (GraphicsPath tube = RoundRect(new RectangleF(cx - 1.5f * u, y + 1.1f * u,
+                3.0f * u, 6.6f * u), 1.5f * u))
+            {
+                g.DrawPath(p, tube);
+            }
+            using (SolidBrush b = new SolidBrush(c))
+            {
+                // 水银柱：从球心往上到管中段
+                g.FillRectangle(b, cx - 0.6f * u, y + 4.2f * u, 1.2f * u, 5.0f * u);
+                g.FillEllipse(b, cx - 2.0f * u, y + 8.2f * u, 4.0f * u, 4.0f * u);
+            }
+            g.DrawLine(p, cx + 2.6f * u, y + 3.2f * u, cx + 4.2f * u, y + 3.2f * u);
+            g.DrawLine(p, cx + 2.6f * u, y + 5.2f * u, cx + 4.2f * u, y + 5.2f * u);
+        }
+
+        // 电池：横躺外壳 + 正极凸起 + 内部按电量填充
+        private static void DrawBatteryIcon(Graphics g, Pen p, float x, float y, float u,
+            Color c, int percent)
+        {
+            using (GraphicsPath body = RoundRect(new RectangleF(x + 0.6f * u, y + 3.3f * u,
+                8.6f * u, 5.4f * u), 1.3f * u))
+            {
+                g.DrawPath(p, body);
+            }
+            using (SolidBrush b = new SolidBrush(c))
+            {
+                g.FillRectangle(b, x + 9.4f * u, y + 4.9f * u, 1.5f * u, 2.2f * u);
+                if (percent >= 0)
+                {
+                    if (percent > 100) percent = 100;
+                    float fw = 6.8f * u * percent / 100f;
+                    if (fw > 0.4f)
+                    {
+                        using (GraphicsPath fill = RoundRect(new RectangleF(x + 1.5f * u,
+                            y + 4.2f * u, fw, 3.6f * u), 0.7f * u))
+                        {
+                            g.FillPath(b, fill);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 耳机：头梁半圆 + 两侧耳罩
+        private static void DrawHeadphoneIcon(Graphics g, Pen p, float x, float y, float u, Color c)
+        {
+            g.DrawArc(p, x + 1.3f * u, y + 1.2f * u, 9.4f * u, 9.4f * u, 180f, 180f);
+            using (SolidBrush b = new SolidBrush(c))
+            {
+                using (GraphicsPath l = RoundRect(new RectangleF(x + 0.8f * u, y + 5.9f * u,
+                    3.0f * u, 4.9f * u), 1.3f * u))
+                {
+                    g.FillPath(b, l);
+                }
+                using (GraphicsPath r = RoundRect(new RectangleF(x + 8.2f * u, y + 5.9f * u,
+                    3.0f * u, 4.9f * u), 1.3f * u))
+                {
+                    g.FillPath(b, r);
+                }
+            }
+        }
+
+        // 键盘：圆角外框 + 两排键帽 + 空格键
+        private static void DrawKeyboardIcon(Graphics g, Pen p, float x, float y, float u, Color c)
+        {
+            using (GraphicsPath frame = RoundRect(new RectangleF(x + 0.4f * u, y + 2.7f * u,
+                11.2f * u, 6.6f * u), 1.4f * u))
+            {
+                g.DrawPath(p, frame);
+            }
+            using (SolidBrush b = new SolidBrush(c))
+            {
+                for (int i = 0; i < 5; i++)
+                    g.FillRectangle(b, x + (1.9f + 2.0f * i) * u, y + 4.2f * u, 1.2f * u, 1.1f * u);
+                for (int i = 0; i < 4; i++)
+                    g.FillRectangle(b, x + (1.9f + 2.0f * i) * u, y + 6.0f * u, 1.2f * u, 1.1f * u);
+                g.FillRectangle(b, x + 4.1f * u, y + 7.7f * u, 3.8f * u, 0.9f * u);
+            }
+        }
+
+        // 手柄：横向胶囊机身 + 左侧十字键 + 右侧两个功能键。
+        // 机身按 10.8 × 7.0 画（原先只有 10 × 5.2），和键盘 11.2 × 6.6 一个墨迹范围，
+        // 不然同样装在 12×12 格子里，手柄看着就比别的图标小一号
+        private static void DrawGamepadIcon(Graphics g, Pen p, float x, float y, float u, Color c)
+        {
+            using (GraphicsPath body = RoundRect(new RectangleF(x + 0.6f * u, y + 2.5f * u,
+                10.8f * u, 7.0f * u), 3.0f * u))
+            {
+                g.DrawPath(p, body);
+            }
+            g.DrawLine(p, x + 2.1f * u, y + 6.0f * u, x + 4.5f * u, y + 6.0f * u);
+            g.DrawLine(p, x + 3.3f * u, y + 4.8f * u, x + 3.3f * u, y + 7.2f * u);
+            using (SolidBrush b = new SolidBrush(c))
+            {
+                g.FillEllipse(b, x + 7.2f * u, y + 4.6f * u, 1.5f * u, 1.5f * u);
+                g.FillEllipse(b, x + 8.8f * u, y + 6.1f * u, 1.5f * u, 1.5f * u);
+            }
+        }
+
+        // 鼠标：竖向圆角外形 + 左键分隔线 + 中缝
+        private static void DrawMouseIcon(Graphics g, Pen p, float x, float y, float u, Color c)
+        {
+            using (GraphicsPath body = RoundRect(new RectangleF(x + 3.2f * u, y + 0.8f * u,
+                5.6f * u, 10.4f * u), 2.8f * u))
+            {
+                g.DrawPath(p, body);
+            }
+            g.DrawLine(p, x + 3.4f * u, y + 4.5f * u, x + 8.6f * u, y + 4.5f * u);
+            g.DrawLine(p, x + 6.0f * u, y + 1.0f * u, x + 6.0f * u, y + 4.4f * u);
+        }
+
+
+        private static Font FitFont(Graphics g, string text, string family, float startPx, FontStyle style,
+            float maxWidth, float maxHeight, StringFormat sf)
+        {
+            float px = startPx;
+            while (px > 8f)
+            {
+                Font probe = new Font(family, px, style, GraphicsUnit.Pixel);
+                SizeF size = sf == null ? g.MeasureString(text, probe) : g.MeasureString(text, probe, 1000, sf);
+                if (size.Width <= maxWidth && size.Height <= maxHeight) return probe;
+                probe.Dispose();
+                px -= 1f;
+            }
+            return new Font(family, 12f, style, GraphicsUnit.Pixel);
+        }
+
+        private void ApplyLayered(Bitmap bmp)
+        {
+            IntPtr screenDc = GetDC(IntPtr.Zero);
+            IntPtr memDc = CreateCompatibleDC(screenDc);
+            IntPtr hBitmap = IntPtr.Zero;
+            IntPtr oldBitmap = IntPtr.Zero;
+            try
+            {
+                hBitmap = bmp.GetHbitmap(Color.FromArgb(0));
+                oldBitmap = SelectObject(memDc, hBitmap);
+
+                SIZE size = new SIZE();
+                size.cx = bmp.Width;
+                size.cy = bmp.Height;
+                POINT srcLoc = new POINT();
+                POINT topPos = new POINT();
+                topPos.X = Location.X;
+                topPos.Y = Location.Y;
+
+                BLENDFUNCTION blend = new BLENDFUNCTION();
+                blend.BlendOp = AC_SRC_OVER;
+                blend.BlendFlags = 0;
+                blend.SourceConstantAlpha = 255;
+                blend.AlphaFormat = AC_SRC_ALPHA;
+
+                UpdateLayeredWindow(Handle, screenDc, ref topPos, ref size, memDc, ref srcLoc, 0, ref blend, ULW_ALPHA);
+            }
+            finally
+            {
+                if (oldBitmap != IntPtr.Zero) SelectObject(memDc, oldBitmap);
+                if (hBitmap != IntPtr.Zero) DeleteObject(hBitmap);
+                DeleteDC(memDc);
+                ReleaseDC(IntPtr.Zero, screenDc);
+            }
+        }
+    }
+
+    // 统计窗口：近 N 天电量折线图
+    // 每天 288 个点 × 30 天太密，按"每像素列取平均"聚合；空列即断档（关机/程序没跑），断线不硬连
+    internal sealed class StatsForm : Form
+    {
+        private readonly int _days;
+        private readonly int _minutes;
+        private List<History.Point> _pts = new List<History.Point>();
+
+        private readonly Font _fTitle;
+        private readonly Font _fBody;
+        private readonly Font _fAxis;
+        private readonly System.Windows.Forms.Timer _refresh;
+
+        private DateTime _t0 = DateTime.Today;
+        private DateTime _t1 = DateTime.Now;
+        private int _hoverX = -1;
+
+        private static readonly Color Ink = Color.FromArgb(32, 36, 43);
+        private static readonly Color SubInk = Color.FromArgb(118, 124, 134);
+        private static readonly Color LineColor = Color.FromArgb(24, 106, 204);
+
+        public StatsForm(int days, int minutes)
+        {
+            _days = days > 0 ? days : 30;
+            _minutes = minutes > 0 ? minutes : 5;
+
+            Text = "电池统计 · 近 " + _days + " 天";
+            FormBorderStyle = FormBorderStyle.Sizable;
+            ShowIcon = false;
+            StartPosition = FormStartPosition.CenterScreen;
+            BackColor = Color.FromArgb(250, 251, 253);
+            ClientSize = new Size(920, 470);
+            MinimumSize = new Size(700, 400);
+            DoubleBuffered = true;
+
+            _fTitle = new Font("Microsoft YaHei UI", 13f, FontStyle.Bold, GraphicsUnit.Point);
+            _fBody = new Font("Microsoft YaHei UI", 9.5f, FontStyle.Regular, GraphicsUnit.Point);
+            _fAxis = new Font("Microsoft YaHei UI", 8.5f, FontStyle.Regular, GraphicsUnit.Point);
+
+            Reload();
+
+            _refresh = new System.Windows.Forms.Timer();
+            _refresh.Interval = 60000;
+            _refresh.Tick += delegate { Reload(); Invalidate(); };
+            _refresh.Start();
+
+            MouseMove += delegate (object s, MouseEventArgs e) { _hoverX = e.X; Invalidate(); };
+            MouseLeave += delegate { _hoverX = -1; Invalidate(); };
+            Resize += delegate { Invalidate(); };
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _refresh.Stop();
+            _refresh.Dispose();
+            _fTitle.Dispose();
+            _fBody.Dispose();
+            _fAxis.Dispose();
+            base.OnFormClosed(e);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape) { Close(); return; }
+            base.OnKeyDown(e);
+        }
+
+        private void Reload()
+        {
+            DateTime cutoff = DateTime.Today.AddDays(-(_days - 1));
+            List<History.Point> all = History.Snapshot();
+            List<History.Point> keep = new List<History.Point>();
+            foreach (History.Point p in all) if (p.Time >= cutoff) keep.Add(p);
+            _pts = keep;
+        }
+
+        private Rectangle PlotRect()
+        {
+            int l = 56, t = 92, r = 28, b = 46;
+            int w = ClientSize.Width - l - r;
+            int h = ClientSize.Height - t - b;
+            if (w < 40) w = 40;
+            if (h < 40) h = 40;
+            return new Rectangle(l, t, w, h);
+        }
+
+        private int XOf(DateTime t, Rectangle plot)
+        {
+            double span = (_t1 - _t0).TotalSeconds;
+            if (span <= 0) return plot.Left;
+            double f = (t - _t0).TotalSeconds / span;
+            if (f < 0) f = 0;
+            if (f > 1) f = 1;
+            return plot.Left + (int)Math.Round(f * plot.Width);
+        }
+
+        private int YOf(double pct, Rectangle plot)
+        {
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
+            return plot.Bottom - (int)Math.Round(pct / 100.0 * plot.Height);
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            _t0 = DateTime.Today.AddDays(-(_days - 1));
+            _t1 = DateTime.Now;
+            if (_t1 <= _t0) _t1 = _t0.AddDays(1);
+
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+            g.Clear(BackColor);
+
+            Rectangle plot = PlotRect();
+            DrawHeader(g, plot);
+            DrawGrid(g, plot);
+            DrawSeries(g, plot);
+            DrawHover(g, plot);
+        }
+
+        private void DrawHeader(Graphics g, Rectangle plot)
+        {
+            using (SolidBrush b = new SolidBrush(Ink))
+            using (SolidBrush bs = new SolidBrush(SubInk))
+            {
+                g.DrawString("近 " + _days + " 天电量", _fTitle, b, plot.Left - 8, 18);
+
+                string summary;
+                if (_pts.Count == 0)
+                {
+                    summary = "暂无数据，程序运行后每 " + _minutes + " 分钟记录一次";
+                }
+                else
+                {
+                    int min = 100, max = 0;
+                    double sum = 0;
+                    foreach (History.Point p in _pts)
+                    {
+                        if (p.Percent < min) min = p.Percent;
+                        if (p.Percent > max) max = p.Percent;
+                        sum += p.Percent;
+                    }
+                    summary = string.Format(CultureInfo.InvariantCulture,
+                        "共 {0} 个采样点（每 {1} 分钟）·  最高 {2}%  ·  最低 {3}%  ·  平均 {4:0.#}%",
+                        _pts.Count, _minutes, max, min, sum / _pts.Count);
+                }
+                g.DrawString(summary, _fBody, bs, plot.Left - 8, 52);
+            }
+        }
+
+        private void DrawGrid(Graphics g, Rectangle plot)
+        {
+            using (Pen grid = new Pen(Color.FromArgb(232, 235, 240)))
+            using (Pen axis = new Pen(Color.FromArgb(204, 209, 218)))
+            using (SolidBrush bs = new SolidBrush(SubInk))
+            {
+                for (int pct = 0; pct <= 100; pct += 25)
+                {
+                    int y = YOf(pct, plot);
+                    g.DrawLine(pct == 0 ? axis : grid, plot.Left, y, plot.Right, y);
+                    string label = pct + "%";
+                    SizeF sz = g.MeasureString(label, _fAxis);
+                    g.DrawString(label, _fAxis, bs, plot.Left - 10 - sz.Width, y - sz.Height / 2f);
+                }
+
+                for (int d = 0; d < _days; d++)
+                {
+                    DateTime t = _t0.AddDays(d);
+                    int x = XOf(t, plot);
+                    g.DrawLine(grid, x, plot.Top, x, plot.Bottom);
+                    // 每 5 天标一个日期，最后一天也标，避免挤成一片
+                    if (d % 5 == 0 || d == _days - 1)
+                    {
+                        string label = t.ToString("M/d", CultureInfo.InvariantCulture);
+                        SizeF sz = g.MeasureString(label, _fAxis);
+                        g.DrawString(label, _fAxis, bs, x - sz.Width / 2f, plot.Bottom + 8);
+                    }
+                }
+            }
+        }
+
+        private void DrawSeries(Graphics g, Rectangle plot)
+        {
+            if (_pts.Count == 0)
+            {
+                using (SolidBrush bs = new SolidBrush(Color.FromArgb(150, 156, 166)))
+                {
+                    string msg = "还没有数据";
+                    SizeF sz = g.MeasureString(msg, _fBody);
+                    g.DrawString(msg, _fBody, bs, plot.Left + (plot.Width - sz.Width) / 2f,
+                        plot.Top + plot.Height / 2f - sz.Height / 2f);
+                }
+                return;
+            }
+
+            int cols = plot.Width + 1;
+            double[] sum = new double[cols];
+            long[] ticks = new long[cols];
+            int[] cnt = new int[cols];
+
+            foreach (History.Point p in _pts)
+            {
+                int c = XOf(p.Time, plot) - plot.Left;
+                if (c < 0 || c >= cols) continue;
+                sum[c] += p.Percent;
+                ticks[c] += p.Time.Ticks;
+                cnt[c]++;
+            }
+
+            List<List<PointF>> segs = new List<List<PointF>>();
+            List<PointF> seg = new List<PointF>();
+            for (int c = 0; c < cols; c++)
+            {
+                if (cnt[c] == 0)
+                {
+                    if (seg.Count > 0) { segs.Add(seg); seg = new List<PointF>(); }
+                    continue;
+                }
+                seg.Add(new PointF(plot.Left + c, YOf(sum[c] / cnt[c], plot)));
+            }
+            if (seg.Count > 0) segs.Add(seg);
+
+            using (Pen pen = new Pen(LineColor, 1.6f))
+            {
+                pen.LineJoin = LineJoin.Round;
+                foreach (List<PointF> s in segs)
+                {
+                    if (s.Count < 2)
+                    {
+                        using (SolidBrush db = new SolidBrush(LineColor))
+                            g.FillEllipse(db, s[0].X - 2f, s[0].Y - 2f, 4f, 4f);
+                        continue;
+                    }
+
+                    PointF[] arr = s.ToArray();
+                    using (GraphicsPath path = new GraphicsPath())
+                    {
+                        path.AddLines(arr);
+                        path.AddLine(arr[arr.Length - 1].X, plot.Bottom, arr[0].X, plot.Bottom);
+                        path.CloseFigure();
+                        using (LinearGradientBrush lg = new LinearGradientBrush(
+                            new Rectangle(plot.Left, plot.Top, Math.Max(1, plot.Width), Math.Max(1, plot.Height)),
+                            Color.FromArgb(64, LineColor), Color.FromArgb(0, LineColor), LinearGradientMode.Vertical))
+                        {
+                            g.FillPath(lg, path);
+                        }
+                    }
+                    g.DrawLines(pen, arr);
+                }
+            }
+        }
+
+        private void DrawHover(Graphics g, Rectangle plot)
+        {
+            if (_pts.Count == 0) return;
+            if (_hoverX < plot.Left || _hoverX > plot.Right) return;
+
+            double span = (_t1 - _t0).TotalSeconds;
+            if (span <= 0) return;
+            DateTime t = _t0.AddSeconds(span * (_hoverX - plot.Left) / Math.Max(1, plot.Width));
+
+            int idx = NearestIndex(t);
+            if (idx < 0) return;
+
+            History.Point p = _pts[idx];
+            int x = XOf(p.Time, plot);
+            int y = YOf(p.Percent, plot);
+
+            using (Pen dash = new Pen(Color.FromArgb(160, 130, 136, 148)))
+            {
+                dash.DashStyle = DashStyle.Dash;
+                g.DrawLine(dash, x, plot.Top, x, plot.Bottom);
+            }
+            using (SolidBrush dot = new SolidBrush(LineColor))
+            using (Pen ring = new Pen(Color.White, 1.5f))
+            {
+                g.FillEllipse(dot, x - 3.5f, y - 3.5f, 7f, 7f);
+                g.DrawEllipse(ring, x - 3.5f, y - 3.5f, 7f, 7f);
+            }
+
+            string text = p.Time.ToString("M/d HH:mm", CultureInfo.InvariantCulture) + "    " + p.Percent + "%";
+            if (!double.IsNaN(p.TempC)) text += "    " + p.TempC.ToString("0.0", CultureInfo.InvariantCulture) + "°C";
+            if (p.Ac) text += "    接电源";
+
+            SizeF sz = g.MeasureString(text, _fBody);
+            float bw = sz.Width + 16f, bh = sz.Height + 12f;
+            float bx = x + 14f, by = y - bh - 12f;
+            if (bx + bw > plot.Right) bx = x - 14f - bw;
+            if (bx < plot.Left) bx = plot.Left;
+            if (by < plot.Top) by = y + 14f;
+            if (by + bh > plot.Bottom) by = plot.Bottom - bh;
+
+            using (GraphicsPath rp = RoundRect(new RectangleF(bx, by, bw, bh), 7f))
+            {
+                using (SolidBrush fb = new SolidBrush(Color.FromArgb(243, 255, 255, 255)))
+                using (SolidBrush tb = new SolidBrush(Ink))
+                using (Pen bp = new Pen(Color.FromArgb(214, 219, 226)))
+                {
+                    g.FillPath(fb, rp);
+                    g.DrawPath(bp, rp);
+                    g.DrawString(text, _fBody, tb, bx + 8f, by + 6f);
+                }
+            }
+        }
+
+        // 二分找时间上离 t 最近的采样点
+        private int NearestIndex(DateTime t)
+        {
+            int n = _pts.Count;
+            if (n == 0) return -1;
+            int lo = 0, hi = n - 1;
+            while (lo < hi)
+            {
+                int mid = (lo + hi) / 2;
+                if (_pts[mid].Time < t) lo = mid + 1; else hi = mid;
+            }
+            if (lo > 0)
+            {
+                double dPrev = Math.Abs((_pts[lo - 1].Time - t).TotalSeconds);
+                double dCur = Math.Abs((_pts[lo].Time - t).TotalSeconds);
+                if (dPrev <= dCur) return lo - 1;
+            }
+            return lo;
+        }
+
+        private static GraphicsPath RoundRect(RectangleF r, float rad)
+        {
+            GraphicsPath p = new GraphicsPath();
+            float d = rad * 2f;
+            p.AddArc(r.X, r.Y, d, d, 180f, 90f);
+            p.AddArc(r.Right - d, r.Y, d, d, 270f, 90f);
+            p.AddArc(r.Right - d, r.Bottom - d, d, d, 0f, 90f);
+            p.AddArc(r.X, r.Bottom - d, d, d, 90f, 90f);
+            p.CloseFigure();
+            return p;
+        }
+    }
+}

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>disable</Nullable>
+    <StartupObject>Preview</StartupObject>
+    <UseWindowsForms>true</UseWindowsForms>
+    <NoWarn>CS0649;CS0169;CS0414;CS0067;SYSLIB0014</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GlobalAlias.cs" />
+    <Compile Include="Preview.cs" />
+    <Compile Include="..\..\src\Types.cs" />
+    <Compile Include="..\..\src\Config.cs" />
+    <Compile Include="..\..\src\Sensors.cs" />
+    <Compile Include="..\..\src\Bluetooth.cs" />
+    <Compile Include="..\..\src\History.cs" />
+    <Compile Include="..\..\src\Audio.cs" />
+    <Compile Include="..\..\src\SettingsForm.cs" />
+    <Compile Include="..\..\src\ChartView.cs" />
+    <Compile Include="..\..\src\CardRender.cs" />
+    <Compile Include="..\..\src\StripTip.cs" />
+    <Compile Include="..\..\src\FloatForm.cs" />
+    <Compile Include="..\..\src\TaskbarStrip.cs" />
+    <Compile Include="..\..\src\TrayIcon.cs" />
+    <Compile Include="..\..\src\AppHost.cs" />
+    <Compile Include="..\..\src\AppMenu.cs" />
+    <Compile Include="..\..\src\Program.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+  </ItemGroup>
+</Project>

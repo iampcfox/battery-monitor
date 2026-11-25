@@ -1,0 +1,1 @@
+src\TaskbarStrip.cs(178,25): warning CS0649: 从未对字段“BatteryMonitor.TaskbarStrip.Seg.Bold”赋值，字段将一直保持其默认值 false

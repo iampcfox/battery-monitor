@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>BatteryMonitor.UI</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <UseWinUI>true</UseWinUI>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>disable</Nullable>
+    <!-- 非 MSIX 打包：必须 SelfContained，否则运行时找不到 WindowsAppRuntime -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- 用 XAML 生成的 Main：它内含 WindowsAppSDK bootstrap，非打包运行必需 -->
+    <AssemblyName>BatteryMonitor.UI</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.260224002" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <!-- 只为共享数据层里的 using System.Windows.Forms / Application.ExecutablePath 提供类型解析。
+       实际 UI 全部是 WinUI 3，不会创建任何 WinForms 控件。 -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+  </ItemGroup>
+
+  <!-- 数据层与现有 WinForms 版共用源码，避免两份实现漂移 -->
+  <ItemGroup>
+    <Compile Include="..\src\Types.cs" Link="Core\Types.cs" />
+    <Compile Include="..\src\Config.cs" Link="Core\Config.cs" />
+    <Compile Include="..\src\Sensors.cs" Link="Core\Sensors.cs" />
+    <Compile Include="..\src\Bluetooth.cs" Link="Core\Bluetooth.cs" />
+    <Compile Include="..\src\History.cs" Link="Core\History.cs" />
+    <Compile Include="..\src\Audio.cs" Link="Core\Audio.cs" />
+  </ItemGroup>
+</Project>

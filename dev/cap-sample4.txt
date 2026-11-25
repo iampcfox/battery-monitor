@@ -1,0 +1,32 @@
+﻿start 19:43:02
+19:43:03 rem=14491 pct=94 volt=4274 chg=True dis=False on=True st=2
+19:43:05 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:07 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:09 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:12 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:14 rem=14491 pct=94 volt=4274 chg=True dis=False on=True st=2
+19:43:16 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:18 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:20 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:22 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:24 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:26 rem=14491 pct=94 volt=4273 chg=True dis=False on=True st=2
+19:43:28 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:30 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:33 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:35 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:37 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:39 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:41 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:43 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:45 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:47 rem=14491 pct=94 volt=4271 chg=True dis=False on=True st=2
+19:43:49 rem=14491 pct=94 volt=4271 chg=True dis=False on=True st=2
+19:43:52 rem=14491 pct=94 volt=4271 chg=True dis=False on=True st=2
+19:43:54 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:56 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:43:58 rem=14491 pct=94 volt=4271 chg=True dis=False on=True st=2
+19:44:00 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:44:02 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+19:44:05 rem=14491 pct=94 volt=4272 chg=True dis=False on=True st=2
+end 19:44:07
