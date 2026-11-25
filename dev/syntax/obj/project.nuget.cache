@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "iu6W3Swc40w=",
+  "dgSpecHash": "noZrQTpld6A=",
   "success": true,
-  "projectFilePath": "C:\\Projects\\battery-float\\dev\\syntax\\Syntax.csproj",
+  "projectFilePath": "C:\\Projects\\battery-monitor\\dev\\syntax\\Syntax.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\system.codedom\\8.0.0\\system.codedom.8.0.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\system.management\\8.0.0\\system.management.8.0.0.nupkg.sha512"

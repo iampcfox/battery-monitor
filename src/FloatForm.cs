@@ -119,6 +119,7 @@ namespace BatteryMonitor
         private int _h;                 // 可随"显示电量"开关变化：两行 68，只剩温度时压成一行 40
         private readonly System.Windows.Forms.Timer _timer;
         private readonly System.Windows.Forms.Timer _warmTimer;   // 启动后补几拍，等首轮链路探测
+        private readonly System.Windows.Forms.Timer _tipTimer;    // Ctrl+悬停：看某台蓝牙设备的详情
         private int _warmLeft;
         private bool _started;          // OnShown 只做一次初始化，隐藏后再显示不要重来
         private Sample _sample = new Sample();
@@ -215,6 +216,13 @@ namespace BatteryMonitor
             _warmTimer = new System.Windows.Forms.Timer();
             _warmTimer.Interval = 700;
             _warmTimer.Tick += OnWarmTick;
+
+            // Ctrl + 悬停看设备详情。卡片本身是"鼠标穿透"的（WS_EX_TRANSPARENT，
+            // 为的是不挡住底下的窗口），收不到 MouseMove，所以跟窄条一样改成轮询光标
+            _tipTimer = new System.Windows.Forms.Timer();
+            _tipTimer.Interval = 120;
+            _tipTimer.Tick += delegate { OnTipTick(); };
+            _tipTimer.Start();
         }
 
         protected override CreateParams CreateParams
@@ -433,6 +441,7 @@ namespace BatteryMonitor
 
         internal void HideCard()
         {
+            HideRowTip();
             if (Visible) Hide();
         }
 
@@ -716,6 +725,71 @@ namespace BatteryMonitor
             if (!_dragging) Location = ClampToWorkArea(Location.X, Location.Y);
             Render();
             if (SampleChanged != null) { try { SampleChanged(); } catch { } }
+        }
+
+        // ── Ctrl + 悬停：蓝牙设备详情卡 ──────────────────────────────────────
+        // 和窄条那张提示卡是同一个控件、同一份文案（BtTip），两处长得一样。
+        // 条件是"按住 Ctrl"：平时划过卡片不该弹框，那会挡视线
+        private StripTip _rowTip;
+        private string _rowTipSig = "";
+
+        private void OnTipTick()
+        {
+            try
+            {
+                if (!Visible) { HideRowTip(); return; }
+                if ((Control.ModifierKeys & Keys.Control) == 0) { HideRowTip(); return; }
+
+                Point cur = Cursor.Position;
+                Point p = PointToClient(cur);
+                List<BtHit> hits = BtHits;
+                BtHit hit = null;
+                for (int i = 0; i < hits.Count; i++)
+                {
+                    if (hits[i].Rect.Contains(p.X, p.Y)) { hit = hits[i]; break; }
+                }
+                if (hit == null) { HideRowTip(); return; }
+
+                if (_rowTip == null) _rowTip = new StripTip();
+                string title = BtTip.Title(hit.Dev);
+                string[] lines = BtTip.Lines(hit.Dev);
+                string sig = title + "\u0001" + string.Join("\u0002", lines);
+                if (sig != _rowTipSig)
+                {
+                    _rowTipSig = sig;
+                    _rowTip.SetContent(_light, _cfg.Scale <= 0 ? 1f : _cfg.Scale, title, lines);
+                }
+
+                int tw = _rowTip.Width, th = _rowTip.Height;
+                Rectangle wa;
+                try { wa = Screen.FromPoint(cur).WorkingArea; }
+                catch { wa = Screen.PrimaryScreen.WorkingArea; }
+                int gp = (int)Math.Round(6 * (_cfg.Scale <= 0 ? 1f : _cfg.Scale));
+
+                // 默认贴光标右下；右边/下边放不下就翻到另一侧，别越出工作区。
+                // 往左翻的时候直接贴到卡片左边外侧 —— 卡片本来就贴屏幕右边，翻过来的框
+                // 如果只是"光标左边那一点"，会正好压住卡片上的设备行，反而看不见
+                int x = cur.X + gp;
+                int y = cur.Y + gp;
+                if (x + tw > wa.Right - gp)
+                {
+                    x = Left - tw - gp;
+                    if (x < wa.Left + gp) x = cur.X - gp - tw;
+                }
+                if (y + th > wa.Bottom - gp) y = cur.Y - gp - th;
+                if (x < wa.Left + gp) x = wa.Left + gp;
+                if (y < wa.Top + gp) y = wa.Top + gp;
+
+                _rowTip.PlaceAt(x, y);
+                _rowTip.ShowNoActivate();
+            }
+            catch { }
+        }
+
+        private void HideRowTip()
+        {
+            _rowTipSig = "";
+            try { if (_rowTip != null && _rowTip.Visible) _rowTip.Hide(); } catch { }
         }
 
         // 每 RecordMinutes 分钟记一个点（采样本身是 5 秒一次，这里只做节流）。

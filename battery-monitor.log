@@ -497,3 +497,425 @@
 23:16:57 tb ok: x=864 w=116 winW=116 list=[96,862] btn=986 tm=none win11=False compressed=True rg=0 tray=986
 23:16:58 tb ok: x=864 w=116 winW=116 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
 23:17:34 pct=92   plug=1 chg=1 full=0 temp=37 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 37℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A0C6D828000000000000000000000000=39 / 耳机 (QCY-T13)@C0CAD828000000000000000000000000=83 / 扬声器 (IN糖(34:46))@A0C6D828000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@C0C7D828000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@00CAD828000000000000000000000000=42
+23:18:39 pct=92   plug=1 chg=1 full=0 temp=37 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 37℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A031E528000000000000000000000000=39 / 耳机 (QCY-T13)@8032E528000000000000000000000000=83 / 扬声器 (IN糖(34:46))@A030E528000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@402DE528000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@A031E528000000000000000000000000=42
+23:19:34 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@0023E528000000000000000000000000=39 / 耳机 (QCY-T13)@A023E528000000000000000000000000=83 / 扬声器 (IN糖(34:46))@A01DE528000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@0020E528000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@0024E528000000000000000000000000=42
+23:20:39 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A035E528000000000000000000000000=39 / 耳机 (QCY-T13)@C0AA8325000000000000000000000000=83 / 扬声器 (IN糖(34:46))@A0A98325000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@40AA8325000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@20AA8325000000000000000000000000=42
+23:21:44 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A0C1D828000000000000000000000000=39 / 耳机 (QCY-T13)@40C1D828000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C0C0D828000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@40C2D828000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@40C1D828000000000000000000000000=42
+23:22:44 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A01CE528000000000000000000000000=39 / 耳机 (QCY-T13)@801FE528000000000000000000000000=83 / 扬声器 (IN糖(34:46))@4023E528000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@C022E528000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@6023E528000000000000000000000000=42
+23:22:47 tb ok: x=864 w=116 winW=116 list=[229,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:23:44 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@D0468525000000000000000000000000=39 / 耳机 (QCY-T13)@70478525000000000000000000000000=83 / 扬声器 (IN糖(34:46))@70458525000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@B0448525000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@D0458525000000000000000000000000=42
+23:24:41 tb taskbar type: classic
+23:24:41 tb row: taskbar=[0,728-1366,768] band=[229,948]
+23:24:41 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:24:41 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:24:41 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=2408
+23:24:41 tb cand Button [954,728-986,768] 32x40 vis=1 pid=2408
+23:24:41 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=2408
+23:24:41 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:24:41 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:24:41 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:24:41 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:24:41 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:24:41 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:24:41 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:24:41 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:24:41 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=2408
+23:24:41 tb cand #32770 [96,732-229,764] 133x32 vis=1 pid=7284
+23:24:41 tb cand MSTaskSwWClass [229,728-954,768] 725x40 vis=1 pid=2408
+23:24:41 tb cand MSTaskListWClass [229,728-954,768] 725x40 vis=1 pid=2408
+23:24:41 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:24:41 tb cand tooltips_class32 [1005,731-1042,753] 37x22 vis=0 pid=2408
+23:24:41 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:24:41 tb cand tooltips_class32 [1091,625-1213,766] 122x141 vis=0 pid=2408
+23:24:41 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:24:41 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:24:41 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:24:41 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:24:41 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:24:41 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:24:41 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:24:41 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:24:41 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:24:41 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:24:41 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:24:41 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:24:41 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:24:42 tb ok: x=889 w=59 winW=59 list=[229,887] btn=954 tm=none win11=False compressed=True rg=0 tray=954
+23:24:42 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=- dev=- link=- drop=QCY-T13 Avrcp 传输@1C521662C925#30:wait,QCY ArcBuds Lite Avrcp 传输@84AC60112BD4#70:wait,Pro Controller@98B6E91CF14D#-1:wait,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:wait,蓝牙链接上的标准串行 (COM4)@000000000000#-1:wait,蓝牙链接上的标准串行 (COM6)@000000000000#-1:wait,AK820 MAX5.0@E6BD813A9447#100:wait >> 92% | 电池 38℃ | audio=耳机 (QCY ArcBuds Lite)@80E70726000000000000000000000000=39 / 耳机 (QCY-T13)@C0E80726000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C0E80726000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@C0E80726000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@80E70726000000000000000000000000=42
+23:24:42 tb ok: x=889 w=59 winW=59 list=[362,887] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:24:43 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70%/键盘 100% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/键盘:100@E6BD813A9447(AK820 MAX5.0) box=72482F21/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:orphan >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | 键盘 100% | audio=耳机 (QCY ArcBuds Lite)@80E70726000000000000000000000000=39 / 耳机 (QCY-T13)@C0E80726000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C0E80726000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@C0E80726000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@80E70726000000000000000000000000=42
+23:24:44 tb ok: x=781 w=167 winW=167 list=[362,779] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:24:44 tb ok: x=781 w=167 winW=167 list=[495,779] btn=779 tm=none win11=False compressed=True rg=0 tray=954
+23:24:46 tb replan: list reset 757 vs 417
+23:24:46 tb ok: x=813 w=167 winW=167 list=[229,811] btn=986 tm=none win11=False compressed=True rg=0 tray=986
+23:24:46 tb ok: x=813 w=167 winW=167 list=[229,811] btn=811 tm=none win11=False compressed=True rg=0 tray=986
+23:24:47 tb ok: x=813 w=167 winW=167 list=[362,811] btn=811 tm=none win11=False compressed=True rg=0 tray=986
+23:24:50 tb ok: x=813 w=167 winW=167 list=[229,811] btn=811 tm=none win11=False compressed=True rg=0 tray=986
+23:24:56 pct=92   plug=1 chg=1 full=0 temp=38 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 38℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@301D1026000000000000000000000000=39 / 耳机 (QCY-T13)@101E1026000000000000000000000000=83 / 扬声器 (IN糖(34:46))@501D1026000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@701B1026000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@101E1026000000000000000000000000=42
+23:24:56 tb ok: x=864 w=116 winW=116 list=[229,862] btn=811 tm=none win11=False compressed=True rg=0 tray=986
+23:24:56 tb ok: x=864 w=116 winW=116 list=[229,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:25:41 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@D06E0D26000000000000000000000000=39 / 耳机 (QCY-T13)@F06E0D26000000000000000000000000=83 / 扬声器 (IN糖(34:46))@50710D26000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@10700D26000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@906F0D26000000000000000000000000=42
+23:26:46 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@B01A0F26000000000000000000000000=39 / 耳机 (QCY-T13)@10180F26000000000000000000000000=83 / 扬声器 (IN糖(34:46))@301A0F26000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70180F26000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@101A0F26000000000000000000000000=42
+23:27:15 tray tip(31): Battery Monitor | 电量 --（没有检测到电池）
+23:27:16 tb taskbar type: classic
+23:27:16 tb row: taskbar=[0,728-1366,768] band=[229,980]
+23:27:16 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:27:16 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:27:16 tb cand TrayNotifyWnd [986,728-1366,768] 380x40 vis=1 pid=2408
+23:27:16 tb cand Button [986,728-1018,768] 32x40 vis=1 pid=2408
+23:27:16 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:27:16 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:27:16 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:27:16 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:27:16 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:27:16 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:27:16 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:27:16 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:27:16 tb cand ReBarWindow32 [94,728-986,768] 892x40 vis=1 pid=2408
+23:27:16 tb cand MSTaskSwWClass [229,728-862,768] 633x40 vis=1 pid=2408
+23:27:16 tb cand MSTaskListWClass [229,728-862,768] 633x40 vis=1 pid=2408
+23:27:16 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:27:16 tb cand tooltips_class32 [1014,709-1051,731] 37x22 vis=0 pid=2408
+23:27:16 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:27:16 tb cand tooltips_class32 [1091,625-1213,766] 122x141 vis=0 pid=2408
+23:27:16 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:27:16 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:27:16 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:27:16 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:27:16 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:27:16 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:27:16 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:27:16 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:27:16 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:27:16 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:27:16 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:27:16 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:27:16 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:27:16 tb ok: x=921 w=59 winW=59 list=[229,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:27:17 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@30408A25000000000000000000000000=39 / 耳机 (QCY-T13)@70438A25000000000000000000000000=83 / 扬声器 (IN糖(34:46))@B0428A25000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@30408A25000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70458A25000000000000000000000000=42
+23:27:17 tb ok: x=864 w=116 winW=116 list=[229,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:28:21 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@3073F128000000000000000000000000=39 / 耳机 (QCY-T13)@B073F128000000000000000000000000=83 / 扬声器 (IN糖(34:46))@1075F128000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@B072F128000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@F073F128000000000000000000000000=42
+23:29:26 tray tip(31): Battery Monitor | 电量 --（没有检测到电池）
+23:29:27 tb taskbar type: classic
+23:29:27 tb row: taskbar=[0,728-1366,768] band=[96,948]
+23:29:27 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:29:27 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:29:27 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=2408
+23:29:27 tb cand Button [954,728-986,768] 32x40 vis=1 pid=2408
+23:29:27 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=2408
+23:29:27 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:29:27 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:29:27 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:29:27 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:29:27 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:29:27 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:29:27 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:29:27 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:29:27 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=2408
+23:29:27 tb cand MSTaskSwWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:29:27 tb cand MSTaskListWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:29:27 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:29:27 tb cand tooltips_class32 [1014,709-1051,731] 37x22 vis=0 pid=2408
+23:29:27 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:29:27 tb cand tooltips_class32 [1091,625-1213,766] 122x141 vis=0 pid=2408
+23:29:27 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:29:27 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:29:27 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:29:27 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:29:27 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:29:27 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:29:27 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:29:27 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:29:27 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:29:27 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:29:27 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:29:27 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:29:27 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:29:27 tb ok: x=889 w=59 winW=59 list=[96,887] btn=954 tm=none win11=False compressed=True rg=0 tray=954
+23:29:27 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=- dev=- link=- drop=QCY-T13 Avrcp 传输@1C521662C925#30:wait,QCY ArcBuds Lite Avrcp 传输@84AC60112BD4#70:wait,Pro Controller@98B6E91CF14D#-1:wait,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:wait,蓝牙链接上的标准串行 (COM4)@000000000000#-1:wait,蓝牙链接上的标准串行 (COM6)@000000000000#-1:wait,AK820 MAX5.0@E6BD813A9447#100:wait >> 92% | 电池 39℃ | audio=耳机 (QCY ArcBuds Lite)@A0D40C26000000000000000000000000=39 / 耳机 (QCY-T13)@102A0426000000000000000000000000=83 / 扬声器 (IN糖(34:46))@F0270426000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@D02D0426000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@102A0426000000000000000000000000=42
+23:29:28 tray tip(32): Battery Monitor | 电量 92%（充电中） 39℃
+23:29:28 tb ok: x=889 w=59 winW=59 list=[96,887] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:29:28 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A0D40C26000000000000000000000000=39 / 耳机 (QCY-T13)@102A0426000000000000000000000000=83 / 扬声器 (IN糖(34:46))@F0270426000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@D02D0426000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@102A0426000000000000000000000000=42
+23:29:28 tray text ex(82): 文本长度必须少于 64 个字符。
+参数名: Text
+实际值是 Battery Monitor
+电量 92%（充电中） 39℃
+耳机1 30% · 音量 83
+耳机2 70% · 音量 39
+音箱 -- · 音量 100。
+23:29:28 tb ok: x=832 w=116 winW=116 list=[96,830] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:29:29 tb ok: x=832 w=116 winW=116 list=[96,830] btn=830 tm=none win11=False compressed=True rg=0 tray=954
+23:30:11 tb replan: list reset 890 vs 734
+23:30:11 tb ok: x=864 w=116 winW=116 list=[96,862] btn=986 tm=none win11=False compressed=True rg=0 tray=986
+23:30:12 tb ok: x=864 w=116 winW=116 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:30:27 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@10270426000000000000000000000000=39 / 耳机 (QCY-T13)@702A0426000000000000000000000000=83 / 扬声器 (IN糖(34:46))@F02B0426000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@902B0426000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@90270426000000000000000000000000=42
+23:30:27 tray text ex(82): 文本长度必须少于 64 个字符。
+参数名: Text
+实际值是 Battery Monitor
+电量 92%（充电中） 40℃
+耳机1 30% · 音量 83
+耳机2 70% · 音量 39
+音箱 -- · 音量 100。
+23:31:26 tray tip(39): Battery Monitor | 第二行测试 92% | 第三行 耳机1 30%
+23:31:27 tb taskbar type: classic
+23:31:27 tb row: taskbar=[0,728-1366,768] band=[96,980]
+23:31:27 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:31:27 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:31:27 tb cand TrayNotifyWnd [986,728-1366,768] 380x40 vis=1 pid=2408
+23:31:27 tb cand Button [986,728-1018,768] 32x40 vis=1 pid=2408
+23:31:27 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:31:27 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:31:27 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:31:27 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:31:27 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:31:27 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:31:27 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:31:27 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:31:27 tb cand ReBarWindow32 [94,728-986,768] 892x40 vis=1 pid=2408
+23:31:27 tb cand MSTaskSwWClass [96,728-862,768] 766x40 vis=1 pid=2408
+23:31:27 tb cand MSTaskListWClass [96,728-862,768] 766x40 vis=1 pid=2408
+23:31:27 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:31:27 tb cand tooltips_class32 [1014,709-1051,731] 37x22 vis=0 pid=2408
+23:31:27 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:31:27 tb cand tooltips_class32 [1091,625-1213,766] 122x141 vis=0 pid=2408
+23:31:27 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:31:27 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:31:27 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:31:27 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:31:27 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:31:27 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:31:27 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:31:27 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:31:27 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:31:27 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:31:27 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:31:27 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:31:27 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:31:27 tb ok: x=921 w=59 winW=59 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:31:28 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@B0E81826000000000000000000000000=39 / 耳机 (QCY-T13)@C02B1126000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C02B1126000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@20261126000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@20261126000000000000000000000000=42
+23:31:28 tb ok: x=864 w=116 winW=116 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:32:32 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@306B0E26000000000000000000000000=39 / 耳机 (QCY-T13)@70690E26000000000000000000000000=83 / 扬声器 (IN糖(34:46))@F0690E26000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@10690E26000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70680E26000000000000000000000000=42
+23:33:37 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@B0891C26000000000000000000000000=39 / 耳机 (QCY-T13)@F0861C26000000000000000000000000=83 / 扬声器 (IN糖(34:46))@F0861C26000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70881C26000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@F0881C26000000000000000000000000=42
+23:34:42 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@A046EF28000000000000000000000000=39 / 耳机 (QCY-T13)@A045EF28000000000000000000000000=83 / 扬声器 (IN糖(34:46))@4047EF28000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@E047EF28000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@8046EF28000000000000000000000000=42
+23:35:42 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@B0B1DE28000000000000000000000000=39 / 耳机 (QCY-T13)@B0B2DE28000000000000000000000000=83 / 扬声器 (IN糖(34:46))@B0B2DE28000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@B0B7DE28000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70B7DE28000000000000000000000000=42
+23:36:42 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@E0C91726000000000000000000000000=39 / 耳机 (QCY-T13)@40C91726000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C0C91726000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@60C71726000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@20C91726000000000000000000000000=42
+23:37:47 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@709EEA28000000000000000000000000=39 / 耳机 (QCY-T13)@309CEA28000000000000000000000000=83 / 扬声器 (IN糖(34:46))@D09EEA28000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@D09DEA28000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@909EEA28000000000000000000000000=42
+23:38:09 tray tip(22): Battery Monitor | 电量 --
+23:38:10 tb taskbar type: classic
+23:38:10 tb row: taskbar=[0,728-1366,768] band=[96,948]
+23:38:10 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:38:10 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:38:10 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=2408
+23:38:10 tb cand Button [954,728-986,768] 32x40 vis=1 pid=2408
+23:38:10 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=2408
+23:38:10 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:38:10 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:38:10 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:38:10 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:38:10 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:38:10 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:38:10 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:38:10 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:38:10 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=2408
+23:38:10 tb cand MSTaskSwWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:38:10 tb cand MSTaskListWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:38:10 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:38:10 tb cand tooltips_class32 [1005,713-1102,735] 97x22 vis=0 pid=2408
+23:38:10 tb cand tooltips_class32 [1061,720-1114,742] 53x22 vis=0 pid=2408
+23:38:10 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:38:10 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:38:10 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:38:10 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:38:10 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:38:10 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:38:10 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:38:10 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:38:10 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:38:10 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:38:10 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:38:10 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:38:10 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:38:10 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:38:10 tb ok: x=889 w=59 winW=59 list=[96,887] btn=954 tm=none win11=False compressed=True rg=0 tray=954
+23:38:10 pct=92   plug=1 chg=1 full=0 temp=39 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 39℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@B05E7825000000000000000000000000=39 / 耳机 (QCY-T13)@105D7825000000000000000000000000=83 / 扬声器 (IN糖(34:46))@D05E7825000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@B0607825000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@B0597825000000000000000000000000=42
+23:38:10 tray tip(63): Battery Monitor | 92% 充电中 39℃ | 耳机1 30% 83 | 耳机2 70% 39 | 音箱 -- 100
+23:38:10 tb ok: x=832 w=116 winW=116 list=[96,830] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:38:11 tb ok: x=832 w=116 winW=116 list=[96,830] btn=830 tm=none win11=False compressed=True rg=0 tray=954
+23:41:50 tray tip(22): Battery Monitor | 电量 --
+23:41:51 tb taskbar type: classic
+23:41:51 tb row: taskbar=[0,728-1366,768] band=[96,948]
+23:41:51 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:41:51 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:41:51 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=2408
+23:41:51 tb cand Button [954,728-986,768] 32x40 vis=1 pid=2408
+23:41:51 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=2408
+23:41:51 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:41:51 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:41:51 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:41:51 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:41:51 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:41:51 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:41:51 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:41:51 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:41:51 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=2408
+23:41:51 tb cand MSTaskSwWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:41:51 tb cand MSTaskListWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:41:51 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:41:51 tb cand tooltips_class32 [1016,723-1053,745] 37x22 vis=0 pid=2408
+23:41:51 tb cand tooltips_class32 [1118,723-1223,745] 105x22 vis=0 pid=2408
+23:41:51 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:41:51 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:41:51 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:41:51 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:41:51 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:41:51 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:41:51 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:41:51 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:41:51 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:41:51 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:41:51 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:41:51 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:41:51 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:41:51 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:41:51 tb ok: x=889 w=59 winW=59 list=[96,887] btn=954 tm=none win11=False compressed=True rg=0 tray=954
+23:41:51 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=1C521662C925:1/84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@C0170426000000000000000000000000=39 / 耳机 (QCY-T13)@C0170426000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C0170426000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@C0170426000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@C0170426000000000000000000000000=42
+23:41:52 tray tip(63): Battery Monitor | 92% 充电中 40℃ | 耳机1 30% 83 | 耳机2 70% 39 | 音箱 -- 100
+23:41:52 tb ok: x=832 w=116 winW=116 list=[96,830] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:41:52 tb ok: x=832 w=116 winW=116 list=[96,830] btn=830 tm=none win11=False compressed=True rg=0 tray=954
+23:43:57 tray tip(22): Battery Monitor | 电量 --
+23:43:58 tb taskbar type: classic
+23:43:58 tb row: taskbar=[0,728-1366,768] band=[96,980]
+23:43:58 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:43:58 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:43:58 tb cand TrayNotifyWnd [986,728-1366,768] 380x40 vis=1 pid=2408
+23:43:58 tb cand Button [986,728-1018,768] 32x40 vis=1 pid=2408
+23:43:58 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:43:58 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:43:58 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:43:58 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:43:58 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:43:58 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:43:58 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:43:58 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:43:58 tb cand ReBarWindow32 [94,728-986,768] 892x40 vis=1 pid=2408
+23:43:58 tb cand MSTaskSwWClass [96,728-986,768] 890x40 vis=1 pid=2408
+23:43:58 tb cand MSTaskListWClass [96,728-986,768] 890x40 vis=1 pid=2408
+23:43:58 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:43:58 tb cand tooltips_class32 [997,721-1094,743] 97x22 vis=1 pid=2408
+23:43:58 tb cand SysShadow [997,721-1099,748] 102x27 vis=1 pid=2408
+23:43:58 tb cand SysShadow [831,706-1016,733] 185x27 vis=1 pid=2408
+23:43:58 tb cand tooltips_class32 [1055,740-1108,762] 53x22 vis=0 pid=2408
+23:43:58 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:43:58 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:43:58 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:43:58 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:43:58 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:43:58 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:43:58 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:43:58 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:43:58 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:43:58 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:43:58 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:43:58 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:43:58 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:43:58 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:43:58 tb ok: x=921 w=59 winW=59 list=[96,919] btn=986 tm=none win11=False compressed=True rg=0 tray=986
+23:43:59 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@70D67326000000000000000000000000=39 / 耳机 (QCY-T13)@90D87326000000000000000000000000=83 / 扬声器 (IN糖(34:46))@70D87326000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@F0D27326000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70D27326000000000000000000000000=42
+23:43:59 tray tip(63): Battery Monitor | 92% 充电中 40℃ | 耳机1 30% 83 | 耳机2 70% 39 | 音箱 -- 100
+23:43:59 tb ok: x=864 w=116 winW=116 list=[96,862] btn=919 tm=none win11=False compressed=True rg=0 tray=986
+23:43:59 tb ok: x=864 w=116 winW=116 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:44:08 menu cmd=0 item=-
+23:45:01 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0/1C521662C925:1 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@00C0BD28000000000000000000000000=39 / 耳机 (QCY-T13)@40C1BD28000000000000000000000000=83 / 扬声器 (IN糖(34:46))@C0C4BD28000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@00C0BD28000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@60C0BD28000000000000000000000000=42
+23:45:28 tray tip(22): Battery Monitor | 电量 --
+23:45:29 tb taskbar type: classic
+23:45:30 tb row: taskbar=[0,728-1366,768] band=[96,948]
+23:45:30 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:45:30 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:45:30 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=2408
+23:45:30 tb cand Button [954,728-986,768] 32x40 vis=1 pid=2408
+23:45:30 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=2408
+23:45:30 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:45:30 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:45:30 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:45:30 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:45:30 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:45:30 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:45:30 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:45:30 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:45:30 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=2408
+23:45:30 tb cand MSTaskSwWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:45:30 tb cand MSTaskListWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:45:30 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:45:30 tb cand tooltips_class32 [996,715-1093,737] 97x22 vis=0 pid=2408
+23:45:30 tb cand tooltips_class32 [1055,740-1108,762] 53x22 vis=0 pid=2408
+23:45:30 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:45:30 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:45:30 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:45:30 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:45:30 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:45:30 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:45:30 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:45:30 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:45:30 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:45:30 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:45:30 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:45:30 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:45:30 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:45:30 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:45:30 tb ok: x=889 w=59 winW=59 list=[96,887] btn=954 tm=none win11=False compressed=True rg=0 tray=954
+23:45:30 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=- dev=- link=- drop=QCY-T13 Avrcp 传输@1C521662C925#30:wait,QCY ArcBuds Lite Avrcp 传输@84AC60112BD4#70:wait,Pro Controller@98B6E91CF14D#-1:wait,IN糖(34:46) Avrcp 传输@486E70C2E5FB#-1:wait,蓝牙链接上的标准串行 (COM4)@000000000000#-1:wait,蓝牙链接上的标准串行 (COM6)@000000000000#-1:wait,AK820 MAX5.0@E6BD813A9447#100:wait >> 92% | 电池 40℃ | audio=耳机 (QCY ArcBuds Lite)@70D91526000000000000000000000000=39 / 耳机 (QCY-T13)@10E01526000000000000000000000000=83 / 扬声器 (IN糖(34:46))@50DC1526000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70D91526000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@50DC1526000000000000000000000000=42
+23:45:30 tray tip(28): Battery Monitor | 92% 充电中 40℃
+23:45:30 tb ok: x=889 w=59 winW=59 list=[96,887] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:45:31 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@70D91526000000000000000000000000=39 / 耳机 (QCY-T13)@10E01526000000000000000000000000=83 / 扬声器 (IN糖(34:46))@50DC1526000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@70D91526000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@50DC1526000000000000000000000000=42
+23:45:31 tray tip(63): Battery Monitor | 92% 充电中 40℃ | 耳机1 30% 83 | 耳机2 70% 39 | 音箱 -- 100
+23:45:31 tb ok: x=832 w=116 winW=116 list=[96,830] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:45:31 tb ok: x=832 w=116 winW=116 list=[96,830] btn=830 tm=none win11=False compressed=True rg=0 tray=954
+23:46:13 tb replan: list reset 890 vs 734
+23:46:13 tb ok: x=864 w=116 winW=116 list=[96,862] btn=986 tm=none win11=False compressed=True rg=0 tray=986
+23:46:14 tb ok: x=864 w=116 winW=116 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:46:34 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0/1C521662C925:1/84AC60112BD4:1 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@10CBB528000000000000000000000000=39 / 耳机 (QCY-T13)@D0CBB528000000000000000000000000=83 / 扬声器 (IN糖(34:46))@30CCB528000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@D0C9B528000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@90C9B528000000000000000000000000=42
+23:47:02 tray tip(22): Battery Monitor | 电量 --
+23:47:03 tb taskbar type: classic
+23:47:04 tb row: taskbar=[0,728-1366,768] band=[96,948]
+23:47:04 tb cand Start [0,728-48,768] 48x40 vis=1 pid=2408
+23:47:04 tb cand TrayButton [48,728-96,768] 48x40 vis=1 pid=2408
+23:47:04 tb cand TrayNotifyWnd [954,728-1366,768] 412x40 vis=1 pid=2408
+23:47:04 tb cand Button [954,728-986,768] 32x40 vis=1 pid=2408
+23:47:04 tb cand ToolbarWindow32 [986,728-1018,768] 32x40 vis=1 pid=2408
+23:47:04 tb cand SysPager [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:47:04 tb cand ToolbarWindow32 [1018,728-1146,768] 128x40 vis=1 pid=2408
+23:47:04 tb cand TIPBand [1146,728-1186,768] 40x40 vis=1 pid=2408
+23:47:04 tb cand TrayInputIndicatorWClass [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:47:04 tb cand IMEModeButton [1186,728-1208,768] 22x40 vis=1 pid=2408
+23:47:04 tb cand TrayClockWClass [1240,728-1313,768] 73x40 vis=1 pid=2408
+23:47:04 tb cand TrayButton [1313,728-1361,768] 48x40 vis=1 pid=2408
+23:47:04 tb cand ControlCenterButton [1208,728-1240,768] 32x40 vis=1 pid=2408
+23:47:04 tb cand ReBarWindow32 [94,728-954,768] 860x40 vis=1 pid=2408
+23:47:04 tb cand MSTaskSwWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:47:04 tb cand MSTaskListWClass [96,728-954,768] 858x40 vis=1 pid=2408
+23:47:04 tb cand ShellHandwritingCanvas {18E91349-E229-4995-8049-7437243BBCC3} [0,0-1366,768] 1366x768 vis=0 pid=1296
+23:47:04 tb cand tooltips_class32 [996,715-1093,737] 97x22 vis=0 pid=2408
+23:47:04 tb cand tooltips_class32 [1055,740-1108,762] 53x22 vis=0 pid=2408
+23:47:04 tb cand tooltips_class32 [1004,721-1236,743] 232x22 vis=0 pid=2408
+23:47:04 tb cand Shell_TrayWnd [0,728-1366,768] 1366x40 vis=1 pid=2408
+23:47:04 tb cand WindowsDashboard [0,0-1080,2270] 1080x2270 vis=0 pid=10148
+23:47:04 tb cand Chrome_WidgetWin_1 [-12,-12-1378,740] 1390x752 vis=1 pid=13672
+23:47:04 tb cand Chrome_WidgetWin_1 [-8,-8-1374,736] 1382x744 vis=1 pid=11008
+23:47:04 tb cand \o/ Walk_MainWindow_Class \o/ [220,220-1030,1016] 810x796 vis=0 pid=13424
+23:47:04 tb cand Chrome_WidgetWin_0 [44,44-854,840] 810x796 vis=0 pid=13760
+23:47:04 tb cand ConsoleWindowClass [87,132-1167,884] 1080x752 vis=0 pid=8636
+23:47:04 tb cand global_hotkey_app [264,264-1074,1060] 810x796 vis=0 pid=14364
+23:47:04 tb cand FLUTTER_RUNNER_WIN32_WINDOW [180,49-1288,845] 1108x796 vis=0 pid=14364
+23:47:04 tb cand Chrome_WidgetWin_0 [220,220-1030,1016] 810x796 vis=0 pid=13672
+23:47:04 tb cand CrossDeviceResumeWindowClass [52,52-515,840] 463x788 vis=0 pid=2156
+23:47:04 tb cand Windows.UI.Core.CoreWindow [0,0-1366,768] 1366x768 vis=1 pid=10540
+23:47:04 tb cand Progman [0,0-1366,768] 1366x768 vis=1 pid=2408
+23:47:04 tb ok: x=889 w=59 winW=59 list=[96,887] btn=954 tm=none win11=False compressed=True rg=0 tray=954
+23:47:04 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@90DCCC28000000000000000000000000=39 / 耳机 (QCY-T13)@D0DECC28000000000000000000000000=83 / 扬声器 (IN糖(34:46))@70E0CC28000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@50DACC28000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@F0DBCC28000000000000000000000000=42
+23:47:04 tray tip(63): Battery Monitor | 92% 充电中 40℃ | 耳机1 30% 83 | 耳机2 70% 39 | 音箱 -- 100
+23:47:04 tb ok: x=832 w=116 winW=116 list=[96,830] btn=887 tm=none win11=False compressed=True rg=0 tray=954
+23:47:04 tb ok: x=832 w=116 winW=116 list=[96,830] btn=830 tm=none win11=False compressed=True rg=0 tray=954
+23:47:47 tb replan: list reset 890 vs 734
+23:47:47 tb ok: x=864 w=116 winW=116 list=[96,862] btn=986 tm=none win11=False compressed=True rg=0 tray=986
+23:47:48 tb ok: x=864 w=116 winW=116 list=[96,862] btn=862 tm=none win11=False compressed=True rg=0 tray=986
+23:48:08 pct=92   plug=1 chg=1 full=0 temp=40 watt=- bt=耳机1 30%/耳机2 70% dev=耳机1:30@1C521662C925(QCY-T13) vol=83 box=D7C2EC75/耳机2:70@84AC60112BD4(QCY ArcBuds Lite) vol=39 box=98035B53/音箱:-1@486E70C2E5FB(IN糖(34:46) vol=100 box=ADD8AFCA link=84AC60112BD4:1/98B6E91CF14D:0/486E70C2E5FB:1/E6BD813A9447:0/1C521662C925:1 drop=Pro Controller@98B6E91CF14D#-1:link0,蓝牙链接上的标准串行 (COM4)@000000000000#-1:noname,蓝牙链接上的标准串行 (COM6)@000000000000#-1:noname,AK820 MAX5.0@E6BD813A9447#100:link0 >> 92% | 电池 40℃ | 耳机1 30% | 耳机2 70% | audio=耳机 (QCY ArcBuds Lite)@00F4D228000000000000000000000000=39 / 耳机 (QCY-T13)@A0F2D228000000000000000000000000=83 / 扬声器 (IN糖(34:46))@80F4D228000000000000000000000000=100 / 扬声器 (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@A0F5D228000000000000000000000000=50 / Internal Handset Speaker (Qualcomm(R) Aqstic(TM) Audio Adapter Device)@20F3D228000000000000000000000000=42

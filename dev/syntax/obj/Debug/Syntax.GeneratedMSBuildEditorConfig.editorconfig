@@ -14,6 +14,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = BatteryMonitor
-build_property.ProjectDir = C:\Projects\battery-float\dev\syntax\
+build_property.ProjectDir = C:\Projects\battery-monitor\dev\syntax\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

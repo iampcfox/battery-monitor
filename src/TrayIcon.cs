@@ -14,7 +14,9 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 using Microsoft.Win32;
 
@@ -98,30 +100,7 @@ namespace BatteryMonitor
                     }
                 }
 
-                string tip;
-                if (noBattery)
-                {
-                    tip = "没有检测到电池（使用交流电）";
-                }
-                else
-                {
-                    tip = string.Format("电量 {0}%{1}", pct,
-                        s.Charging ? (s.Full ? "（已充满）" : "（充电中）") : "");
-                    if (!double.IsNaN(s.TempC)) tip += string.Format("  {0:0}℃", s.TempC);
-                    if (_cfg.TrayMin && lowestName != "本机") tip = lowestName + " " + tip;
-                }
-                if (s.Bt != null && s.Bt.Count > 0)
-                {
-                    int btMin = 101;
-                    string btName = "";
-                    foreach (BtDevice d in s.Bt)
-                    {
-                        if (d.Percent < 0 || d.Percent >= btMin) continue;
-                        btMin = d.Percent; btName = d.Label;
-                    }
-                    if (btName.Length > 0 && lowestName == "本机")
-                        tip += "  ·  " + btName + " " + btMin + "%";
-                }
+                string tip = BuildTip(s, noBattery, pct, lowestName);
 
                 Icon next = IconFor(noBattery ? "AC" : pct.ToString(), noBattery ? -1 : pct,
                     ChargeVisual.Powered(s), ChargeVisual.Bolt(s), LightTaskbar());
@@ -132,16 +111,110 @@ namespace BatteryMonitor
                     _icon.Icon = next;
                 }
 
-                // NotifyIcon.Text 上限 63 字符，超了会被系统截断甚至报错
+                // 提示内容已经在 BuildTip 里按 63 字符裁过了，这里直接设
                 if (tip != _lastTip)
                 {
                     _lastTip = tip;
-                    _icon.Text = tip.Length > 63 ? tip.Substring(0, 63) : tip;
+                    try
+                    {
+                        _icon.Text = tip;
+                        try { _card.WriteDiag("tray tip(" + tip.Length + "): " + tip.Replace("\r\n", " | ")); } catch { }
+                    }
+                    catch (Exception ex)
+                    {
+                        try { _card.WriteDiag("tray text ex(" + tip.Length + "): " + ex.Message); } catch { }
+                    }
                 }
 
                 WarnIfLow(pct, noBattery, s.Charging, lowestName);
             }
             catch { }
+        }
+
+        // 悬停提示（多行）：
+        //   Battery Monitor
+        //   92% 充电中 40℃
+        //   耳机1 30% 83
+        //   音箱 --
+        // 一行一台设备，没上报电量的写 "--"（和设备电量页一致）。
+        // **长度硬限制 63 字符**：WinForms 的 NotifyIcon.Text 超过 63 个字符会直接抛
+        // "文本长度必须少于 64 个字符"，所以这里自己拼、自己按优先级截：
+        // 先试"标题 + 全部行"，装不下就丢标题，再装不下才从尾部丢设备行。
+        private const int TipMax = 63;
+
+        private string BuildTip(Sample s, bool noBattery, int pct, string lowestName)
+        {
+            List<string> rows = new List<string>();
+
+            // 本机那一行
+            if (noBattery)
+            {
+                rows.Add("电量 --");
+            }
+            else
+            {
+                StringBuilder local = new StringBuilder();
+                if (_cfg.TrayMin && lowestName != "本机") local.Append(lowestName).Append(' ');
+                local.Append(pct).Append('%');
+                if (s.Charging) local.Append(s.Full ? " 已充满" : " 充电中");
+                if (!double.IsNaN(s.TempC))
+                    local.Append(' ').Append(s.TempC.ToString("0", CultureInfo.InvariantCulture)).Append('℃');
+                rows.Add(local.ToString());
+            }
+
+            // 每台蓝牙设备一行：名称 + 电量（没电量就 --）+ 音频设备的当前音量
+            if (_cfg.ShowBt && s.Bt != null)
+            {
+                for (int i = 0; i < s.Bt.Count; i++)
+                {
+                    BtDevice d = s.Bt[i];
+                    StringBuilder row = new StringBuilder(
+                        string.IsNullOrEmpty(d.Label) ? "蓝牙" : d.Label);
+                    row.Append(' ').Append(d.Percent >= 0
+                        ? d.Percent.ToString(CultureInfo.InvariantCulture) + "%"
+                        : "--");
+                    // 只有音频设备有"当前音量"这回事，键鼠手柄不写
+                    if (d.Kind == BtKind.Headphone || d.Kind == BtKind.Speaker)
+                    {
+                        int v = Audio.VolumeFor(d.Container, d.Model);
+                        if (v >= 0) row.Append(' ').Append(v);
+                    }
+                    rows.Add(row.ToString());
+                }
+            }
+
+            return Fit("Battery Monitor", rows);
+        }
+
+        // 在 63 字符里塞下尽可能多的行：标题是装饰，先丢它；设备信息才是正经内容
+        private static string Fit(string title, List<string> rows)
+        {
+            string all = Join(title, rows);
+            if (all.Length <= TipMax) return all;
+
+            string noTitle = Join(null, rows);
+            if (noTitle.Length <= TipMax) return noTitle;
+
+            // 还超：从尾部丢行，但至少留第一行（本机）
+            for (int keep = rows.Count - 1; keep >= 1; keep--)
+            {
+                string part = Join(null, rows.GetRange(0, keep));
+                if (part.Length <= TipMax) return part;
+            }
+            string first = rows.Count > 0 ? rows[0] : "";
+            return first.Length > TipMax ? first.Substring(0, TipMax) : first;
+        }
+
+        private static string Join(string title, List<string> rows)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (!string.IsNullOrEmpty(title)) sb.Append(title);
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (sb.Length > 0) sb.Append("\r\n");
+                sb.Append(rows[i]);
+            }
+            return sb.ToString();
         }
 
         // 低电量提醒：掉到阈值以下弹一次气泡，充上电或回血之后才重新武装

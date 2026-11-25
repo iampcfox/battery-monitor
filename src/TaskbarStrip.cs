@@ -2004,28 +2004,9 @@ namespace BatteryMonitor
             return bts[idx];
         }
 
-        private static string BtTipTitle(BtDevice d)
-        {
-            if (d == null) return "蓝牙设备";
-            return string.IsNullOrEmpty(d.Model) ? d.Label : d.Label + " · " + d.Model;
-        }
+        private static string BtTipTitle(BtDevice d) { return BtTip.Title(d); }
 
-        private static string[] BtTipLines(BtDevice d)
-        {
-            List<string> L = new List<string>();
-            if (d == null) return L.ToArray();
-            L.Add(d.Percent >= 0
-                ? "电量：" + d.Percent.ToString(CultureInfo.InvariantCulture) + "%"
-                : "电量：--（设备未上报）");
-            // 状态后面带上蓝牙版本（5.3 / 5.0…）。版本要走驱动 IOCTL 查，第一次是空的，
-            // 后台查到后下一拍悬停就会补上（见 OnHoverTick 里现拼提示内容那段）
-            string ver = Sensors.BtVersion(d.Address);
-            string st = "状态：已连接";
-            if (ver.Length > 0) st += " · 蓝牙 " + ver;
-            L.Add(st);
-            if (!string.IsNullOrEmpty(d.Address)) L.Add("地址：" + d.Address);
-            return L.ToArray();
-        }
+        private static string[] BtTipLines(BtDevice d) { return BtTip.Lines(d); }
 
         private static string[] LocalTipLines(Sample s)
         {

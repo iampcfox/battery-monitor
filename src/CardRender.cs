@@ -153,6 +153,7 @@ namespace BatteryMonitor
                     ? d.Percent.ToString(CultureInfo.InvariantCulture)
                     : "";
                 r.Bt = true;
+                r.Dev = d;
                 // 耳机才看音量：键盘 / 鼠标 / 手柄没有"当前音量"这回事，硬塞一个数字反而误导。
                 // 音量取的是系统默认播放设备（连着耳机时就是它），见 Audio.cs
                 // 音量是**每个音频端点各自一份**的：连着蓝牙音箱和耳机时，两个数字通常不一样。
@@ -383,8 +384,14 @@ namespace BatteryMonitor
             return p;
         }
 
+        private readonly List<BtHit> _btHits = new List<BtHit>();
+
+        // 卡片上蓝牙行的命中区（窗口内坐标）。Ctrl+悬停时用来判定"停在哪个设备上"
+        internal List<BtHit> BtHits { get { return _btHits; } }
+
         private void Render()
         {
+            _btHits.Clear();
             float sc = _cfg.Scale <= 0 ? 1f : _cfg.Scale;
             using (Bitmap bmp = new Bitmap(_w, _h, PixelFormat.Format32bppArgb))
             {
@@ -600,6 +607,12 @@ namespace BatteryMonitor
                                 if (fInfo != null)
                                     g.DrawString(r.Text, fInfo, bInfo,
                                         new RectangleF(tx, yInfo, Math.Max(12f, nameRight - tx), rowH), sfCut);
+                                if (r.Bt && r.Dev != null)
+                                    _btHits.Add(new BtHit
+                                    {
+                                        Rect = new RectangleF(card.X, yInfo, card.Width, btRowH),
+                                        Dev = r.Dev
+                                    });
                                 yInfo += r.Bt ? btRowH : rowH;
                             }
                         }

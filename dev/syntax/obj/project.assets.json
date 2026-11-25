@@ -120,11 +120,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projects\\battery-float\\dev\\syntax\\Syntax.csproj",
+      "projectUniqueName": "C:\\Projects\\battery-monitor\\dev\\syntax\\Syntax.csproj",
       "projectName": "Syntax",
-      "projectPath": "C:\\Projects\\battery-float\\dev\\syntax\\Syntax.csproj",
+      "projectPath": "C:\\Projects\\battery-monitor\\dev\\syntax\\Syntax.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "C:\\Projects\\battery-float\\dev\\syntax\\obj\\",
+      "outputPath": "C:\\Projects\\battery-monitor\\dev\\syntax\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config"

@@ -58,6 +58,13 @@ namespace BatteryMonitor
         Speaker = 8
     }
 
+    // 悬浮窗里一行蓝牙设备的命中区（窗口内坐标 + 设备），画的时候顺手记下来
+    internal sealed class BtHit
+    {
+        public System.Drawing.RectangleF Rect;
+        public BtDevice Dev;
+    }
+
     internal sealed class InfoRow
     {
         public string Text = "";
@@ -66,6 +73,7 @@ namespace BatteryMonitor
         public int Percent = -1;      // 行首电池图标内部的填充比例；蓝牙行也是胶囊的填充依据
         public bool Bt;               // true = 蓝牙设备行（缩进画图标，和本机信息隔开一档）
         public int Volume = -1;       // 耳机行的当前音量（0~100）；-1 = 不显示（键盘 / 鼠标 / 手柄没有）
+        public BtDevice Dev;           // 蓝牙行的设备（悬浮窗按 Ctrl 悬停时取文案用）
 
         public InfoRow() { }
 
