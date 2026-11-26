@@ -60,9 +60,17 @@ namespace BatteryMonitor
                 for (int i = 0; i < m.Devs.Count; i++)
                 {
                     BtDevice d = m.Devs[i];
+                    // 胶囊宽固定 21.5；百分比模式按实际文字（"60%" / "--"）量，
+                    // 且必须用 DrawBtCapsule 里那只字体量 —— 两只字体宽度不一样
+                    float capPart = _cfg.BtCapsule
+                        ? capW * sc
+                        : g.MeasureString(
+                            d.Percent >= 0
+                                ? d.Percent.ToString(CultureInfo.InvariantCulture) + "%"
+                                : "--", fInfo, PointF.Empty, sf).Width;
                     float w = iconBox * sc + 3f * sc
                         + g.MeasureString(d.Label, fInfo, PointF.Empty, sf).Width + 4f * sc
-                        + capW * sc;
+                        + capPart;
                     if (d.Kind == BtKind.Headphone || d.Kind == BtKind.Speaker)
                     {
                         int v = Audio.VolumeFor(d.Container, d.Model);
@@ -155,26 +163,28 @@ namespace BatteryMonitor
                             RowIcon ic = Sensors.BtKindIcon(d.Kind);
                             if (ic != RowIcon.None)
                             {
-                                // 图标和设备名整体比其他元素低 1px：耳机/键盘这类图标的下摆重，
-                                // 名字又是汉字（墨迹中心偏下），同一个 cy 上看着就是"浮着"的
-                                DrawRowIcon(g, ic, x, cy - iconBox / 2f + 1.5f * sc, iconBox, ink, d.Percent);
+                                // 图标和设备名整体比其他元素低半像素
+                                DrawRowIcon(g, ic, x, cy - iconBox / 2f + 0.5f * sc, iconBox, ink, d.Percent);
                                 x += iconBox + 3f * sc;
                             }
 
                             using (SolidBrush b = new SolidBrush(ink))
                                 // 名字是汉字：墨迹中心要用汉字探针量（见 CardRender.InkCenterOffset），
                                 // 用数字探针的话"耳机1"会比胶囊低一截
-                                g.DrawString(d.Label, fInfo, b, x, cy - InkCenterOffset(fInfo, "耳机") + 1.5f * sc, sf);
+                                g.DrawString(d.Label, fInfo, b, x, cy - InkCenterOffset(fInfo, "耳机") + 0.5f * sc, sf);
                             x += g.MeasureString(d.Label, fInfo, PointF.Empty, sf).Width + 4f * sc;
 
                             // 名字后面那 4px 的缝在 x += labelW + 4 时已经让出来了，
-                            // 这里胶囊右缘直接就是 x + capW —— 再加一次缝就会把后面的内容顶出段宽
+                            // 这里电量块右缘直接就是 x + 块宽 —— 再加一次缝会把后面的内容顶出段宽
                             string capText = d.Percent >= 0
                                 ? d.Percent.ToString(CultureInfo.InvariantCulture)
                                 : "--";
-                            float capRight = x + capW * sc;
-                            DrawBtCapsule(g, capText, capRight, cy + 0.5f * sc, d.Percent, ink, sc);
-                            x = capRight;
+                            float btW = _cfg.BtCapsule
+                                ? capW * sc
+                                : g.MeasureString(capText + "%", fInfo, PointF.Empty, sf).Width;
+                            float btRight = x + btW;
+                            DrawBtCapsule(g, capText, btRight, cy + 0.5f * sc, d.Percent, ink, sc, fInfo);
+                            x = btRight;
 
                             if (d.Kind == BtKind.Headphone || d.Kind == BtKind.Speaker)
                             {

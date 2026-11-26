@@ -2313,6 +2313,7 @@ namespace BatteryMonitor
         private readonly UiToggle _chkEmptyBt = new UiToggle();
         private readonly UiToggle _chkHorizontal = new UiToggle();
         private readonly UiToggle _chkSquare = new UiToggle();
+        private readonly UiToggle _chkBtCapsule = new UiToggle();
         private readonly UiToggle _chkCtrl = new UiToggle();
         private readonly UiToggle _chkTray = new UiToggle();
         private readonly UiToggle _chkTaskbar = new UiToggle();
@@ -2439,7 +2440,8 @@ namespace BatteryMonitor
         private void BuildGroups()
         {
             // 悬浮窗口显示哪些内容
-            Panel g1 = Group("悬浮窗口", 200);
+            // 行距体系：46 / 76 / 106 / 136 / 166 / 196 / 226，组高 = 最后一行 + 34
+            Panel g1 = Group("悬浮窗口", 260);
             _chkTemp.Text = "温度";
             _chkState.Text = "充放电状态 · 功率";
             _chkBt.Text = "蓝牙设备电量";
@@ -2450,12 +2452,24 @@ namespace BatteryMonitor
             _chkPercent.Location = new Point(196, 76);
             _chkEmptyBt.Text = "显示未上报电量的设备（音箱等）";
             _chkEmptyBt.Location = new Point(18, 106);
+            _chkBtCapsule.Text = "蓝牙电量用胶囊显示（不勾则用百分比）";
+            _chkBtCapsule.Location = new Point(280, 106);
             _chkHorizontal.Text = "横向排列（电量在右 · 温度居中 · 蓝牙在左）";
             _chkHorizontal.Location = new Point(18, 136);
             _chkSquare.Text = "卡片直角（默认圆角）";
             _chkSquare.Location = new Point(18, 166);
+            g1.Controls.Add(Caption("缩放", 18, 196));
+            _numScale.Location = new Point(70, 192);
+            g1.Controls.Add(_numScale);
+            g1.Controls.Add(Caption("倍", 142, 198));
+            g1.Controls.Add(Caption("不透明度", 196, 196));
+            _numAlpha.Location = new Point(270, 192);
+            g1.Controls.Add(_numAlpha);
+            _chkCtrl.Text = "只有按住 Ctrl 才能拖动卡片（关掉更容易误拖）";
+            _chkCtrl.Location = new Point(18, 226);
+            g1.Controls.Add(_chkCtrl);
             g1.Controls.Add(_chkTemp); g1.Controls.Add(_chkState);
-            g1.Controls.Add(_chkBt); g1.Controls.Add(_chkPercent); g1.Controls.Add(_chkEmptyBt);
+            g1.Controls.Add(_chkBt); g1.Controls.Add(_chkPercent); g1.Controls.Add(_chkEmptyBt); g1.Controls.Add(_chkBtCapsule);
             g1.Controls.Add(_chkHorizontal); g1.Controls.Add(_chkSquare);
 
             Panel themeHost = new Panel();
@@ -2491,6 +2505,7 @@ namespace BatteryMonitor
             g4.Controls.Add(Caption("缩放", 18, 76));
             _numStripScale.Location = new Point(58, 74);
             g4.Controls.Add(_numStripScale);
+            g4.Controls.Add(Caption("倍", 130, 78));
             g4.Controls.Add(Caption("上行电量 + 蓝牙设备（耳机 / 键盘 / 手柄）；下行 TEM 温度，与电量图标左侧对齐。", 18, 106));
             g4.Controls.Add(Caption("地方不够时按 多台设备 → 温度 让位；只放得下一台时每 6 秒轮流显示。", 18, 126));
 
@@ -2510,24 +2525,6 @@ namespace BatteryMonitor
             _numWarn.Increment = 5;
             g5.Controls.Add(_numWarn);
             g5.Controls.Add(Caption("%（0 = 不提醒，掉到该值时弹一次气泡）", 184, 112));
-
-            // 外观与拖动
-            Panel g2 = Group("外观与拖动", 116);
-            g2.Controls.Add(Caption("缩放", 18, 48));
-            _numScale.Location = new Point(70, 44);
-            g2.Controls.Add(_numScale);
-            g2.Controls.Add(Caption("倍", 142, 48));
-
-            g2.Controls.Add(Caption("不透明度", 196, 48));
-            _numAlpha.Location = new Point(270, 44);
-            _numAlpha.Minimum = 100;
-            _numAlpha.Maximum = 255;
-            _numAlpha.Increment = 5;
-            g2.Controls.Add(_numAlpha);
-
-            _chkCtrl.Text = "只有按住 Ctrl 才能拖动卡片（关掉更容易误拖）";
-            _chkCtrl.Location = new Point(18, 80);
-            g2.Controls.Add(_chkCtrl);
 
             // 刷新与记录
             Panel g3 = Group("刷新与记录", 116);
@@ -2639,6 +2636,7 @@ namespace BatteryMonitor
             _chkBt.Checked = _cfg.ShowBt;
             _chkPercent.Checked = _cfg.ShowPercentSign;
             _chkEmptyBt.Checked = _cfg.ShowEmptyBt;
+            _chkBtCapsule.Checked = _cfg.BtCapsule;
             _chkHorizontal.Checked = _cfg.Horizontal;
             _chkSquare.Checked = _cfg.SquareCorners;
             _chkCtrl.Checked = _cfg.DragNeedsCtrl;
@@ -2724,6 +2722,7 @@ namespace BatteryMonitor
             _cfg.ShowBt = _chkBt.Checked;
             _cfg.ShowPercentSign = _chkPercent.Checked;
             _cfg.ShowEmptyBt = _chkEmptyBt.Checked;
+            _cfg.BtCapsule = _chkBtCapsule.Checked;
             _cfg.Horizontal = _chkHorizontal.Checked;
             _cfg.SquareCorners = _chkSquare.Checked;
             Sensors.ShowAllBt = _cfg.ShowEmptyBt;

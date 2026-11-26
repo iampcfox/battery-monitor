@@ -37,6 +37,7 @@ namespace BatteryMonitor
         public bool StripBt = true;          // 窄条上的蓝牙设备电量（耳机/键盘/手柄，各自一个图标 + 电量）
         public bool Horizontal = false;      // true = 悬浮窗横向排列（电量在右、温度居中、蓝牙在左）
         public bool SquareCorners = false;   // true = 卡片直角；false = 圆角（默认）
+        public bool BtCapsule = true;        // true = 蓝牙电量用电池胶囊；false = 纯百分比数字
         public float StripScale = 1.0f;      // 窄条自己的缩放（和卡片缩放分开配；范围 0.7~1.6）
         public bool ShowEmptyBt = false;     // 连"没上报电量"的设备也显示（蓝牙音箱这类永远不报电量的才看得见）
         public bool StripSolid = false;      // true = 窄条不走逐像素透明，改用实底绘制（花屏/看不见时的退路）
@@ -91,6 +92,7 @@ namespace BatteryMonitor
                     else if (k == "horizontal") c.Horizontal = !IsFalse(v);
                     else if (k == "squarecorners") c.SquareCorners = !IsFalse(v);
                     else if (k == "stripscale") c.StripScale = ParseF(v, c.StripScale);
+                    else if (k == "btcapsule") c.BtCapsule = !IsFalse(v);
                     else if (k == "stripsolid") c.StripSolid = !IsFalse(v);
                     else if (k == "traymin") c.TrayMin = !IsFalse(v);
                     else if (k == "trayicon") c.TrayNumber = (v.Trim().ToLowerInvariant() == "number");
@@ -134,6 +136,7 @@ namespace BatteryMonitor
             kv["horizontal"] = BoolText(Horizontal);
             kv["squarecorners"] = BoolText(SquareCorners);
             kv["stripscale"] = StripScale.ToString("0.00", CultureInfo.InvariantCulture);
+            kv["btcapsule"] = BoolText(BtCapsule);
             kv["stripsolid"] = BoolText(StripSolid);
             kv["traymin"] = BoolText(TrayMin);
             kv["trayicon"] = TrayNumber ? "number" : "glyph";

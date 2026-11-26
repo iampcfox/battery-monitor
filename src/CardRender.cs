@@ -203,12 +203,32 @@ namespace BatteryMonitor
         private const float CapH = 12.6f;
 
         private float DrawBtCapsule(Graphics g, string text, float right, float cy,
-            int percent, Color ink, float sc)
+            int percent, Color ink, float sc, Font textFont = null)
         {
             Font f = null;
             try
             {
                 f = new Font("Segoe UI", Math.Max(6.5f, 9f * sc), FontStyle.Bold, GraphicsUnit.Pixel);
+
+                // 非胶囊模式：不画壳，直接一个百分比数字（"60%" / "--"），右缘对齐调用方给的 right，
+                // 返回文字左缘 —— 调用方接着往左排设备名，往右排音量，间距规则不变
+                if (!_cfg.BtCapsule)
+                {
+                    // 百分比模式：字号跟设备名一致（用调用方的正文字体，不另起一套）
+                    Font ft = textFont ?? f;
+                    string t = percent >= 0 ? text + "%" : "--";
+                    float btTw = g.MeasureString(t, ft, PointF.Empty, StringFormat.GenericTypographic).Width;
+                    float btTx = right - btTw;
+                    float btTy = cy - InkCenterOffset(ft);
+                    Color btC = percent >= 0 ? BtValueColor(percent, ink) : SubInk(ink);
+                    using (StringFormat c2 = new StringFormat(StringFormat.GenericTypographic))
+                    {
+                        c2.FormatFlags |= StringFormatFlags.NoWrap | StringFormatFlags.NoClip;
+                        using (SolidBrush b = new SolidBrush(btC))
+                            g.DrawString(t, ft, b, btTx, btTy, c2);
+                    }
+                    return btTx;
+                }
 
                 float w = CapW * sc;
                 float h = CapH * sc;
@@ -252,7 +272,12 @@ namespace BatteryMonitor
 
                 // 字：横向按墨迹宽度居中，纵向按墨迹中心压在胶囊中线上（见 InkCenterOffset）
                 float tw = g.MeasureString(text, f, PointF.Empty, StringFormat.GenericTypographic).Width;
-                float tx = body.X + (w - tw) / 2f;
+                // 左右居中要对"看得见的胶囊"居中：正极凸头在右侧占了 tipW+tipGap 的宽度，
+                // 只按电池身居中的话数字整体偏左半个凸头。往右补回来，但最多补到左右对称，
+                // "100"这种快满的不能被挤出壳
+                float tipBias = 0.15f * sc;             // 用户实测定值：0.65/0.3 都偏右，0.15 刚好
+                float slack = Math.Max(0f, (w - tw) / 2f - lw);
+                float tx = body.X + (w - tw) / 2f + Math.Min(tipBias, slack);
                 float ty = cy - InkCenterOffset(f);
 
                 using (StringFormat c = new StringFormat(StringFormat.GenericTypographic))
@@ -601,7 +626,7 @@ namespace BatteryMonitor
                                         // 没电量写 "--"、壳是空的。右边缘统一贴齐，竖着看是一列
                                         cursor = DrawBtCapsule(g,
                                             r.Percent >= 0 ? r.Value : "--",
-                                            cursor, cy, r.Percent, ink, sc);
+                                            cursor, cy, r.Percent, ink, sc, fInfo);
                                         cursor -= 3.5f * sc;
                                     }
                                     else if (r.Value.Length > 0)
