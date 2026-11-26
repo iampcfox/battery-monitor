@@ -172,7 +172,7 @@ namespace BatteryMonitor
             else
             {
                 _w = (int)Math.Round(134 * sc);
-                _h = CalcHeight(cfg, sc, 0);   // 蓝牙行等第一次采样后由 ApplyHeight 补上
+                _h = CalcHeight(cfg, sc, 0, true);   // 蓝牙行等第一次采样后由 ApplyHeight 补上
             }
 
             _light = IsLightTheme(cfg);
@@ -469,12 +469,16 @@ namespace BatteryMonitor
         // 功率和状态共用同一行（"充电中 6.2W"），所以它们只要有一个开着就占一行；
         // 蓝牙是每台设备一行（耳机 / 键盘 / 手柄），断开就自动消失。
         // 本机信息（温度/状态）和蓝牙设备之间空 BtGap 一档，两组才分得开
-        private static int CalcHeight(Config cfg, float sc, int btDevices)
+        private static int CalcHeight(Config cfg, float sc, int btDevices, bool hasBattery)
         {
             if (sc <= 0) sc = 1f;
             int local = 0;
-            if (cfg.ShowTemp) local++;
-            if (cfg.ShowState) local++;
+            // 台式机没电池：温度 / 状态行整块不画，高度里也不计
+            if (hasBattery)
+            {
+                if (cfg.ShowTemp) local++;
+                if (cfg.ShowState) local++;
+            }
 
             int bt = 0;
             int more = 0;                               // "还有 N 台"那一行（纯文字，不加高行距）
@@ -536,7 +540,7 @@ namespace BatteryMonitor
             else
             {
                 nw = _w;
-                nh = CalcHeight(_cfg, sc, BtRowCount());
+                nh = CalcHeight(_cfg, sc, BtRowCount(), _sample != null && _sample.HasBattery);
             }
             if (nw == _w && nh == _h) return;
 
@@ -653,7 +657,7 @@ namespace BatteryMonitor
             else
             {
                 _w = (int)Math.Round(134 * sc);     // 同构造函数
-                _h = CalcHeight(_cfg, sc, BtRowCount());
+                _h = CalcHeight(_cfg, sc, BtRowCount(), _sample != null && _sample.HasBattery);
             }
             Size = new Size(_w, _h);
             Location = ClampToWorkArea(wa0.Right - _w - gapR, wa0.Bottom - _h - gapB);

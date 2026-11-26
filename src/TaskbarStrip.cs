@@ -1218,6 +1218,9 @@ namespace BatteryMonitor
 
             bool noBat = !s.HasBattery || s.Percent < 0;
 
+            // 台式机没电池：电池胶囊和百分比整块不排（用户要求），窄条只显示蓝牙设备
+            if (!noBat)
+            {
             Seg g = new Seg();
             g.Glyph = true;
             g.Kind = K_GLYPH;
@@ -1231,6 +1234,7 @@ namespace BatteryMonitor
             p.Unit = noBat || !_cfg.ShowPercentSign ? "" : "%";
             p.Text = p.Num + p.Unit;
             list.Add(p);
+            }
 
             // 蓝牙设备：耳机 / 键盘 / 鼠标 / 手柄，各一个"小图标 + 电量"，排在右侧那一列
             // （竖着摞，几台就几行；只有一台时在整条里垂直居中）。
@@ -1260,7 +1264,7 @@ namespace BatteryMonitor
                 }
             }
 
-            if (_cfg.StripTemp && !double.IsNaN(s.TempC))
+            if (_cfg.StripTemp && s.HasBattery && !double.IsNaN(s.TempC))
             {
                 Seg t = new Seg();
                 t.Line = 1;
@@ -1504,7 +1508,7 @@ namespace BatteryMonitor
             L.NumX = Math.Max(anchor, lowStart);
             L.NumW = numW;
             L.ValRight = L.NumX + numW + L.UnitW;
-            lineW[0] = (anchor - pad) + numW + L.UnitW;
+            if (started[0]) lineW[0] = (anchor - pad) + numW + L.UnitW;
             if (started[1]) lineW[1] = (lowStart - pad) + numW + L.UnitW;
             for (int i = 0; i < 2; i++)
             {
@@ -1529,8 +1533,10 @@ namespace BatteryMonitor
 
             if (L.BtN > 0)
             {
-                L.DivX = pad + L.MainW + DivGap;
-                L.BtX = L.DivX + DivW + DivGap;
+                // 有本机区才需要竖线；没电池时蓝牙区直接从左边起，只留一档缝
+                bool hasMain = L.MainW > 0.5f;
+                L.DivX = pad + L.MainW + (hasMain ? DivGap : 0f);
+                L.BtX = L.DivX + (hasMain ? DivW + DivGap : 0f);
             }
             return L;
         }
@@ -1561,7 +1567,7 @@ namespace BatteryMonitor
                 g.TextContrast = 5;
                 StripLayout L = BuildLayout(g, segs);
                 total = L.Pad * 2f + L.MainW;
-                if (L.BtN > 0) total += DivGap + DivW + DivGap + L.BtW;
+                if (L.BtN > 0) total += (L.MainW > 0.5f ? DivGap + DivW + DivGap : DivGap) + L.BtW;
             }
             w = (int)Math.Ceiling(total);
             if (w < 40) w = 40;
@@ -1760,8 +1766,9 @@ namespace BatteryMonitor
             // 两组含义完全不同，只靠间距区分不够，一条细线一眼就分开了。
             // 高度只占 42%：立在两行文字的行距之间那一档就够了，拉到 60% 比字还高，
             // 反而像表格边框、把人往两边推
-            if (L.BtN > 0)
+            if (L.BtN > 0 && L.MainW > 0.5f)
             {
+                // 没电池时本机区整块不排，竖线也一并去掉（用户要求）
                 float divH = h * 0.42f;
                 using (SolidBrush db = new SolidBrush(Color.FromArgb(90, sub.R, sub.G, sub.B)))
                     g.FillRectangle(db, L.DivX, (h - divH) / 2f, DivW, divH);

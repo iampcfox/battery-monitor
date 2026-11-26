@@ -64,6 +64,7 @@ namespace BatteryMonitor
         private string TempText()
         {
             if (!_cfg.ShowTemp) return "";
+            if (!_sample.HasBattery) return "";      // 台式机没电池：温度一并隐藏
             if (double.IsNaN(_sample.TempC)) return "";
             return string.Format(CultureInfo.InvariantCulture, "{0} {1:0}℃", _sample.TempLabel, _sample.TempC);
         }
@@ -489,7 +490,8 @@ namespace BatteryMonitor
 
                     // 充电徽标：外圈是电量环（进度 = 当前电量，100% 才是整圆），环内是闪电。
                     // 环的右边缘对齐 rightLimit，与左边距对称
-                    bool showBolt = ChargeVisual.Bolt(_sample);   // 只有真在进电才画，已充满/停充都不画
+                    bool hasBat = _sample != null && _sample.HasBattery;   // 台式机没电池：整块本机信息都不画
+                    bool showBolt = hasBat && ChargeVisual.Bolt(_sample);   // 只有真在进电才画，已充满/停充都不画
                     float ringD = 24f * sc;                    // 环外径
                     float ringW = 2.4f * sc;                   // 环宽（线宽）
                     float ringGap = 4f * sc;                   // 环与左侧电量文字的间隔
@@ -497,16 +499,19 @@ namespace BatteryMonitor
                     float ringCy = card.Y + padtop + rowPct / 2f;
                     if (showBolt) DrawBoltRing(g, ringCx, ringCy, ringD, ringW, _sample.Percent, TrackColor(), accent, BoltPulse());
 
-                    // 电量行永远画：这是卡片的主体信息，不给关
-                    string pctText = DrawPercentText();
-
-                    float pctRight = showBolt ? (ringCx - ringD / 2f - ringGap) : rightLimit;
-                    float pctMaxW = pctRight - left;
-                    using (Font fPct = FitFont(g, pctText, "Segoe UI", 24f * sc, FontStyle.Bold,
-                        pctMaxW, rowPct, sf))
-                    using (SolidBrush bPct = new SolidBrush(accent))
+                    // 电量行：有电池才画。台式机没电池时卡片只剩温度和蓝牙设备行
+                    if (hasBat)
                     {
-                        g.DrawString(pctText, fPct, bPct, left, card.Y + padtop, sf);
+                        string pctText = DrawPercentText();
+
+                        float pctRight = showBolt ? (ringCx - ringD / 2f - ringGap) : rightLimit;
+                        float pctMaxW = pctRight - left;
+                        using (Font fPct = FitFont(g, pctText, "Segoe UI", 24f * sc, FontStyle.Bold,
+                            pctMaxW, rowPct, sf))
+                        using (SolidBrush bPct = new SolidBrush(accent))
+                        {
+                            g.DrawString(pctText, fPct, bPct, left, card.Y + padtop, sf);
+                        }
                     }
 
                     // 信息行：温度 / 状态+功率 / 蓝牙设备（一台一行），从上往下排（菜单里可分别开关）
@@ -569,7 +574,7 @@ namespace BatteryMonitor
 
                         using (SolidBrush bInfo = new SolidBrush(ink))
                         {
-                            float yInfo = card.Y + padtop + rowPct;
+                            float yInfo = card.Y + padtop + (hasBat ? rowPct : 0f);
                             bool drewLocal = false;       // 已经画过本机信息行
                             bool gapDone = false;
                             for (int i = 0; i < infos.Count; i++)

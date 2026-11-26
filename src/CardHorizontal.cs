@@ -54,7 +54,9 @@ namespace BatteryMonitor
                 sf.FormatFlags |= StringFormatFlags.NoWrap;
 
                 m.Devs = VisibleBt();
-                m.Bolt = ChargeVisual.Bolt(_sample);
+                // 台式机没电池：温度和电量块整块不排，卡片只剩蓝牙设备
+                bool hasBat = _sample != null && _sample.HasBattery;
+                m.Bolt = hasBat && ChargeVisual.Bolt(_sample);
 
                 // ── 蓝牙设备：一台挨一台往右排 ──
                 for (int i = 0; i < m.Devs.Count; i++)
@@ -82,15 +84,15 @@ namespace BatteryMonitor
                 }
 
                 // ── 温度块 ──
-                m.Temp = TempText();
+                m.Temp = hasBat ? TempText() : "";
                 m.TempW = m.Temp.Length > 0
                     ? iconBox * sc + 3f * sc + g.MeasureString(m.Temp, fInfo, PointF.Empty, sf).Width
                     : 0f;
 
-                // ── 电量块：小闪电 + 小号数字 ──
-                string pct = DrawPercentText();
+                // ── 电量块：小闪电 + 小号数字（没电池整块不排）──
+                string pct = hasBat ? DrawPercentText() : "";
                 float boltW = m.Bolt ? boltBox * sc + 2f * sc : 0f;
-                m.PctW = boltW + g.MeasureString(pct, fPct, PointF.Empty, sf).Width;
+                m.PctW = pct.Length == 0 ? 0f : boltW + g.MeasureString(pct, fPct, PointF.Empty, sf).Width;
 
                 // 高度：一行内容（图标 / 胶囊 / 数字谁最高算谁）+ 上下内边距
                 float content = Math.Max(Math.Max(iconBox, capH), 13f) * sc;
