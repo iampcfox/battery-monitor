@@ -163,15 +163,15 @@ namespace BatteryMonitor
                             RowIcon ic = Sensors.BtKindIcon(d.Kind);
                             if (ic != RowIcon.None)
                             {
-                                // 图标和设备名整体比其他元素低半像素
-                                DrawRowIcon(g, ic, x, cy - iconBox / 2f + 0.5f * sc, iconBox, ink, d.Percent);
+                                // 图标和设备名：+0.8（0.5 基础上再下移 0.3）
+                                DrawRowIcon(g, ic, x, cy - iconBox / 2f + 0.8f * sc, iconBox, ink, d.Percent);
                                 x += iconBox + 3f * sc;
                             }
 
                             using (SolidBrush b = new SolidBrush(ink))
                                 // 名字是汉字：墨迹中心要用汉字探针量（见 CardRender.InkCenterOffset），
                                 // 用数字探针的话"耳机1"会比胶囊低一截
-                                g.DrawString(d.Label, fInfo, b, x, cy - InkCenterOffset(fInfo, "耳机") + 0.5f * sc, sf);
+                                g.DrawString(d.Label, fInfo, b, x, cy - InkCenterOffset(fInfo, "耳机") + 0.8f * sc, sf);
                             x += g.MeasureString(d.Label, fInfo, PointF.Empty, sf).Width + 4f * sc;
 
                             // 名字后面那 4px 的缝在 x += labelW + 4 时已经让出来了，

@@ -240,6 +240,9 @@ namespace BatteryMonitor
             _animTimer = new System.Windows.Forms.Timer();
             _animTimer.Interval = 350;
             _animTimer.Tick += delegate { OnAnimTick(); };
+
+            // 屏幕 / 分辨率切换时保持贴角：只置标记，真正的重排在 OnTick（UI 线程）里做
+            SystemEvents.DisplaySettingsChanged += delegate { OnDisplaySettingsChanged(); };
         }
 
         protected override CreateParams CreateParams
@@ -762,8 +765,36 @@ namespace BatteryMonitor
             base.OnFormClosing(e);
         }
 
+        // 屏幕切换 / 分辨率变化：事件在广播线程上触发，只置标记，
+        // 下一拍 OnTick 在 UI 线程里按"最近一次保存的右下间距"重新贴角
+        private bool _repin;
+
+        private void OnDisplaySettingsChanged()
+        {
+            _repin = true;
+        }
+
+        // 按最近一次保存的右/下间距，把卡片重新贴到当前工作区的右下角
+        private void RePinToCorner()
+        {
+            try
+            {
+                if (!File.Exists(_posPath)) return;
+                string[] parts = File.ReadAllText(_posPath).Split(',');
+                if (parts.Length < 8) return;
+                int gapR, gapB;
+                if (!int.TryParse(parts[6].Trim(), out gapR)) return;
+                if (!int.TryParse(parts[7].Trim(), out gapB)) return;
+                Rectangle wa = Screen.FromPoint(new Point(Location.X + _w / 2, Location.Y + _h / 2)).WorkingArea;
+                Location = ClampToWorkArea(wa.Right + EdgeInset(true) - _w - gapR,
+                    wa.Bottom + EdgeInset(true) - _h - gapB);
+            }
+            catch { }
+        }
+
         private void OnTick(object sender, EventArgs e)
         {
+            if (_repin) { _repin = false; RePinToCorner(); }
             try { _sample = Sensors.Read(); } catch { }
             // 蓝牙设备连上/断开会让信息行数变化，高度要跟着调（底边不动，向上长或缩）
             ApplyHeight();
@@ -1130,13 +1161,10 @@ namespace BatteryMonitor
                 if (!int.TryParse(parts[6].Trim(), out gapR)) return false;
                 if (!int.TryParse(parts[7].Trim(), out gapB)) return false;
 
-                // 屏幕动过（换分辨率、接投影、远程桌面改了尺寸）就不认旧坐标
-                if (l != wa.Left || t != wa.Top || r != wa.Right || b != wa.Bottom) return false;
-
-                // 末两段是"距工作区右边 / 底边"的距离。按间距反算左上角，
-                // 卡片宽度高度怎么改，右下角那一圈缝都还是原样。
-                // 距离按"看得见的卡片边"算：gap=0 就是卡片贴住任务栏/屏幕边，
-                // 所以要把窗口自身的透明边距补回去，不然永远差那么几像素
+                // 屏幕动过（换分辨率、接投影、远程桌面改了尺寸）也认间距：
+                // gap 的语义就是"贴右下角"，换屏幕之后按新工作区重新贴角即可。
+                // 末两段是"距工作区右边 / 底边"的距离，按"看得见的卡片边"算：
+                // gap=0 就是卡片贴住任务栏/屏幕边，所以要把窗口自身的透明边距补回去
                 pos = new Point(wa.Right + EdgeInset(true) - _w - gapR,
                     wa.Bottom + EdgeInset(true) - _h - gapB);
                 return true;
