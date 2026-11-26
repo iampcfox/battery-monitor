@@ -38,7 +38,7 @@ namespace BatteryMonitor
         {
             float sc = HScale;
             HGeom m = new HGeom();
-            m.Pad = 7f * sc;
+            m.Pad = 10f * sc;
             m.Gap = 12f * sc;
             m.DevGap = 13f * sc;
 
@@ -125,12 +125,12 @@ namespace BatteryMonitor
 
                     float pad = 3f * sc;
                     RectangleF card = new RectangleF(pad, pad, _w - pad * 2 - 2f * sc, _h - pad * 2 - 2f * sc);
-                    DrawCardBody(g, card, 8f * sc);
+                    DrawCardBody(g, card, _cfg.SquareCorners ? 0f : 8f * sc);
 
                     Color ink = InkColor();
                     Color sub = SubInk(ink);
                     Color accent = AccentColor();
-                    float cy = _h / 2f;
+                    float cy = _h / 2f - 1f * sc;   // 整行（文字/图标/胶囊）往上提 1px
 
                     using (StringFormat sf = new StringFormat(StringFormat.GenericTypographic))
                     using (Font fPct = new Font("Segoe UI", 13f * sc, FontStyle.Bold, GraphicsUnit.Pixel))
@@ -155,12 +155,16 @@ namespace BatteryMonitor
                             RowIcon ic = Sensors.BtKindIcon(d.Kind);
                             if (ic != RowIcon.None)
                             {
-                                DrawRowIcon(g, ic, x, cy - iconBox / 2f, iconBox, ink, d.Percent);
+                                // 图标和设备名整体比其他元素低 1px：耳机/键盘这类图标的下摆重，
+                                // 名字又是汉字（墨迹中心偏下），同一个 cy 上看着就是"浮着"的
+                                DrawRowIcon(g, ic, x, cy - iconBox / 2f + 1.5f * sc, iconBox, ink, d.Percent);
                                 x += iconBox + 3f * sc;
                             }
 
                             using (SolidBrush b = new SolidBrush(ink))
-                                g.DrawString(d.Label, fInfo, b, x, cy - InkCenterOffset(fInfo), sf);
+                                // 名字是汉字：墨迹中心要用汉字探针量（见 CardRender.InkCenterOffset），
+                                // 用数字探针的话"耳机1"会比胶囊低一截
+                                g.DrawString(d.Label, fInfo, b, x, cy - InkCenterOffset(fInfo, "耳机") + 1.5f * sc, sf);
                             x += g.MeasureString(d.Label, fInfo, PointF.Empty, sf).Width + 4f * sc;
 
                             // 名字后面那 4px 的缝在 x += labelW + 4 时已经让出来了，
@@ -169,7 +173,7 @@ namespace BatteryMonitor
                                 ? d.Percent.ToString(CultureInfo.InvariantCulture)
                                 : "--";
                             float capRight = x + capW * sc;
-                            DrawBtCapsule(g, capText, capRight, cy, d.Percent, ink, sc);
+                            DrawBtCapsule(g, capText, capRight, cy + 0.5f * sc, d.Percent, ink, sc);
                             x = capRight;
 
                             if (d.Kind == BtKind.Headphone || d.Kind == BtKind.Speaker)
@@ -198,10 +202,10 @@ namespace BatteryMonitor
                         if (m.TempW > 0f)
                         {
                             float tx = m.TempX;
-                            DrawRowIcon(g, RowIcon.Thermo, tx, cy - iconBox / 2f, iconBox, ink, -1);
+                            DrawRowIcon(g, RowIcon.Thermo, tx, cy - iconBox / 2f + 0.5f * sc, iconBox, ink, -1);
                             tx += iconBox + 3f * sc;
                             using (SolidBrush b = new SolidBrush(ink))
-                                g.DrawString(m.Temp, fInfo, b, tx, cy - InkCenterOffset(fInfo), sf);
+                                g.DrawString(m.Temp, fInfo, b, tx, cy - InkCenterOffset(fInfo, "电池") + 0.5f * sc, sf);
                         }
 
                         // ── 本机电量（最右）：小闪电 + 小号数字，不画电量环 ──
@@ -216,7 +220,7 @@ namespace BatteryMonitor
                             DrawRowIcon(g, RowIcon.Bolt, m.PctX, cy - b2 / 2f, b2, boltC, -1);
                         }
                         using (SolidBrush bp = new SolidBrush(accent))
-                            g.DrawString(pctText, fPct, bp, px, cy - InkCenterOffset(fPct), sf);
+                            g.DrawString(pctText, fPct, bp, px, cy - InkCenterOffset(fPct) + 0.5f * sc, sf);
                     }
 
                     ApplyLayered(bmp);

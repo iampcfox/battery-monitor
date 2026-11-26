@@ -471,7 +471,7 @@ namespace BatteryMonitor
             if (sc <= 0) sc = 1f;
             int local = 0;
             if (cfg.ShowTemp) local++;
-            if (cfg.ShowState || cfg.ShowWatt) local++;
+            if (cfg.ShowState) local++;
 
             int bt = 0;
             int more = 0;                               // "还有 N 台"那一行（纯文字，不加高行距）
@@ -564,13 +564,9 @@ namespace BatteryMonitor
             }
             else if (menuId == MENU_STATE)
             {
-                // 菜单里这两项是合成的：任一项开着就算"开"，点一下两项一起关；都关着就一起开。
-                // 设置页仍然保留各自的复选框，可能出现只有一项开的状态，这时点菜单会一起收掉。
-                bool on = !(_cfg.ShowState || _cfg.ShowWatt);
-                _cfg.ShowState = on;
-                _cfg.ShowWatt = on;
-                SaveFlag("showstate", on);
-                SaveFlag("showwatt", on);
+                // 状态和功率合在一行、一个开关：开着 = "充电中 6.2W"，关了整行不画
+                _cfg.ShowState = !_cfg.ShowState;
+                SaveFlag("showstate", _cfg.ShowState);
             }
             else
             {
@@ -947,11 +943,25 @@ namespace BatteryMonitor
             try { wa = Screen.FromPoint(new Point(x + _w / 2, y + _h / 2)).WorkingArea; }
             catch { return new Point(x, y); }
 
-            if (x + _w > wa.Right) x = wa.Right - _w;
-            if (y + _h > wa.Bottom) y = wa.Bottom - _h;
-            if (x < wa.Left) x = wa.Left;
-            if (y < wa.Top) y = wa.Top;
+            // 窗口矩形比看得见的卡片大一圈（四周是透明像素，还有圆角留的空），
+            // 按"窗口贴边"来钳，卡片就永远差那么几像素贴不到任务栏/屏幕边。
+            // 所以各边分别按自己的透明边距往外让：右边和下边让得多（还有 2px 圆角空），上左边让得少
+            int inRB = EdgeInset(true), inLT = EdgeInset(false);
+            if (x + _w > wa.Right + inRB) x = wa.Right + inRB - _w;
+            if (y + _h > wa.Bottom + inRB) y = wa.Bottom + inRB - _h;
+            if (x < wa.Left - inLT) x = wa.Left - inLT;
+            if (y < wa.Top - inLT) y = wa.Top - inLT;
             return new Point(x, y);
+        }
+
+        // 透明边距：right/bottom = pad + 2px（卡片宽高算的是 _w - pad*2 - 2），left/top = pad。
+        // 纵向 pad=4，横向 pad=3
+        private int EdgeInset(bool rightBottom)
+        {
+            float sc = HScale;
+            float pad = _cfg.Horizontal ? 3f : 4f;
+            float inset = rightBottom ? pad + 2f * sc : pad;
+            return (int)Math.Round(inset);
         }
 
         // 轮询式拖动：窗口带 WS_EX_TRANSPARENT 收不到鼠标消息，只能看全局按键状态
@@ -1124,8 +1134,11 @@ namespace BatteryMonitor
                 if (l != wa.Left || t != wa.Top || r != wa.Right || b != wa.Bottom) return false;
 
                 // 末两段是"距工作区右边 / 底边"的距离。按间距反算左上角，
-                // 卡片宽度高度怎么改，右下角那一圈缝都还是原样
-                pos = new Point(wa.Right - _w - gapR, wa.Bottom - _h - gapB);
+                // 卡片宽度高度怎么改，右下角那一圈缝都还是原样。
+                // 距离按"看得见的卡片边"算：gap=0 就是卡片贴住任务栏/屏幕边，
+                // 所以要把窗口自身的透明边距补回去，不然永远差那么几像素
+                pos = new Point(wa.Right + EdgeInset(true) - _w - gapR,
+                    wa.Bottom + EdgeInset(true) - _h - gapB);
                 return true;
             }
             catch { return false; }

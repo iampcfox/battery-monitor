@@ -83,7 +83,6 @@ namespace BatteryMonitor
         // 空白会让人以为"这行坏了"，0 至少说明状态行还在工作（数值来源见 UpdateWatts）
         private string WattText()
         {
-            if (!_cfg.ShowWatt) return "";
             if (!_sample.HasBattery) return "";           // 台式机没电池，不写 0.0W
             if (double.IsNaN(_sample.Watts)) return "0.0W";
             return string.Format(CultureInfo.InvariantCulture, "{0:0.0}W", _sample.Watts);
@@ -93,7 +92,9 @@ namespace BatteryMonitor
         // 状态被关掉时就只剩数字，前面补个"功率"免得孤零零一个 6.2W 看不懂
         private string StateLineText()
         {
-            string st = _cfg.ShowState ? StateText() : "";
+            // 开关合成了一个：关了整行（状态词 + 功率）都不画，开着 = "充电中 6.2W"
+            if (!_cfg.ShowState) return "";
+            string st = StateText();
             string w = WattText();
             if (w.Length == 0) return st;
             return st.Length == 0 ? "功率 " + w : st + " " + w;
@@ -300,20 +301,24 @@ namespace BatteryMonitor
         private float _inkNormSize = -1f;
         private float _inkNormOff;
 
-        private float InkCenterOffset(Font f)
+        private readonly Dictionary<string, float> _inkOffCache = new Dictionary<string, float>();
+
+        // probe：用来量墨迹中心的样本文字。**中文和数字的墨迹中心不一样**
+        // （汉字占满字身框、中心偏下，数字只到 cap 高度、中心偏上）——
+        // 拿"88"量出来的偏移去画"耳机1"，汉字就会比胶囊低一截。
+        // 所以横向布局里：设备名用汉字探针，音量/电量的数字用数字探针
+        private float InkCenterOffset(Font f) { return InkCenterOffset(f, "88"); }
+
+        private float InkCenterOffset(Font f, string probe)
         {
-            float size = f.Size;
-            if (f.Bold)
-            {
-                if (_inkBoldSize > 0f && Math.Abs(_inkBoldSize - size) < 0.05f) return _inkBoldOff;
-                _inkBoldOff = MeasureInkOffset(f, "88");
-                _inkBoldSize = size;
-                return _inkBoldOff;
-            }
-            if (_inkNormSize > 0f && Math.Abs(_inkNormSize - size) < 0.05f) return _inkNormOff;
-            _inkNormOff = MeasureInkOffset(f, "88");
-            _inkNormSize = size;
-            return _inkNormOff;
+            string key = Math.Round(f.Size * 10).ToString(CultureInfo.InvariantCulture)
+                + "|" + probe + (f.Bold ? "|B" : "|N");
+            float hit;
+            if (_inkOffCache.TryGetValue(key, out hit)) return hit;
+
+            float off = MeasureInkOffset(f, probe);
+            _inkOffCache[key] = off;
+            return off;
         }
 
         private static float MeasureInkOffset(Font f, string sample)
@@ -402,6 +407,7 @@ namespace BatteryMonitor
         private static GraphicsPath RoundRect(RectangleF r, float radius)
         {
             GraphicsPath p = new GraphicsPath();
+            if (radius <= 0.5f) { p.AddRectangle(r); return p; }   // 直角：零尺寸的圆弧会画出毛边
             float d = radius * 2f;
             p.AddArc(r.X, r.Y, d, d, 180, 90);
             p.AddArc(r.Right - d, r.Y, d, d, 270, 90);
@@ -438,7 +444,7 @@ namespace BatteryMonitor
 
                     float pad = 4f * sc;
                     RectangleF card = new RectangleF(pad, pad, _w - pad * 2 - 2f * sc, _h - pad * 2 - 2f * sc);
-                    float radius = 11f * sc;
+                    float radius = _cfg.SquareCorners ? 0f : 11f * sc;
 
                     DrawCardBody(g, card, radius);
 

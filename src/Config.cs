@@ -30,14 +30,14 @@ namespace BatteryMonitor
         public bool ShowPercentSign = true;
         public bool ShowTemp = true;         // 温度行（Ctrl+右键菜单可切换，会写回 ini）
         public bool ShowState = true;        // 充放电状态词（充电中/放电中…，菜单可切换）
-        public bool ShowWatt = true;         // 状态行后面的功率数字（菜单可切换）
         public bool ShowBt = true;           // 蓝牙设备电量行（耳机/键盘，没连时不占行）
         public bool Tray = true;             // 托盘图标（原来 battery-tray 那个，已并进来）
         public bool Taskbar = true;          // 任务栏窄条（挂进 Shell_TrayWnd，跟 TrafficMonitor 一个路子）
         public bool StripTemp = true;        // 窄条下行的温度（与悬浮窗口的温度分开配，缺省跟以前一致）
-        public bool StripWatt = true;        // 窄条下行的功率（同上）
         public bool StripBt = true;          // 窄条上的蓝牙设备电量（耳机/键盘/手柄，各自一个图标 + 电量）
         public bool Horizontal = false;      // true = 悬浮窗横向排列（电量在右、温度居中、蓝牙在左）
+        public bool SquareCorners = false;   // true = 卡片直角；false = 圆角（默认）
+        public float StripScale = 1.0f;      // 窄条自己的缩放（和卡片缩放分开配；范围 0.7~1.6）
         public bool ShowEmptyBt = false;     // 连"没上报电量"的设备也显示（蓝牙音箱这类永远不报电量的才看得见）
         public bool StripSolid = false;      // true = 窄条不走逐像素透明，改用实底绘制（花屏/看不见时的退路）
         public bool TrayMin = false;         // true = 托盘数字取"所有在线设备的最低电量"，而不是只显示本机
@@ -58,7 +58,7 @@ namespace BatteryMonitor
             Config c = new Config();
             // 老 ini 里没有 striptemp/stripwatt：第一版窄条直接跟着 ShowTemp/ShowWatt 走，
             // 这里继承一次，升级后窄条的样子不会突然多出/少掉一行
-            bool hasStripTemp = false, hasStripWatt = false;
+            bool hasStripTemp = false;
             try
             {
                 string dir = Path.GetDirectoryName(Application.ExecutablePath);
@@ -82,15 +82,15 @@ namespace BatteryMonitor
                     else if (k == "percent") c.ShowPercentSign = !IsFalse(v);
                     else if (k == "showtemp") c.ShowTemp = !IsFalse(v);
                     else if (k == "showstate") c.ShowState = !IsFalse(v);
-                    else if (k == "showwatt") c.ShowWatt = !IsFalse(v);
-                    else if (k == "showbt" || k == "showheadset") c.ShowBt = !IsFalse(v);
+                            else if (k == "showbt" || k == "showheadset") c.ShowBt = !IsFalse(v);
                     else if (k == "tray") c.Tray = !IsFalse(v);
                     else if (k == "taskbar") c.Taskbar = !IsFalse(v);
                     else if (k == "striptemp") { c.StripTemp = !IsFalse(v); hasStripTemp = true; }
-                    else if (k == "stripwatt") { c.StripWatt = !IsFalse(v); hasStripWatt = true; }
                     else if (k == "stripbt") c.StripBt = !IsFalse(v);
                     else if (k == "showemptybt") c.ShowEmptyBt = !IsFalse(v);
                     else if (k == "horizontal") c.Horizontal = !IsFalse(v);
+                    else if (k == "squarecorners") c.SquareCorners = !IsFalse(v);
+                    else if (k == "stripscale") c.StripScale = ParseF(v, c.StripScale);
                     else if (k == "stripsolid") c.StripSolid = !IsFalse(v);
                     else if (k == "traymin") c.TrayMin = !IsFalse(v);
                     else if (k == "trayicon") c.TrayNumber = (v.Trim().ToLowerInvariant() == "number");
@@ -104,7 +104,6 @@ namespace BatteryMonitor
             }
             catch { }
             if (!hasStripTemp) c.StripTemp = c.ShowTemp;
-            if (!hasStripWatt) c.StripWatt = c.ShowWatt;
             return c;
         }
 
@@ -126,15 +125,15 @@ namespace BatteryMonitor
             kv["percent"] = BoolText(ShowPercentSign);
             kv["showtemp"] = BoolText(ShowTemp);
             kv["showstate"] = BoolText(ShowState);
-            kv["showwatt"] = BoolText(ShowWatt);
             kv["showbt"] = BoolText(ShowBt);
             kv["tray"] = BoolText(Tray);
             kv["taskbar"] = BoolText(Taskbar);
             kv["striptemp"] = BoolText(StripTemp);
-            kv["stripwatt"] = BoolText(StripWatt);
             kv["stripbt"] = BoolText(StripBt);
             kv["showemptybt"] = BoolText(ShowEmptyBt);
             kv["horizontal"] = BoolText(Horizontal);
+            kv["squarecorners"] = BoolText(SquareCorners);
+            kv["stripscale"] = StripScale.ToString("0.00", CultureInfo.InvariantCulture);
             kv["stripsolid"] = BoolText(StripSolid);
             kv["traymin"] = BoolText(TrayMin);
             kv["trayicon"] = TrayNumber ? "number" : "glyph";

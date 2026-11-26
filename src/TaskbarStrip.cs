@@ -661,7 +661,9 @@ namespace BatteryMonitor
                 uint dpi = 96;
                 try { dpi = GetDpiForWindow(_taskbar); } catch { }
                 if (dpi < 72 || dpi > 480) dpi = 96;
-                float scale = _cfg.Scale <= 0 ? 1f : Math.Min(1.6f, Math.Max(0.8f, _cfg.Scale));
+                // 窄条用独立的缩放（stripscale），跟卡片的 scale 分开配 —— 任务栏高度固定，
+                // 卡片调到 1.3 的时候窄条往往得反过来调小才放得下
+                float scale = _cfg.StripScale <= 0f ? 1f : Math.Min(1.6f, Math.Max(0.7f, _cfg.StripScale));
                 _u = dpi / 96f * scale;
 
                 // 任务栏那条空隙里可能已经有别人的浮条（TrafficMonitor 就是），
@@ -1274,16 +1276,7 @@ namespace BatteryMonitor
                 list.Add(t);
             }
 
-            if (_cfg.StripWatt && s.HasBattery)
-            {
-                Seg w = new Seg();
-                w.Line = 1;
-                w.Kind = K_WATT;
-                w.Text = double.IsNaN(s.Watts)
-                    ? "0.0W"
-                    : string.Format(CultureInfo.InvariantCulture, "{0:0.0}W", s.Watts);
-                list.Add(w);
-            }
+            // 功率不再进窄条：这块地方留给设备电量，功率在悬浮窗里看
             return list;
         }
         // 窄条只画"报了电量"的蓝牙设备：没电量的（手柄这一类）塞进窄条也只剩一个 "--"，
@@ -1513,9 +1506,6 @@ namespace BatteryMonitor
             L.ValRight = L.NumX + numW + L.UnitW;
             lineW[0] = (anchor - pad) + numW + L.UnitW;
             if (started[1]) lineW[1] = (lowStart - pad) + numW + L.UnitW;
-            // 功率跟在符号列后面，别把它的宽度吞掉
-            for (int i = 0; i < segs.Count; i++)
-                if (segs[i].Kind == K_WATT) lineW[1] += gap + SegWidth(g, segs[i]);
             for (int i = 0; i < 2; i++)
             {
                 if (!started[i]) continue;
@@ -1925,9 +1915,12 @@ namespace BatteryMonitor
 
                 // 原点取整再画：grid fit 只有在整数原点上才把笔画真正压到像素格里，
                 // 差半个像素就是一级灰边 —— 12px 的字全靠这一点看着"利"
+                // 蓝牙数字再往下 1px：行首图标的墨迹偏重（耳机/键盘的下摆都比字重），
+                // 按墨迹中心对齐时数字会比图标高 1px，看着就是"图标沉、数字飘"
+                float yyOff = seg.Bt ? 1f : 0f;
                 using (SolidBrush b = new SolidBrush(c))
                     g.DrawString(seg.Text, f, b,
-                        new RectangleF((float)Math.Round(vx), (float)Math.Round(cy - inkOff),
+                        new RectangleF((float)Math.Round(vx), (float)Math.Round(cy - inkOff) + (int)yyOff,
                             tw + 2f, lineH), sf);
                 lineX[ln] = vx + tw + gap;
             }

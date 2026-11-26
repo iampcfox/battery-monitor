@@ -2308,22 +2308,22 @@ namespace BatteryMonitor
 
         private readonly UiToggle _chkTemp = new UiToggle();
         private readonly UiToggle _chkState = new UiToggle();
-        private readonly UiToggle _chkWatt = new UiToggle();
         private readonly UiToggle _chkBt = new UiToggle();
         private readonly UiToggle _chkPercent = new UiToggle();
         private readonly UiToggle _chkEmptyBt = new UiToggle();
         private readonly UiToggle _chkHorizontal = new UiToggle();
+        private readonly UiToggle _chkSquare = new UiToggle();
         private readonly UiToggle _chkCtrl = new UiToggle();
         private readonly UiToggle _chkTray = new UiToggle();
         private readonly UiToggle _chkTaskbar = new UiToggle();
         private readonly UiToggle _chkStripTemp = new UiToggle();
-        private readonly UiToggle _chkStripWatt = new UiToggle();
         private readonly UiToggle _chkStripBt = new UiToggle();
         private readonly UiToggle _chkTrayMin = new UiToggle();
         private readonly UiToggle _chkAuto = new UiToggle();
         private readonly UiToggle _chkDebug = new UiToggle();
 
         private readonly UiNumBox _numScale = new UiNumBox();
+        private readonly UiNumBox _numStripScale = new UiNumBox();
         private readonly UiNumBox _numAlpha = new UiNumBox();
         private readonly UiNumBox _numRefresh = new UiNumBox();
         private readonly UiNumBox _numRecord = new UiNumBox();
@@ -2367,8 +2367,8 @@ namespace BatteryMonitor
 
         private void StyleChecks()
         {
-            UiToggle[] all = { _chkTemp, _chkState, _chkWatt, _chkBt, _chkPercent,
-                _chkCtrl, _chkTray, _chkTaskbar, _chkStripTemp, _chkStripWatt, _chkStripBt,
+            UiToggle[] all = { _chkTemp, _chkState, _chkBt, _chkPercent,
+                _chkCtrl, _chkTray, _chkTaskbar, _chkStripTemp, _chkStripBt,
                 _chkTrayMin, _chkAuto, _chkDebug };
             foreach (UiToggle c in all)
             {
@@ -2380,7 +2380,7 @@ namespace BatteryMonitor
 
         private void StyleNums()
         {
-            UiNumBox[] all = { _numScale, _numAlpha, _numRefresh, _numRecord, _numKeep, _numWarn };
+            UiNumBox[] all = { _numScale, _numStripScale, _numAlpha, _numRefresh, _numRecord, _numKeep, _numWarn };
             foreach (UiNumBox n in all)
             {
                 n.Font = UiFonts.Body;
@@ -2391,6 +2391,10 @@ namespace BatteryMonitor
             _numScale.Increment = 0.05m;
             _numScale.Minimum = 0.7m;
             _numScale.Maximum = 2.5m;
+            _numStripScale.DecimalPlaces = 2;
+            _numStripScale.Increment = 0.05m;
+            _numStripScale.Minimum = 0.7m;
+            _numStripScale.Maximum = 1.6m;
         }
 
         private RoundButton MakeButton(string text, bool accent)
@@ -2435,24 +2439,24 @@ namespace BatteryMonitor
         private void BuildGroups()
         {
             // 悬浮窗口显示哪些内容
-            Panel g1 = Group("悬浮窗口", 170);
+            Panel g1 = Group("悬浮窗口", 200);
             _chkTemp.Text = "温度";
-            _chkState.Text = "充放电状态";
-            _chkWatt.Text = "功率";
+            _chkState.Text = "充放电状态 · 功率";
             _chkBt.Text = "蓝牙设备电量";
             _chkPercent.Text = "电量数字后带 %";
             _chkTemp.Location = new Point(18, 46);
             _chkState.Location = new Point(196, 46);
-            _chkWatt.Location = new Point(380, 46);
             _chkBt.Location = new Point(18, 76);
             _chkPercent.Location = new Point(196, 76);
             _chkEmptyBt.Text = "显示未上报电量的设备（音箱等）";
             _chkEmptyBt.Location = new Point(18, 106);
             _chkHorizontal.Text = "横向排列（电量在右 · 温度居中 · 蓝牙在左）";
             _chkHorizontal.Location = new Point(18, 136);
-            g1.Controls.Add(_chkTemp); g1.Controls.Add(_chkState); g1.Controls.Add(_chkWatt);
+            _chkSquare.Text = "卡片直角（默认圆角）";
+            _chkSquare.Location = new Point(18, 166);
+            g1.Controls.Add(_chkTemp); g1.Controls.Add(_chkState);
             g1.Controls.Add(_chkBt); g1.Controls.Add(_chkPercent); g1.Controls.Add(_chkEmptyBt);
-            g1.Controls.Add(_chkHorizontal);
+            g1.Controls.Add(_chkHorizontal); g1.Controls.Add(_chkSquare);
 
             Panel themeHost = new Panel();
             themeHost.BackColor = Ui.Card;
@@ -2474,21 +2478,21 @@ namespace BatteryMonitor
             RefreshThemeButtons();
 
             // 任务栏窗口（挂在任务栏里的窄条）：跟悬浮窗口各自配置，互不影响
-            Panel g4 = Group("任务栏窗口", 136);
+            Panel g4 = Group("任务栏窗口", 156);
             _chkTaskbar.Text = "显示任务栏窗口";
             _chkTaskbar.Location = new Point(18, 46);
             _chkStripTemp.Text = "显示温度";
             _chkStripTemp.Location = new Point(170, 46);
-            _chkStripWatt.Text = "显示功率";
-            _chkStripWatt.Location = new Point(270, 46);
             _chkStripBt.Text = "显示蓝牙设备电量";
-            _chkStripBt.Location = new Point(370, 46);
+            _chkStripBt.Location = new Point(300, 46);
             g4.Controls.Add(_chkTaskbar);
             g4.Controls.Add(_chkStripTemp);
-            g4.Controls.Add(_chkStripWatt);
             g4.Controls.Add(_chkStripBt);
-            g4.Controls.Add(Caption("上行电量 + 蓝牙设备（耳机 / 键盘 / 手柄）；下行 TEM 温度 · 功率，与电量图标左侧对齐。", 18, 78));
-            g4.Controls.Add(Caption("地方不够时按 多台设备 → 功率 → 温度 让位；只放得下一台时每 6 秒轮流显示。", 18, 98));
+            g4.Controls.Add(Caption("缩放", 18, 76));
+            _numStripScale.Location = new Point(58, 74);
+            g4.Controls.Add(_numStripScale);
+            g4.Controls.Add(Caption("上行电量 + 蓝牙设备（耳机 / 键盘 / 手柄）；下行 TEM 温度，与电量图标左侧对齐。", 18, 106));
+            g4.Controls.Add(Caption("地方不够时按 多台设备 → 温度 让位；只放得下一台时每 6 秒轮流显示。", 18, 126));
 
             // 托盘图标
             Panel g5 = Group("托盘图标", 148);
@@ -2632,22 +2636,22 @@ namespace BatteryMonitor
         {
             _chkTemp.Checked = _cfg.ShowTemp;
             _chkState.Checked = _cfg.ShowState;
-            _chkWatt.Checked = _cfg.ShowWatt;
             _chkBt.Checked = _cfg.ShowBt;
             _chkPercent.Checked = _cfg.ShowPercentSign;
             _chkEmptyBt.Checked = _cfg.ShowEmptyBt;
             _chkHorizontal.Checked = _cfg.Horizontal;
+            _chkSquare.Checked = _cfg.SquareCorners;
             _chkCtrl.Checked = _cfg.DragNeedsCtrl;
             _chkTray.Checked = _cfg.Tray;
             _chkTaskbar.Checked = _cfg.Taskbar;
             _chkStripTemp.Checked = _cfg.StripTemp;
-            _chkStripWatt.Checked = _cfg.StripWatt;
             _chkStripBt.Checked = _cfg.StripBt;
             _chkTrayMin.Checked = _cfg.TrayMin;
             _chkDebug.Checked = _cfg.Debug;
             try { _chkAuto.Checked = FloatForm.AutoStartOn; } catch { }
 
             _numScale.Value = Clamp((decimal)_cfg.Scale, _numScale);
+            _numStripScale.Value = Clamp((decimal)_cfg.StripScale, _numStripScale);
             _numAlpha.Value = Clamp(_cfg.Alpha, _numAlpha);
             _numRefresh.Value = Clamp(_cfg.RefreshSeconds, _numRefresh);
             _numRecord.Value = Clamp(_cfg.RecordMinutes, _numRecord);
@@ -2717,22 +2721,22 @@ namespace BatteryMonitor
         {
             _cfg.ShowTemp = _chkTemp.Checked;
             _cfg.ShowState = _chkState.Checked;
-            _cfg.ShowWatt = _chkWatt.Checked;
             _cfg.ShowBt = _chkBt.Checked;
             _cfg.ShowPercentSign = _chkPercent.Checked;
             _cfg.ShowEmptyBt = _chkEmptyBt.Checked;
             _cfg.Horizontal = _chkHorizontal.Checked;
+            _cfg.SquareCorners = _chkSquare.Checked;
             Sensors.ShowAllBt = _cfg.ShowEmptyBt;
             _cfg.DragNeedsCtrl = _chkCtrl.Checked;
             _cfg.Tray = _chkTray.Checked;
             _cfg.Taskbar = _chkTaskbar.Checked;
             _cfg.StripTemp = _chkStripTemp.Checked;
-            _cfg.StripWatt = _chkStripWatt.Checked;
             _cfg.StripBt = _chkStripBt.Checked;
             _cfg.TrayMin = _chkTrayMin.Checked;
             _cfg.Debug = _chkDebug.Checked;
 
             _cfg.Scale = (float)_numScale.Value;
+            _cfg.StripScale = (float)_numStripScale.Value;
             _cfg.Alpha = (int)_numAlpha.Value;
             _cfg.RefreshSeconds = (int)_numRefresh.Value;
             _cfg.RecordMinutes = (int)_numRecord.Value;
